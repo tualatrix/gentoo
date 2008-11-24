@@ -1,0 +1,21 @@
+# ChangeLog for media-tv/gmlive
+# Copyright 1999-2008 Gentoo Foundation; Distributed under the GPL v2
+# $Header: $
+
+  29 May 2008; lidaibin <lidaibin@gmail.com> gmlive-0.20.2.ebuild:
+  regenerate the digest of the gmlive
+
+  17 May 2008; lidaibin <lidaibin@gmail.com> -gmlive-0.20.1.ebuild,
+  +gmlive-0.20.2.ebuild:
+  Upgrade the gmlive to 0.20.2 Upgrade the gmlive to 0.20.2 -v
+
+  20 Apr 2008; Zhang Le <r0bertz@gentoo.org> Manifest:
+  fixed manifest
+
+  20 Apr 2008; Zhang Le <r0bertz@gentoo.org> gmlive-0.20.1.ebuild:
+  added RESTRICT mirror
+
+  20 Apr 2008; Zhang Le <r0bertz@gentoo.org> gmlive-0.20.1.ebuild:
+  added necessary space after ( and before ) in dependency specification;
+  removed ~ppc keyword since sopcast won't work on ppc
+

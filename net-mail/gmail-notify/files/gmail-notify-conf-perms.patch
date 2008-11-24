@@ -1,0 +1,15 @@
+diff -u gmail-notify.orig/GmailConfig.py gmail-notify/GmailConfig.py
+--- gmail-notify.orig/GmailConfig.py	2006-09-25 23:23:50.000000000 -0700
++++ gmail-notify/GmailConfig.py	2006-09-27 20:51:03.000000000 -0700
+@@ -237,7 +237,10 @@
+ 				self.config.remove_option( "options", "gmailusername" )
+ 				self.config.remove_option( "options", "gmailpassword" )
+ 
+-			self.config.write( open( self.loadedConfig, 'w' ) )
++			fp=open(self.loadedConfig, 'w')
++			self.config.write(fp)
++			os.chmod(self.loadedConfig, 0600)
++			fp.close()
+ 			gtk.main_quit()
+ 			self.hide()
+ 		else:

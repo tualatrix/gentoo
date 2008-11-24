@@ -1,0 +1,7 @@
+diff -abBU 1 -rP gmailfs-0.7.2.orig/gmailfs.conf gmailfs-0.7.2/gmailfs.conf
+--- gmailfs-0.7.2.orig/gmailfs.conf	2005-11-27 12:22:22.000000000 +0200
++++ gmailfs-0.7.2/gmailfs.conf		2006-02-27 21:48:34.000000000 +0200
+@@ -26,2 +26,2 @@
+ # equivalent for it
+-logfile = ~/gmailfs.log
++logfile = /var/log/gmailfs.log

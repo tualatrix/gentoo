@@ -1,0 +1,21 @@
+diff -u gmail-notify.orig/notifier.py gmail-notify/notifier.py
+--- gmail-notify.orig/notifier.py	2006-09-25 23:23:50.000000000 -0700
++++ gmail-notify/notifier.py	2006-09-25 23:40:10.000000000 -0700
+@@ -6,7 +6,7 @@
+ import gtk
+ import time
+ import os
+-import pytrayicon
++from egg.trayicon import TrayIcon
+ import sys
+ import warnings
+ import ConfigParser
+@@ -82,7 +82,7 @@
+ 		self.popuptimer=0
+ 		self.waittimer=0
+ 		# Create the tray icon object
+-		self.tray = pytrayicon.TrayIcon(self.lang.get_string(21));
++		self.tray = TrayIcon(self.lang.get_string(21));
+ 		self.eventbox = gtk.EventBox()
+ 		self.tray.add(self.eventbox)
+ 		self.eventbox.connect("button_press_event", self.tray_icon_clicked)
