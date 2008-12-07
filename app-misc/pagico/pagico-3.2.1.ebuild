@@ -29,6 +29,7 @@ src_install(){
 	mkdir -p $SYSTEM_DIR
 	cp ${S}/service/pagico-daemon.conf $SYSTEM_DIR
 	dobin ${S}/bin/pagico
+	dobin ${S}/bin/pagico-helper
 	mkdir -p $DESKTOP_DIR
 	cp ${S}/pagico.desktop $DESKTOP_DIR
 }
