@@ -1,0 +1,51 @@
+diff -Nurp genkernel-3.4.10.902/arch/x86/modules_load genkernel-3.4.10.902-new/arch/x86/modules_load
+--- genkernel-3.4.10.902/arch/x86/modules_load	2008-12-05 01:15:19.000000000 +0800
++++ genkernel-3.4.10.902-new/arch/x86/modules_load	2008-12-08 09:31:18.000000000 +0800
+@@ -24,3 +24,5 @@ MODULES_USB="ehci-hcd uhci usb-ohci hid 
+ # Filesystems
+ MODULES_FS="ext2 ext3 reiserfs jfs nfs xfs fuse"
+ 
++# Uvesafb
++MODULES_VIDEO="cfbcopyarea cfbfillrect cfbimgblt uvesafb"
+diff -Nurp genkernel-3.4.10.902/defaults/linuxrc genkernel-3.4.10.902-new/defaults/linuxrc
+--- genkernel-3.4.10.902/defaults/linuxrc	2008-12-05 01:15:18.000000000 +0800
++++ genkernel-3.4.10.902-new/defaults/linuxrc	2008-12-08 09:12:29.000000000 +0800
+@@ -3,6 +3,9 @@
+ . /etc/initrd.defaults
+ . /etc/initrd.scripts
+ 
++#915
++915resolution 58 1280 800 32
++
+ splash() {
+ 	return 0
+ }
+@@ -221,6 +224,16 @@ then
+ 	REAL_ROOT="${FAKE_ROOT}"	
+ fi
+ 
++real_mod_path() {
++    find /lib/modules | grep /"${1}${KSUFF}"
++}
++
++${INSMOD} `real_mod_path cn`
++${INSMOD} `real_mod_path cfbcopyarea`
++${INSMOD} `real_mod_path cfbfillrect`
++${INSMOD} `real_mod_path cfbimgblt`
++${INSMOD} `real_mod_path uvesafb` mode_option=1280x800-32 mtrr=3 scroll=ywrap
++
+ splash 'init'
+ 
+ detect_sbp2_devices
+diff -Nurp genkernel-3.4.10.902/gen_initramfs.sh genkernel-3.4.10.902-new/gen_initramfs.sh
+--- genkernel-3.4.10.902/gen_initramfs.sh	2008-12-05 01:15:19.000000000 +0800
++++ genkernel-3.4.10.902-new/gen_initramfs.sh	2008-12-08 09:10:28.000000000 +0800
+@@ -40,6 +40,8 @@ append_busybox() {
+ 	fi
+ 	mkdir -p "${TEMP}/initramfs-busybox-temp/bin/" 
+ 
++	cp "/boot/backup/915resolution" ${TEMP}/initramfs-busybox-temp/bin/
++
+ 	cp "${GK_SHARE}/defaults/udhcpc.scripts" ${TEMP}/initramfs-busybox-temp/bin/
+ 	chmod +x "${TEMP}/initramfs-busybox-temp/bin/udhcpc.scripts"
+ 	tar -xjf "${BUSYBOX_BINCACHE}" -C "${TEMP}/initramfs-busybox-temp/bin" busybox ||

@@ -1,0 +1,10 @@
+--- src/paletteparser/palette.h.orig	2008-09-26 16:20:55.000000000 +0200
++++ src/paletteparser/palette.h	2008-09-26 16:21:14.000000000 +0200
+@@ -29,6 +29,7 @@
+ #include <iostream>
+ #include <vector>
+ #include <glibmm/ustring.h>
++#include <cstring>
+ #include "core/gcs-types.h"
+ #include "core/gcs-color.h"
+ #include "paletteparser/error.h"

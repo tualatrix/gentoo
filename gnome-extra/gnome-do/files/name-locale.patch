@@ -1,0 +1,12 @@
+diff -Nurp old/Do.Addins/src/Do.Universe/ApplicationItem.cs new/Do.Addins/src/Do.Universe/ApplicationItem.cs
+--- old/Do.Addins/src/Do.Universe/ApplicationItem.cs	2008-09-23 16:29:33.000000000 +0800
++++ new/Do.Addins/src/Do.Universe/ApplicationItem.cs	2008-12-07 22:35:19.000000000 +0800
+@@ -46,7 +46,7 @@ namespace Do.Universe {
+ 			if (null == item)
+ 				throw new Exception (desktopFile + " not found.");
+ 			
+-			name = item.GetLocalestring ("Name");
++			name = item.GetString ("Name");
+ 			description = item.GetLocalestring ("Comment");
+ 			icon = item.GetString ("Icon");
+ 		}

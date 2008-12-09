@@ -1,0 +1,233 @@
+diff -ru gnome-do-0.6.1.0/Do/src/Do.Core/SearchControllers/SimpleSearchContext.cs gnome-do-0.6.1.0-new//Do/src/Do.Core/SearchControllers/SimpleSearchContext.cs
+--- gnome-do-0.6.1.0/Do/src/Do.Core/SearchControllers/SimpleSearchContext.cs	2008-09-23 04:29:33.000000000 -0400
++++ gnome-do-0.6.1.0-new//Do/src/Do.Core/SearchControllers/SimpleSearchContext.cs	2008-12-03 20:08:29.000000000 -0500
+@@ -45,13 +45,19 @@
+ 		
+ 		public string Query
+ 		{
+-			get { return query ?? query = string.Empty; }
++			get { if (query == null)
++					query = string.Empty;
++				return query;
++			}
+ 			set { query = value; }
+ 		}
+ 
+ 		public IObject[] Results
+ 		{
+-			get { return results ?? results = new IObject[0]; }
++			get { if (results == null)
++					results = new IObject[0];
++				return results;
++			}
+ 			set {
+ 				results = value ?? new IObject[0];
+ 				
+diff -ru gnome-do-0.6.1.0/Do/src/Do.cs gnome-do-0.6.1.0-new//Do/src/Do.cs
+--- gnome-do-0.6.1.0/Do/src/Do.cs	2008-09-23 04:29:33.000000000 -0400
++++ gnome-do-0.6.1.0-new//Do/src/Do.cs	2008-12-03 20:08:16.000000000 -0500
+@@ -117,35 +117,40 @@
+ 		}
+ 
+ 		public static DoPreferences Preferences {
+-			get { return preferences ?? 
+-					preferences = new DoPreferences (); 
++			get { if (preferences == null)
++					preferences = new DoPreferences ();
++				return preferences;
+ 			}
+ 		}
+ 		
+ 		public static CommandLinePreferences CLIPrefs {
+-			get { return cliprefs ?? 
+-					cliprefs = new CommandLinePreferences (args); 
++			get { if (cliprefs == null)
++					cliprefs = new CommandLinePreferences (args);
++				return cliprefs;
+ 			}
+ 		}
+ 
+ 		public static Controller Controller {
+ 			get {
+-				return controller ??
++				if (controller == null)
+ 					controller = new Controller ();
++				return controller;
+ 			}
+ 		}
+ 
+ 		public static IUniverseManager UniverseManager {
+ 			get {
+-				return universe_manager ??
++				if (universe_manager == null)
+ 					universe_manager = new SimpleUniverseManager ();
++				return universe_manager;
+ 			}
+ 		}
+ 		
+ 		public static NotificationIcon NotificationIcon {
+ 			get {
+-				return notification_icon ??
++				if ( notification_icon == null )
+ 					notification_icon = new NotificationIcon ();
++				return notification_icon;
+ 			}
+ 		}
+ 		
+diff -ru gnome-do-0.6.1.0/Do/src/Do.UI/MainMenu.cs gnome-do-0.6.1.0-new//Do/src/Do.UI/MainMenu.cs
+--- gnome-do-0.6.1.0/Do/src/Do.UI/MainMenu.cs	2008-09-23 04:29:33.000000000 -0400
++++ gnome-do-0.6.1.0-new//Do/src/Do.UI/MainMenu.cs	2008-12-03 20:08:25.000000000 -0500
+@@ -32,8 +32,9 @@
+ 
+ 		public static MainMenu Instance {
+ 			get {
+-				return instance ??
++				if (instance == null)
+ 					instance = new MainMenu ();
++				return instance;
+ 			}
+ 		}
+ 
+diff -ru gnome-do-0.6.1.0/Do/src/GconfPreferencesBackend.cs gnome-do-0.6.1.0-new//Do/src/GconfPreferencesBackend.cs
+--- gnome-do-0.6.1.0/Do/src/GconfPreferencesBackend.cs	2008-09-23 04:29:33.000000000 -0400
++++ gnome-do-0.6.1.0-new//Do/src/GconfPreferencesBackend.cs	2008-12-03 20:09:32.000000000 -0500
+@@ -74,6 +74,7 @@
+ 			try {
+ 				val = (T) client.Get (MakeKeyPath (key));
+ 			} catch {
++				val = default (T);
+ 				success = false;
+ 			}
+ 			return success;
+diff -ru gnome-do-0.6.1.0/Do.Addins/src/Do.Addins/SearchContext.cs gnome-do-0.6.1.0-new//Do.Addins/src/Do.Addins/SearchContext.cs
+--- gnome-do-0.6.1.0/Do.Addins/src/Do.Addins/SearchContext.cs	2008-09-23 04:29:33.000000000 -0400
++++ gnome-do-0.6.1.0-new//Do.Addins/src/Do.Addins/SearchContext.cs	2008-12-03 19:30:17.000000000 -0500
+@@ -81,7 +81,11 @@
+ 		
+ 		public List<IItem> Items
+ 		{
+-			get { return items ?? items = new List<IItem> (); }
++			get {
++				if (items == null)
++					items = new List<IItem> ();
++				return items;
++			}
+ 			set { items = value; }
+ 		}
+ 		
+@@ -99,13 +103,23 @@
+ 			
+ 		public string Query
+ 		{
+-			get { return query ?? query = ""; }
++			get {
++				if (query == null)
++					query = "";
++				
++				return query;
++			}
+ 			set { query = value; }
+ 		}
+ 
+ 		public IObject[] Results
+ 		{
+-			get { return results ?? results = new IObject[0]; }
++			get {
++				if (results == null)
++					results = new IObject [0];
++				
++				return results;
++			}
+ 			set {
+ 				results = value ?? new IObject[0];
+ 				cursor = 0;
+@@ -212,8 +226,13 @@
+ 		
+ 		public Type[] SearchTypes
+ 		{
+-			get { return searchTypes ??
+-					searchTypes = new Type[] {typeof (IItem), typeof (IAction)}; }
++			get {
++				if (searchTypes == null)
++					searchTypes = new Type[] {typeof (IItem), typeof (IAction)};
++				
++				return searchTypes;
++			}
++			
+ 			set {
+ 				PreviousSearchTypes = searchTypes;
+ 				searchTypes = value;
+@@ -222,8 +241,12 @@
+ 		
+ 		private Type[] PreviousSearchTypes
+ 		{
+-			get { return previousSearchTypes ??
+-					previousSearchTypes = new Type[] {typeof (IItem), typeof (IAction)}; }
++			get {
++				if (previousSearchTypes == null)
++					previousSearchTypes = new Type[] {typeof (IItem), typeof (IAction)};
++				
++				return previousSearchTypes;
++			}	
+ 			set {
+ 				previousSearchTypes = value;
+ 			}
+diff -ru gnome-do-0.6.1.0/Do.Addins/src/Do.UI/ClassicWindow/ClassicWindow.cs gnome-do-0.6.1.0-new//Do.Addins/src/Do.UI/ClassicWindow/ClassicWindow.cs
+--- gnome-do-0.6.1.0/Do.Addins/src/Do.UI/ClassicWindow/ClassicWindow.cs	2008-09-23 04:29:33.000000000 -0400
++++ gnome-do-0.6.1.0-new//Do.Addins/src/Do.UI/ClassicWindow/ClassicWindow.cs	2008-12-03 19:29:33.000000000 -0500
+@@ -72,8 +72,11 @@
+ 		
+ 		public PositionWindow PositionWindow {
+ 			get {
+-				return positionWindow ??
++				if (positionWindow == null)
+ 					positionWindow = new PositionWindow (this, resultsWindow);
++				
++				return positionWindow;
++					
+ 			}
+ 		}
+ 		
+diff -ru gnome-do-0.6.1.0/Do.Addins/src/Do.UI/DarkFrame/GlassWindow.cs gnome-do-0.6.1.0-new//Do.Addins/src/Do.UI/DarkFrame/GlassWindow.cs
+--- gnome-do-0.6.1.0/Do.Addins/src/Do.UI/DarkFrame/GlassWindow.cs	2008-09-23 04:29:33.000000000 -0400
++++ gnome-do-0.6.1.0-new//Do.Addins/src/Do.UI/DarkFrame/GlassWindow.cs	2008-12-03 19:29:47.000000000 -0500
+@@ -78,8 +78,9 @@
+ 		
+ 		public PositionWindow PositionWindow {
+ 			get {
+-				return positionWindow ?? 
++				if (positionWindow == null)
+ 					positionWindow = new PositionWindow(this, resultsWindow);
++				return positionWindow;
+ 			}
+ 		}
+ 		//---------------------ctor-----------------------
+diff -ru gnome-do-0.6.1.0/Do.Addins/src/Do.UI/MiniWindow/MiniWindow.cs gnome-do-0.6.1.0-new//Do.Addins/src/Do.UI/MiniWindow/MiniWindow.cs
+--- gnome-do-0.6.1.0/Do.Addins/src/Do.UI/MiniWindow/MiniWindow.cs	2008-09-23 04:29:33.000000000 -0400
++++ gnome-do-0.6.1.0-new//Do.Addins/src/Do.UI/MiniWindow/MiniWindow.cs	2008-12-03 19:30:00.000000000 -0500
+@@ -75,8 +75,10 @@
+ 		
+ 		public PositionWindow PositionWindow {
+ 			get {
+-				return positionWindow ??
++				if (positionWindow == null)
+ 					positionWindow = new PositionWindow (this, resultsWindow);
++
++				return positionWindow;
+ 			}
+ 		}
+ 		
+diff -ru gnome-do-0.6.1.0/Do.Addins/src/Do.Universe/ApplicationItem.cs gnome-do-0.6.1.0-new//Do.Addins/src/Do.Universe/ApplicationItem.cs
+--- gnome-do-0.6.1.0/Do.Addins/src/Do.Universe/ApplicationItem.cs	2008-09-23 04:29:33.000000000 -0400
++++ gnome-do-0.6.1.0-new//Do.Addins/src/Do.Universe/ApplicationItem.cs	2008-12-03 20:01:36.000000000 -0500
+@@ -107,8 +107,8 @@
+ 		/// </returns>
+ 		GLib.List IEnumerableToList<T> (IEnumerable<T> es)
+ 		{
+-			object [] arr;
+-	
++			T [] arr;
++
+ 			arr = new List<T> (es).ToArray ();
+ 			return new GLib.List (arr, typeof (T), false, true);
+ 		}

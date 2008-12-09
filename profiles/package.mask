@@ -1,0 +1,22 @@
+# $Header: $
+# When you add an entry to this file, add your name, the date, and an
+# explanation of why something is getting masked
+#
+# NOTE: Please add your entry at the top!
+#
+
+##
+##  This is an example
+##
+# <bangert@gentoo.org> (28 Jun 2002)
+# psypete says these are broken and i am using the
+# opporturnity to test the masking style :)
+# <bangert@gentoo.org> (28 Jun 2002)
+# psypete says these are not really broken - its just
+# the v4l stuff that does not work
+#=media-video/mplayer-0.90_pre5
+#=media-video/mplayer-0.90_pre5-r1
+=sys-kernel/genkernel-3.4.10.902-r1
+##
+##   End example
+##

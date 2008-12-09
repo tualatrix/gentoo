@@ -1,0 +1,35 @@
+--- Songbird/songbird	2008-11-13 21:33:20.000000000 +0100
++++ Songbird/songbird	2008-11-15 01:38:51.000000000 +0100
+@@ -310,6 +310,32 @@
+ 	elif [ -x "$MOZ_DIST_BIN/$MOZ_APPRUNNER_NAME" ]
+ 	then
+ 		MOZ_PROGRAM=$MOZ_DIST_BIN/$MOZ_APPRUNNER_NAME
++	##
++	## Try resolving symlinks
++	##
++	else
++		here=`/bin/pwd`
++		progname="$0"
++		while [ -h "$progname" ]; do
++			bn=`basename "$progname"`
++			cd `dirname "$progname"`
++			progname=`/bin/ls -l "$bn" | sed -e 's/^.* -> //' `
++			progbase=`basename "$progname"`
++			if [ ! -x "$progname" ]; then
++				break
++			fi
++			curdir=`dirname "$progname"`
++			run_moz="$curdir/songbird-bin"
++			echo run_moz: $run_moz
++			if [ -x "$run_moz" ]; then
++				cd "$curdir"
++				MOZ_DIST_BIN=`/bin/pwd`
++				MOZ_PROGRAM=$MOZ_DIST_BIN/songbird-bin
++				echo xx $MOZ_PROGRAM
++				break
++			fi
++		done
++		cd "$here"
+ 	fi
+ fi
+ #

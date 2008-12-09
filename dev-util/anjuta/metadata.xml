@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <herd>no-herd</herd>
+  <maintainer>
+    <email>compnerd@gentoo.org</email>
+    <name>Saleem Abdulrasool</name>
+  </maintainer>
+  <maintainer>
+    <email>welp@gentoo.org</email>
+    <name>Peter Weller</name>
+  </maintainer>
+  <use>
+    <flag name="devhelp">Enable devhelp integration</flag>
+    <flag name="glade">Build glade plugin for anjuta</flag>
+    <flag name="inherit-graph">Build inheritance graphing plugin for anjuta</flag>
+    <flag name="sourceview">Build sourceview editing plugin for anjuta</flag>
+    <flag name="valgrind">Build valgrind plugin for anjuta</flag>
+  </use>
+</pkgmetadata>
