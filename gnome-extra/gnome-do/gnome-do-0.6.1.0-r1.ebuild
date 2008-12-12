@@ -44,6 +44,7 @@ MAKEOPTS="${MAKEOPTS} -j1"
 src_prepare() {
 	epatch "${FILESDIR}/${P}-mono-2.2.patch"
 	epatch "${FILESDIR}/name-locale.patch"
+#	epatch "${FILESDIR}/locale.patch"
 }
 
 src_configure() {
