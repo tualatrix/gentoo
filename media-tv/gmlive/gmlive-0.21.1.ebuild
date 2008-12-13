@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
+inherit eutils
 DESCRIPTION="The gtk front-end of the iptv \"mms\" and \"sopcast\" and \"nslive\""
 HOMEPAGE="http://gmlive.googlecode.com"
 SRC_URI="http://gmlive.googlecode.com/files/${P}.tar.bz2"
@@ -26,6 +27,13 @@ DEPEND="${RDEPEND}
 		sys-devel/gettext
 		>=dev-util/pkgconfig-0.19
 		>=dev-util/intltool-0.35"
+
+src_unpack() {
+	unpack ${A}
+	cd ${S}
+
+	epatch "${FILESDIR}/gui-fix.patch"
+}
 
 src_compile() {
 	econf $(use_enable totem plugin) || die "configure failed"

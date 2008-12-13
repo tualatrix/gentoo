@@ -1,0 +1,12 @@
+diff -Nurp gnome-do-0.6.1.0/Do/src/Do.cs gnome-do-0.6.1.0.new/Do/src/Do.cs
+--- gnome-do-0.6.1.0/Do/src/Do.cs	2008-09-23 16:29:33.000000000 +0800
++++ gnome-do-0.6.1.0.new/Do/src/Do.cs	2008-12-11 17:46:23.000000000 +0800
+@@ -46,7 +46,7 @@ namespace Do {
+ 			perfTime = DateTime.Now;
+ 			Do.args = args;
+ 			
+-			Catalog.Init ("gnome-do", "/usr/local/share/locale");
++			Catalog.Init ("gnome-do", "/usr/share/locale");
+ 			Gtk.Application.Init ();
+ 
+ 			DetectInstanceAndExit ();
