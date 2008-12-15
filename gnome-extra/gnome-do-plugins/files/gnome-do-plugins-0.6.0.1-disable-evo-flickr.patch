@@ -1,0 +1,48 @@
+diff --git a/Makefile.am b/Makefile.am
+index 0b90d3a..da31e16 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -6,10 +6,8 @@ SUBDIRS = po BundledLibraries \
+ 	del.icio.us \
+ 	DiskMounter \
+ 	Epiphany \
+-	Evolution \
+ 	File \
+ 	Firefox \
+-	Flickr \
+ 	GCalendar \
+ 	GMailContacts \
+ 	GNOME-Dictionary \
+diff --git a/configure.ac b/configure.ac
+index 5f681c7..2f21e92 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -30,8 +30,6 @@ SHAMROCK_EXPAND_LIBDIR
+ SHAMROCK_EXPAND_BINDIR
+ SHAMROCK_EXPAND_DATADIR
+ 
+-PKG_CHECK_MODULES([EVOLUTION_SHARP], [evolution-sharp])
+-PKG_CHECK_MODULES([FLICKRNET], [flickrnet])
+ PKG_CHECK_MODULES([GCONF_SHARP_20], [gconf-sharp-2.0])
+ PKG_CHECK_MODULES([GLADE_SHARP_20], [glade-sharp-2.0])
+ PKG_CHECK_MODULES([GLIB_SHARP_20], [glib-sharp-2.0])
+@@ -51,8 +49,6 @@ PKG_CHECK_MODULES([WNCK_SHARP_10], [wnck-sharp-1.0])
+ PKG_CHECK_MODULES([DOADDINS], [do.addins])
+ PKG_CHECK_MODULES([DODBUS], [do.dbus])
+ 
+-AC_SUBST([EVOLUTION_SHARP_LIBS])
+-AC_SUBST([FLICKRNET_LIBS])
+ AC_SUBST([GCONF_SHARP_20_LIBS])
+ AC_SUBST([GLADE_SHARP_20_LIBS])
+ AC_SUBST([GLIB_SHARP_20_LIBS])
+@@ -106,10 +102,8 @@ Banshee/Makefile
+ del.icio.us/Makefile
+ DiskMounter/Makefile
+ Epiphany/Makefile
+-Evolution/Makefile
+ File/Makefile
+ Firefox/Makefile
+-Flickr/Makefile
+ GCalendar/Makefile
+ GMailContacts/Makefile
+ GNOME-Dictionary/Makefile
