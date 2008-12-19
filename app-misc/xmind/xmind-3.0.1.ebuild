@@ -17,10 +17,8 @@ DEPEND=""
 RDEPEND="${DEPEND}"
 
 src_install(){
-	insinto /opt/xmind
+	insinto /usr
+	cd ${S}
 	doins -r *
-	fperms 755 /opt/xmind/xmind/xmind
-	dosym /opt/xmind/xmind/xmind /opt/bin/xmind
-	newicon ${S}/xmind.png xmind.png
-	make_desktop_entry ${PN} ${PN} ${PN}.png "Application:Office"
+	fperms 755 /usr/local/xmind/xmind
 }
