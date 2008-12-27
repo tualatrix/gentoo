@@ -22,6 +22,6 @@ DEPEND="${RDEPEND}"
 DOCS="AUTHORS ChangeLog INSTALL NEWS README"
 
 src_configure() {
-	G2CONF="${G2CONF} $(use_enable sqlite backend-sqlite)"
+	G2CONF="${G2CONF} $(use_enable sqlite backend-sqlite) --enable-backend-rtm"
 #	gnome2_src_configure
 }
