@@ -1,10 +1,10 @@
-# Copyright 1999-2008 Gentoo Foundation
+# Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit multilib
+inherit eutils multilib
 
-MY_P=${PN}_v${PV/_pre/-preview}_i386
+MY_P=${PN}_v${PV/_/-}_i386
 DESCRIPTION="Tencent QQ for Linux"
 HOMEPAGE="http://im.qq.com/qq/linux"
 SRC_URI="http://dl_dir.qq.com/linuxqq/${MY_P}.tar.gz"
@@ -28,7 +28,7 @@ S=${WORKDIR}/${MY_P}
 RESTRICT="mirror strip"
 
 pkg_setup() {
-	#XXX: x86 binary package, we need multilib.
+	#XXX: x86 binary package, we need multilib?
 	if use amd64 && ! has_multilib_profile ; then
 		eerror "We need multilib profile to run Tencent QQ client!"
 		die "We need multilib profile to run Tencent QQ client!"
@@ -39,20 +39,9 @@ src_install() {
 	dodir /opt/${PN}
 	mv "${S}"/* "${D}"/opt/${PN}
 
-	insinto /usr/share/pixmaps
-	doins "${FILESDIR}"/linuxqq.png || die "doins failed"
-	insinto /usr/share/applications
-	doins "${FILESDIR}"/linuxqq.desktop || die "doins failed"
-
-	# If we could have something like herebin in exheres ...
-	cat > qq << DONE
-#!/bin/bash
-# for launch qq from every directory
-pushd /opt/linuxqq > /dev/null
-./qq &
-popd > /dev/null
-DONE
-	dobin qq || die "dobin failed"
+	doicon "${FILESDIR}"/linuxqq.png
+	domenu "${FILESDIR}"/linuxqq.desktop
+	make_wrapper qq ./qq "/opt/${PN}"
 }
 
 pkg_postinst() {

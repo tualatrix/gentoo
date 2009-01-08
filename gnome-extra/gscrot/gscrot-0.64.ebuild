@@ -6,7 +6,7 @@ inherit eutils
 
 DESCRIPTION="GScrot - Screenshot Tool"
 HOMEPAGE="https://launchpad.net/gscrot"
-SRC_URI="http://launchpadlibrarian.net/19444010/${PN}_${PV}~ppa9.orig.tar.gz"
+SRC_URI="http://launchpadlibrarian.net/20864797/gscrot_0.64~ppa10.orig.tar.gz"
 
 LICENSE=""
 
@@ -30,7 +30,7 @@ gnome-extra/gnome-web-photo"
 
 RDEPEND="${DEPEND}"
 
-S="${WORKDIR}/gscrot-0.63.orig"
+S="${WORKDIR}/gscrot-0.64.orig"
 
 src_install() {
 	dobin ${S}/bin/gscrot
