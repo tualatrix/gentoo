@@ -1,0 +1,41 @@
+# ChangeLog for app-text/chmsee
+# Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
+# $Header: $
+
+  09 Jan 2009; Hong Hao <oahong@gmail.com> -chmsee-1.0.0.ebuild,
+  -chmsee-1.0.1.ebuild, chmsee-1.0.2.ebuild:
+  Clean up old versions (source code not fetchable), fix manifest.
+
+  08 Jan 2009; Hong Hao <oahong@gmail.com> +chmsee-1.0.2.ebuild:
+  Version bump.
+
+  06 Sep 2008; Zhang Le <r0bertz@gentoo.org> chmsee-1.0.1.ebuild:
+  changed the logic to determine the value of --with-gecko parameter, if has
+  =net-libs/xulrunner-1.9*, then use libxul unconditionally
+
+  11 Jul 2008; lidaibin <lidaibin@gmail.com> chmsee-1.0.1.ebuild:
+  fixed dependency, chmsee-1.0.1 depends on xulrunner-1.9
+
+  11 Jul 2008; lidaibin <lidaibin@gmail.com> chmsee-1.0.1.ebuild:
+  fixed dependency, chmsee-1.0.1 depends on xulrunner-1.9
+
+  05 Jul 2008; Zhang Le <r0bertz@gentoo.org> chmsee-1.0.1.ebuild:
+  fixed dependency, chmsee depends on xulrunner-1.8
+
+  26 May 2008; lidaibin <lidaibin@gmail.com> chmsee-1.0.1.ebuild:
+  fixed the bug about the gecko not be found when configure
+
+  19 May 2008; Zhang Le <r0bertz@gentoo.org> +chmsee-1.0.1.ebuild:
+  added chmsee-1.0.1.ebuild
+
+  14 May 2008; Zhang Le <r0bertz@gentoo.org> chmsee-1.0.0.ebuild:
+  chmlib now in cat dev-libs instead of app-doc
+
+  20 Apr 2008; Zhang Le <r0bertz@gentoo.org> chmsee-1.0.0.ebuild,
+  metadata.xml:
+  fixed metadata.xml, removed trailing space added necessary quote in ebuild
+
+  20 Apr 2008; Zhang Le <r0bertz@gentoo.org> chmsee-1.0.0.ebuild,
+  +metadata.xml:
+  fixed a bug in dependency specification， added a space between ))
+
