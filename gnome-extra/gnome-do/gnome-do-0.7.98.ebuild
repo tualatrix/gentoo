@@ -14,7 +14,7 @@ PVCS=$(get_version_component_range 1-2)
 
 DESCRIPTION="GNOME Do allows you to get things done quickly"
 HOMEPAGE="http://do.davebsd.com/"
-SRC_URI="https://launchpad.net/do/${PVCS}/${PVC}/+download/${P}.tar.gz"
+SRC_URI="http://launchpad.net/do/trunk/${PV}/+download/${P}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
