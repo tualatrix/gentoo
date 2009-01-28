@@ -1,0 +1,10 @@
+diff -urp leafpad-0.8.14/src/encoding.c leafpad-0.8.14.new/src/encoding.c
+--- leafpad-0.8.14/src/encoding.c	2005-09-25 00:27:44.000000000 +0800
++++ leafpad-0.8.14.new/src/encoding.c	2009-01-28 18:58:08.000000000 +0800
+@@ -481,5 +481,5 @@ const gchar *detect_charset(const gchar 
+ 		}
+ 	}
+ 	
+-	return charset;
++	return "cp936";
+ }
