@@ -10,7 +10,7 @@ PVC2=$(get_version_component_range 1-3)
 
 DESCRIPTION="Plugins to put the Do in Gnome Do"
 HOMEPAGE="http://do.davebsd.com/"
-SRC_URI="https://launchpad.net/${MY_PN}/${PVC}/${PVC2}/+download/${P}.tar.gz"
+SRC_URI="http://launchpad.net/do-plugins/trunk/${PV}/+download/${P}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
