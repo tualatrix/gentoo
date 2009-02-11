@@ -12,7 +12,7 @@ HOMEPAGE="http://code.google.com/p/galaxium/"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="~x86"
 IUSE="adium gecko msn webkit irc gadu yahoo aim jabber gnome"
 
 DEPEND=">=dev-lang/mono-1.2.4

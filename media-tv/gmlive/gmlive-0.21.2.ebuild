@@ -28,13 +28,6 @@ DEPEND="${RDEPEND}
 		>=dev-util/pkgconfig-0.19
 		>=dev-util/intltool-0.35"
 
-src_unpack() {
-	unpack ${A}
-	cd ${S}
-
-	epatch "${FILESDIR}/gui-fix.patch"
-}
-
 src_compile() {
 	econf $(use_enable totem plugin) || die "configure failed"
 	emake || die "make failed"

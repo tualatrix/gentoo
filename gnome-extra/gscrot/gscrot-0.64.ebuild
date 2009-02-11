@@ -6,7 +6,7 @@ inherit eutils
 
 DESCRIPTION="GScrot - Screenshot Tool"
 HOMEPAGE="https://launchpad.net/gscrot"
-SRC_URI="http://launchpadlibrarian.net/20864797/gscrot_0.64~ppa10.orig.tar.gz"
+SRC_URI="http://launchpadlibrarian.net/20864797/gscrot_0.64~ppa12.orig.tar.gz"
 
 LICENSE=""
 
