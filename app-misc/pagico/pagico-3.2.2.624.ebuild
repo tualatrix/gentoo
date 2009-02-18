@@ -4,16 +4,21 @@
 
 inherit eutils
 
-DESCRIPTION="This is a sample skeleton ebuild file"
-HOMEPAGE="http://ubuntu-tweak.com/"
-SRC_URI="ftp://foo.bar.com/${P}.tar.bz2"
+HOMEPAGE="http://www.pagico.com/"
+DESCRIPTION="Pagico keeps track of all your tasks, projects, and contacts."
+SRC_URI="http://downloads.imtx.com/${P}.tar.bz2"
 
-LICENSE="GPL"
+LICENSE="pagico"
 SLOT="0"
 KEYWORDS="~x86"
 IUSE=""
 
-DEPEND=""
+DEPEND="
+	>=x11-libs/gtk+-2.12
+	>=dev-libs/dbus-glib-0.78
+	>=net-libs/webkit-gtk-0_p40220
+	>=dev-python/dbus-python-0.83
+	"
 RDEPEND="${DEPEND}"
 
 OPT_DIR=${D}/opt/pagico
@@ -29,6 +34,7 @@ src_install(){
 	mkdir -p $SYSTEM_DIR
 	cp ${S}/service/pagico-daemon.conf $SYSTEM_DIR
 	dobin ${S}/bin/pagico
+	dobin ${S}/bin/pagico-client
 	dobin ${S}/bin/pagico-helper
 	mkdir -p $DESKTOP_DIR
 	cp ${S}/pagico.desktop $DESKTOP_DIR
