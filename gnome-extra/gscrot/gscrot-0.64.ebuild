@@ -5,35 +5,38 @@
 inherit eutils
 
 DESCRIPTION="GScrot - Screenshot Tool"
-HOMEPAGE="https://launchpad.net/gscrot"
+HOMEPAGE="https://launchpad.net/shutter"
 SRC_URI="http://launchpadlibrarian.net/20864797/gscrot_0.64~ppa12.orig.tar.gz"
 
-LICENSE=""
-
+LICENSE="GPLv3"
 SLOT="0"
-
 KEYWORDS="~x86"
-
 IUSE=""
 
 DEPEND="
-dev-perl/gtk2-perl
-dev-perl/gtk2-trayicon
-dev-perl/gnome2-perl
-dev-perl/gnome2-wnck
-dev-perl/gnome2-gconf
-media-gfx/imagemagick
-net-print/gtklp
-dev-perl/X11-Protocol
-dev-perl/WWW-Mechanize
-gnome-extra/gnome-web-photo"
-
+	dev-perl/gtk2-perl
+	dev-perl/gtk2-trayicon
+	dev-perl/gnome2-perl
+	dev-perl/gnome2-wnck
+	dev-perl/gnome2-gconf
+	dev-perl/Goo-Canvas
+	media-gfx/imagemagick
+	net-print/gtklp
+	dev-perl/X11-Protocol
+	dev-perl/WWW-Mechanize
+	gnome-extra/gnome-web-photo
+"
 RDEPEND="${DEPEND}"
 
 S="${WORKDIR}/gscrot-0.64.orig"
 
+src_unpack() {
+	unpack ${A}
+	cd $S
+	epatch "${FILESDIR}/enhance-gspshadow.patch"
+}
+
 src_install() {
 	dobin ${S}/bin/gscrot
-
 	cp -r ${S}/share ${D}/usr/share
 }

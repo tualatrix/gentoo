@@ -8,7 +8,7 @@ DESCRIPTION="Ubuntu Tweak is a tool for Ubuntu that makes it easy to configure
 your system and desktop settings."
 HOMEPAGE="http://ubuntu-tweak.com/"
 #SRC_URI="http://ubuntu-tweak.googlecode.com/files/${PN}_${PV}.orig.tar.gz"
-SRC_URI="http://ubuntu-tweak.googlecode.com/files/${P}.tar.gz"
+SRC_URI="http://ubuntu-tweak.googlecode.com/files/${P}.tar.bz2"
 
 LICENSE="GPL"
 SLOT="0"

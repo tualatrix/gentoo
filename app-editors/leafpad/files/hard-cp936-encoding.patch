@@ -1,0 +1,43 @@
+diff -urp leafpad-0.8.14/src/encoding.c leafpad-0.8.14.new/src/encoding.c
+--- leafpad-0.8.14/src/encoding.c	2005-09-25 00:27:44.000000000 +0800
++++ leafpad-0.8.14.new/src/encoding.c	2009-01-28 21:34:36.000000000 +0800
+@@ -447,38 +447,7 @@ const gchar *detect_charset(const gchar 
+ 	}
+ 	
+ 	if (!charset) {
+-		switch (get_encoding_code()) {
+-		case LATINC:
+-		case LATINC_UA:
+-		case LATINC_TJ:
+-			charset = detect_charset_cylillic(text); // fuzzy...
+-			break;
+-		case CHINESE_CN:
+-		case CHINESE_TW:
+-		case CHINESE_HK:
+-			charset = detect_charset_chinese(text);
+-			break;
+-		case JAPANESE:
+-			charset = detect_charset_japanese(text);
+-			break;
+-		case KOREAN:
+-			charset = detect_charset_korean(text);
+-			break;
+-		case VIETNAMESE:
+-		case THAI:
+-		case GEORGIAN:
+-			charset = get_encoding_items(get_encoding_code())->item[OPENI18N];
+-			break;
+-		default:
+-			if (strcmp(get_default_charset(), "UTF-8") != 0)
+-				charset = get_default_charset();
+-			else if (detect_noniso(text))
+-				charset = get_encoding_items(get_encoding_code())->item[CODEPAGE];
+-			else
+-				charset = get_encoding_items(get_encoding_code())->item[OPENI18N];
+-			if (!charset)
+-				charset = get_encoding_items(get_encoding_code())->item[IANA];					
+-		}
++		charset = "cp936";
+ 	}
+ 	
+ 	return charset;

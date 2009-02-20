@@ -1,0 +1,13 @@
+diff -urp gscrot-0.64.orig/share/gscrot/resources/system/plugins/bash/gspshadow/gspshadow gscrot-0.64.orig.new/share/gscrot/resources/system/plugins/bash/gspshadow/gspshadow
+--- gscrot-0.64.orig/share/gscrot/resources/system/plugins/bash/gspshadow/gspshadow	2009-01-02 21:26:58.000000000 +0800
++++ gscrot-0.64.orig.new/share/gscrot/resources/system/plugins/bash/gspshadow/gspshadow	2009-02-20 13:19:34.000000000 +0800
+@@ -33,7 +33,7 @@ FILE="${1}"
+ #FILEYTPE="${4}"
+ #GEO="${2}x${3}"
+ 
+-convert "${FILE}" \( +clone -background black  -shadow 80x3+5+5 \) \
+-+swap -background none -mosaic +repage "${FILE}"
++convert "${FILE}" -gravity northwest -background 'rgba(255,255,255,0)' -splice 10x10 \
++\( +clone -background gray -shadow 80x3+5+5 \) +swap -background none -mosaic +repage "${FILE}"
+        
+ exit 0
