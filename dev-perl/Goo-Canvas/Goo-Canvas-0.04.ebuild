@@ -6,7 +6,7 @@ MODULE_AUTHOR=FLORA
 inherit perl-module
 
 DESCRIPTION="Perl interface to the sexy widget collection"
-SRC_URI="https://launchpad.net/%7Eshutter/+archive/ppa/+files/libgoo-canvas-perl_0.05.orig.tar.gz"
+SRC_URI="http://launchpadlibrarian.net/21311433/libgoo-canvas-perl_0.05.orig.tar.gz"
 S="${WORKDIR}/libgoo-canvas-perl-0.05.orig"
 
 SLOT="0"
