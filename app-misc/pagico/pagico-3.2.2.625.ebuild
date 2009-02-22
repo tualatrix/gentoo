@@ -6,7 +6,7 @@ inherit eutils
 
 HOMEPAGE="http://www.pagico.com/"
 DESCRIPTION="Pagico keeps track of all your tasks, projects, and contacts."
-SRC_URI="http://downloads.imtx.cn/${P}.tar.bz2"
+SRC_URI="http://downloads.imtx.cn/gentoo/${P}.tar.bz2"
 
 LICENSE="pagico"
 SLOT="0"
