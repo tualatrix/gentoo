@@ -4,9 +4,9 @@
 
 inherit eutils
 
-DESCRIPTION="GScrot - Screenshot Tool"
+DESCRIPTION="Shutter - Featureful Screenshot Tool"
 HOMEPAGE="https://launchpad.net/shutter"
-SRC_URI="http://launchpadlibrarian.net/21309426/gscrot_0.64~ppa12.orig.tar.gz"
+SRC_URI="https://launchpad.net/%7Eshutter/+archive/ppa/+files/shutter_0.70~ppa11.orig.tar.gz"
 
 LICENSE="GPLv3"
 SLOT="0"
@@ -20,23 +20,18 @@ DEPEND="
 	dev-perl/gnome2-wnck
 	dev-perl/gnome2-gconf
 	dev-perl/Goo-Canvas
+	dev-perl/gnome2-vfs-perl
+	dev-perl/libxml-perl
 	media-gfx/imagemagick
-	net-print/gtklp
 	dev-perl/X11-Protocol
 	dev-perl/WWW-Mechanize
 	gnome-extra/gnome-web-photo
 "
 RDEPEND="${DEPEND}"
 
-S="${WORKDIR}/gscrot-0.64.orig"
-
-src_unpack() {
-	unpack ${A}
-	cd $S
-	epatch "${FILESDIR}/enhance-gspshadow.patch"
-}
+S="${WORKDIR}/shutter-0.70.orig"
 
 src_install() {
-	dobin ${S}/bin/gscrot
+	dobin ${S}/bin/shutter
 	cp -r ${S}/share ${D}/usr/share
 }
