@@ -1,0 +1,114 @@
+upstream: http://trac.gajim.org/ticket/4770
+
+diff -r 15ddf05b958b -r 6c0f28cde899 configure.ac
+--- a/configure.ac	Tue Feb 03 21:18:37 2009 +0100
++++ b/configure.ac	Tue Feb 03 21:39:50 2009 +0100
+@@ -174,18 +174,12 @@
+ AC_SUBST([PYTHON_INCLUDES])
+ 
+ AS_AC_EXPAND(DATADIR, "${datadir}")
+-
+-AS_AC_EXPAND(LIBDIR, ${libdir})
+-
++AS_AC_EXPAND(LIBDIR, "${libdir}")
+ AS_AC_EXPAND(DOCDIR, "${docdir}")
++AS_AC_EXPAND(LOCALEDIR, "${localedir}")
+ 
+ AC_SUBST(VERSION)
+ AC_SUBST(PACKAGE)
+-AC_SUBST(DATADIR)
+-AC_SUBST(LIBDIR)
+-AS_AC_EXPAND(DATADIR, "${DATADIR}")
+-AC_SUBST(DOCDIR)
+-AS_AC_EXPAND(DOCDIR, "${DOCDIR}")
+ 
+ AC_CONFIG_FILES([ 
+ 	Makefile
+diff -r 15ddf05b958b -r 6c0f28cde899 data/defs.py.in
+--- a/data/defs.py.in	Tue Feb 03 21:18:37 2009 +0100
++++ b/data/defs.py.in	Tue Feb 03 21:39:50 2009 +0100
+@@ -4,4 +4,6 @@
+ 
+ datadir = "@DATADIR@"
+ 
++localedir = "@LOCALEDIR@"
++
+ version = "@VERSION@"
+diff -r 15ddf05b958b -r 6c0f28cde899 m4/acinclude.m4
+--- a/m4/acinclude.m4	Tue Feb 03 21:18:37 2009 +0100
++++ b/m4/acinclude.m4	Tue Feb 03 21:39:50 2009 +0100
+@@ -1,6 +1,15 @@
++dnl as-ac-expand.m4 0.2.0                                   -*- autoconf -*-
++dnl autostars m4 macro for expanding directories using configure's prefix
++
++dnl (C) 2003, 2004, 2005 Thomas Vander Stichele <thomas at apestaart dot org>
++
++dnl Copying and distribution of this file, with or without modification,
++dnl are permitted in any medium without royalty provided the copyright
++dnl notice and this notice are preserved.
++
+ dnl AS_AC_EXPAND(VAR, CONFIGURE_VAR)
+-dnl
+-dnl example
++
++dnl example:
+ dnl AS_AC_EXPAND(SYSCONFDIR, $sysconfdir)
+ dnl will set SYSCONFDIR to /usr/local/etc if prefix=/usr/local
+ 
+@@ -15,7 +24,7 @@
+ 
+   dnl if no prefix given, then use /usr/local, the default prefix
+   if test "x$prefix" = "xNONE"; then
+-    prefix=$ac_default_prefix
++    prefix="$ac_default_prefix"
+   fi
+   dnl if no exec_prefix given, then use prefix
+   if test "x$exec_prefix" = "xNONE"; then
+@@ -26,7 +35,7 @@
+   dnl loop until it doesn't change anymore
+   while true; do
+     new_full_var="`eval echo $full_var`"
+-    if test "x$new_full_var"="x$full_var"; then break; fi
++    if test "x$new_full_var" = "x$full_var"; then break; fi
+     full_var=$new_full_var
+   done
+ 
+diff -r 15ddf05b958b -r 6c0f28cde899 src/common/defs.py
+--- a/src/common/defs.py	Tue Feb 03 21:18:37 2009 +0100
++++ b/src/common/defs.py	Tue Feb 03 21:39:50 2009 +0100
+@@ -25,6 +25,7 @@
+ 
+ docdir = '../'
+ datadir = '../'
++localedir = '../po'
+ 
+ version = '0.12.1.2-svn'
+ 
+diff -r 15ddf05b958b -r 6c0f28cde899 src/common/i18n.py
+--- a/src/common/i18n.py	Tue Feb 03 21:18:37 2009 +0100
++++ b/src/common/i18n.py	Tue Feb 03 21:39:50 2009 +0100
+@@ -26,10 +26,8 @@
+ import os
+ 
+ APP = 'gajim'
+-if os.path.isdir('../po'):
+-	DIR = '../po'
+-else:
+-	DIR = '../../locale'
++import defs
++DIR = defs.localedir
+ 
+ # set '' so each part of the locale that should be modified is set
+ # according to the environment variables
+diff -r 15ddf05b958b -r 6c0f28cde899 src/gtkgui_helpers.py
+--- a/src/gtkgui_helpers.py	Tue Feb 03 21:18:37 2009 +0100
++++ b/src/gtkgui_helpers.py	Tue Feb 03 21:39:50 2009 +0100
+@@ -61,7 +61,7 @@
+ screen_w = gtk.gdk.screen_width()
+ screen_h = gtk.gdk.screen_height()
+ 
+-GLADE_DIR = os.path.join('..', 'data', 'glade')
++GLADE_DIR = os.path.join(gajim.DATA_DIR, 'glade')
+ def get_glade(file_name, root = None):
+ 	file_path = os.path.join(GLADE_DIR, file_name)
+ 	return gtk.glade.XML(file_path, root=root, domain=i18n.APP)

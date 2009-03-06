@@ -1,0 +1,62 @@
+autotools: install *.py in $(pkglibdir), ie $prefix/lib/gajim
+
+diff -r 2c6ac74dd0e2 data/Makefile.am
+--- a/data/Makefile.am	Tue Feb 03 15:52:16 2009 +0100
++++ b/data/Makefile.am	Tue Feb 03 16:52:41 2009 +0100
+@@ -5,7 +5,7 @@
+ desktop_in_files = gajim.desktop.in.in 
+ desktop_DATA = $(desktop_in_files:.desktop.in.in=.desktop)
+ 
+-installdefsdir = $(pkgdatadir)/src/common
++installdefsdir = $(pkglibdir)/common
+ installdefs_DATA = defs.py
+ 
+ soundsdir = $(pkgdatadir)/data/sounds
+diff -r 2c6ac74dd0e2 scripts/gajim-remote.in
+--- a/scripts/gajim-remote.in	Tue Feb 03 15:52:16 2009 +0100
++++ b/scripts/gajim-remote.in	Tue Feb 03 16:52:41 2009 +0100
+@@ -27,6 +27,6 @@
+ datadir=@DATADIR@
+ PYTHON_EXEC=@PYTHON@
+ 
+-cd ${datadir}/gajim/src
++cd @LIBDIR@/gajim
+ export PYTHONPATH="$PYTHONPATH:@LIBDIR@/gajim"
+ exec ${PYTHON_EXEC} -OO gajim-remote.py "$@"
+diff -r 2c6ac74dd0e2 scripts/gajim.in
+--- a/scripts/gajim.in	Tue Feb 03 15:52:16 2009 +0100
++++ b/scripts/gajim.in	Tue Feb 03 16:52:41 2009 +0100
+@@ -29,6 +29,6 @@
+ datadir=@DATADIR@
+ PYTHON_EXEC=@PYTHON@
+ 
+-cd ${datadir}/gajim/src
++cd @LIBDIR@/gajim
+ export PYTHONPATH="$PYTHONPATH:@LIBDIR@/gajim"
+ exec ${PYTHON_EXEC} -OO gajim.py $@
+diff -r 2c6ac74dd0e2 src/Makefile.am
+--- a/src/Makefile.am	Tue Feb 03 15:52:16 2009 +0100
++++ b/src/Makefile.am	Tue Feb 03 16:52:41 2009 +0100
+@@ -43,18 +43,18 @@
+ 		    --override $(srcdir)/trayicon.override \
+ 		    $(srcdir)/trayicon.defs > $@
+ endif
+-gajimsrcdir = $(pkgdatadir)/src
++gajimsrcdir = $(pkglibdir)
+ gajimsrc_PYTHON = $(srcdir)/*.py 
+ 
+-gajimsrc1dir = $(pkgdatadir)/src/common
++gajimsrc1dir = $(pkglibdir)/common
+ gajimsrc1_PYTHON = \
+ 				$(srcdir)/common/*.py 
+ 
+-gajimsrc2dir = $(pkgdatadir)/src/common/xmpp
++gajimsrc2dir = $(pkglibdir)/common/xmpp
+ gajimsrc2_PYTHON = \
+ 				$(srcdir)/common/xmpp/*.py 
+ 
+-gajimsrc3dir = $(pkgdatadir)/src/common/zeroconf
++gajimsrc3dir = $(pkglibdir)/common/zeroconf
+ gajimsrc3_PYTHON = \
+ 				$(srcdir)/common/zeroconf/*.py 
+ 
