@@ -1,0 +1,13 @@
+--- build/SConscript.main.orig	2009-03-27 13:44:39.000000000 +0100
++++ build/SConscript.main	2009-03-27 13:45:10.000000000 +0100
+@@ -468,7 +468,8 @@
+ for envvar in ('HOME', 'DISTCC_DIR', 'DISTCC_HOSTS', 'CCACHE_DIR',
+                'INTERCEPTOR_SOCKET', 'ENFORGE_DIGEST_CACHE',
+                'CHROME_BUILD_TYPE', 'CHROMIUM_BUILD',
+-               'ENFORGE_CACHE_HOST', 'ENFORGE_CACHE_PORT'):
++               'ENFORGE_CACHE_HOST', 'ENFORGE_CACHE_PORT',
++	       'PKG_CONFIG_PATH'):
+   if envvar in os.environ:
+     linux_env['ENV'][envvar] = os.environ[envvar]
+ 
+

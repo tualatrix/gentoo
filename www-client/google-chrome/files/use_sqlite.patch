@@ -1,0 +1,11 @@
+--- SConscript.main	2009-03-25 00:05:33.795021130 -0400
++++ SConscript.main.new	2009-03-25 00:41:43.610041667 -0400
+@@ -622,7 +622,7 @@
+       sys.exit(1)
+   if root_env.WantSystemLib('sqlite'):
+     try:
+-      linux_env.ParseConfig('pkg-config --cflags --libs sqlite')
++      linux_env.ParseConfig('pkg-config --cflags --libs sqlite3')
+     except OSError, e:
+       print ('\n'
+           'sqlite requested in SYSTEM_LIBS but not found\n')
