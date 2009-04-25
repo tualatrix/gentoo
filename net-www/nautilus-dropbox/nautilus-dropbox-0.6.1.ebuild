@@ -44,7 +44,8 @@ src_install () {
 	# Allow only for users in the dropbox group
 	# see http://forums.getdropbox.com/topic.php?id=3329&replies=5#post-22898
 	fowners root:dropbox /usr/$(get_libdir)/nautilus/extensions-2.0/libnautilus-dropbox.{a,la,so}
-	fperms 640 /usr/$(get_libdir)/nautilus/extensions-2.0/libnautilus-dropbox.{a,la,so}
+	fperms 750 /usr/$(get_libdir)/nautilus/extensions-2.0/libnautilus-dropbox.{la,so}
+	fperms 640 /usr/$(get_libdir)/nautilus/extensions-2.0/libnautilus-dropbox.a
 }
 
 pkg_postinst () {
@@ -55,3 +56,4 @@ pkg_postinst () {
 	einfo "plugin to the group 'dropbox'."
 	einfo
 }
+
