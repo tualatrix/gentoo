@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Google Chrome
-Comment=Web Browser
-Exec=/opt/bin/chrome %U
-Icon=google-chrome-icon
-Terminal=false
-Type=Application
-MimeType=text/html;
-Categories=Network;WebBrowser;
