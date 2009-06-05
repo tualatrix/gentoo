@@ -19,6 +19,7 @@ DEPEND="dev-python/pygtk
 		sys-devel/gettext
 		dev-util/intltool
 		dev-util/pkgconfig
+		dev-libs/gobject-introspection
 		"
 
 RDEPEND="${DEPEND}

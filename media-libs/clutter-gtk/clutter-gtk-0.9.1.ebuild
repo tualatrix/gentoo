@@ -17,4 +17,8 @@ DEPEND="${RDEPEND}"
 SLOT=0
 
 DOCS="AUTHORS ChangeLog NEWS README TODO"
-EXAMPLES=examples/{*.c,redhand.png}
+
+src_compile() {
+	econf --enable-introspection|| die "econf failed"
+	emake || die "emake failed"
+}
