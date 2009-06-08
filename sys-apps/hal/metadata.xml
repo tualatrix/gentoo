@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+<herd>freedesktop</herd>
+<maintainer>
+	<email>dang@gentoo.org</email>
+</maintainer>
+<use>
+	<flag name='acpi'>Enables HAL to attempt to read from /proc/acpi/event, if
+		unavailable, HAL will read events from <pkg>sys-power/acpid</pkg>. If
+		you need multiple acpi readers, ensure acpid is in your default
+		runlevel (rc-update add acpid default) along with HAL. This will also
+		enable HAL to read Toshiba and IBM acpi events which do not get sent
+		via /proc/acpi/event</flag>
+	<flag name='consolekit'>Enables HAL to interact with consolekit for
+		determining whether a given process is running on behalf of the person
+		setting at the console.</flag>
+	<flag name='crypt'>Allows HAL to mount volumes that are encrypted using
+		LUKS. <pkg>sys-fs/cryptsetup-luks</pkg> which has recently been renamed
+		to <pkg>sys-fs/cryptsetup</pkg> allows you to create such encrypted
+		volumes. HAL will be able to handle volumes that are removable or
+		fixed.</flag>
+	<flag name='dell'>Builds and installs the Dell addon, which reads data from
+		the Dell SM BIOS via <pkg>sys-libs/libsmbios</pkg>. It will read your
+		service tag information and your hardware backlight data as well as
+		allow you to modify the backlight settings on a Dell laptop.</flag>
+	<flag name='disk-partition'>Allows HAL to use libparted from
+		<pkg>sys-apps/parted</pkg> to read raw partition data from your disks
+		and process that data. Future versions of HAL (possibly 0.5.11 and
+		higher) will allow you to create, modify, delete and format partitions
+		from a GUI interface agnostic of your desktop environment.</flag>
+	<flag name='doc'>Generates documentation that describes HAL's fdi
+		format.</flag>
+	<flag name='laptop'>Adds support for power management scripts
+		(<pkg>sys-power/pm-utils</pkg>)</flag>
+	<flag name='pcmcia'>Allows HAL to process PCMCIA/CardBus slot data which
+		includes inserts and removals and act on these events.</flag>
+	<flag name='selinux'>Installs SELinux policies and links HAL to the SELinux
+		libraries.</flag>
+</use>
+</pkgmetadata>
