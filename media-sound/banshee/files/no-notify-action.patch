@@ -1,0 +1,27 @@
+diff -Nur banshee-1-1.4.3/src/Extensions/Banshee.NotificationArea/Banshee.NotificationArea/NotificationAreaService.cs banshee-1-1.4.3.new/src/Extensions/Banshee.NotificationArea/Banshee.NotificationArea/NotificationAreaService.cs
+--- banshee-1-1.4.3/src/Extensions/Banshee.NotificationArea/Banshee.NotificationArea/NotificationAreaService.cs	2009-01-24 03:28:34.000000000 +0800
++++ banshee-1-1.4.3.new/src/Extensions/Banshee.NotificationArea/Banshee.NotificationArea/NotificationAreaService.cs	2009-07-24 21:56:20.557838193 +0800
+@@ -405,9 +405,6 @@
+                     message, image, notif_area.Widget);
+                 nf.Urgency = Urgency.Low;
+                 nf.Timeout = 4500;
+-                if (interface_action_service.PlaybackActions["NextAction"].Sensitive) {
+-                    nf.AddAction ("skip-song", Catalog.GetString("Skip this item"), OnSongSkipped);
+-                }
+                 nf.Show ();
+                 
+                 current_nf = nf;
+@@ -416,13 +413,6 @@
+             }
+         }
+         
+-        private void OnSongSkipped (object o, ActionArgs args)
+-        {
+-            if (args.Action == "skip-song") {
+-                ServiceManager.PlaybackController.Next ();
+-            }
+-        }
+-        
+         public bool ShowNotifications {
+             get { 
+                 show_notifications = ShowNotificationsSchema.Get (); 
