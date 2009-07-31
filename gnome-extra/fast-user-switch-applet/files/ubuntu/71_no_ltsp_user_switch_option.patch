@@ -1,0 +1,36 @@
+=== modified file 'src/applet.c'
+--- src/applet.c	2008-07-18 02:58:57 +0000
++++ src/applet.c	2008-08-30 04:53:45 +0000
+@@ -538,6 +538,7 @@
+       users = g_slist_delete_link (users, users);
+     }
+ 
++  if (!g_getenv ("LTSP_CLIENT"))
+   g_signal_connect (adata->manager, "user-added",
+ 		    G_CALLBACK (manager_user_added_cb), adata);
+ 
+@@ -580,8 +581,9 @@
+   reset_login_window_item (adata->login_window_item, use_xnest, value);
+   g_free (value);
+ 
+-  if (GTK_WIDGET_VISIBLE (adata->login_screen_item) ||
+-      GTK_WIDGET_VISIBLE (adata->login_window_item))
++  if (g_getenv ("LTSP_CLIENT") && (
++      GTK_WIDGET_VISIBLE (adata->login_screen_item) ||
++	  GTK_WIDGET_VISIBLE (adata->login_window_item)))
+     gtk_widget_show (adata->separator_item);
+   else
+     gtk_widget_hide (adata->separator_item);
+@@ -1516,8 +1518,9 @@
+ 	}
+     }
+ 
+-  if (GTK_WIDGET_VISIBLE (adata->login_screen_item) ||
+-      GTK_WIDGET_VISIBLE (adata->login_window_item))
++  if (g_getenv ("LTSP_CLIENT") && (
++      GTK_WIDGET_VISIBLE (adata->login_screen_item) ||
++	  GTK_WIDGET_VISIBLE (adata->login_window_item)))
+     gtk_widget_show (adata->separator_item);
+   else
+     gtk_widget_hide (adata->separator_item);
+

@@ -1,0 +1,197 @@
+diff -Nur fast-user-switch-applet-2.20.0/src/applet.c fast-user-switch-applet-2.20.0.new/src/applet.c
+--- fast-user-switch-applet-2.20.0/src/applet.c	2007-09-18 15:33:33.000000000 +0200
++++ fast-user-switch-applet-2.20.0.new/src/applet.c	2007-09-18 17:41:05.000000000 +0200
+@@ -237,6 +237,7 @@
+ static GladeXML *get_glade_xml                (const gchar    *root);
+ static void      run_switch                   (FusaAppletData *adata,
+ 					       FusaDisplay    *display,
++					       FusaUser       *user,
+ 					       gboolean        use_xnest);
+ static void      maybe_lock_screen            (FusaAppletData *adata,
+ 					       FusaDisplay    *display);
+@@ -1780,12 +1781,12 @@
+ 	  if (g_slist_length (unique_displays) > 1)
+ 	    show_display_selector_dialog (adata, unique_displays);
+ 	  else
+-	    run_switch (adata, unique_displays->data, FALSE);
++	    run_switch (adata, unique_displays->data, user, FALSE);
+ 
+ 	  g_slist_free (unique_displays);
+ 	}
+       else
+-	run_switch (adata, displays->data, FALSE);
++	run_switch (adata, displays->data, user, FALSE);
+ 
+       g_slist_free (displays);
+     }
+@@ -1801,7 +1802,7 @@
+       /* Only one display open (this one), so create a new one */
+       if (g_slist_length (displays) == 1)
+ 	{
+-	  run_switch (adata, NULL, use_xnest);
++	  run_switch (adata, NULL, user, use_xnest);
+ 	  g_slist_free (displays);
+ 	}
+       /* Iterate through to find an open display */
+@@ -1815,7 +1816,7 @@
+ 	      if (!fusa_display_get_user (displays->data) &&
+ 		  (use_xnest == !!fusa_display_get_nested (displays->data)))
+ 		{
+-		  run_switch (adata, displays->data, FALSE);
++		  run_switch (adata, displays->data, user, FALSE);
+ 		  /* The pointer will be invalid but !NULL after this */
+ 		  g_slist_free (displays);
+ 		  break;
+@@ -1825,7 +1826,7 @@
+ 	    }
+ 
+ 	  if (!displays)
+-	    run_switch (adata, NULL, use_xnest);
++	    run_switch (adata, NULL, user, use_xnest);
+ 	}
+     }
+ }
+@@ -1855,7 +1856,7 @@
+     }
+   g_slist_free (displays);
+ 
+-  run_switch (adata, target, FALSE);
++  run_switch (adata, target, NULL, FALSE);
+ }
+ 
+ static void
+@@ -1891,7 +1892,7 @@
+     }
+   else
+     {
+-      run_switch (adata, target, TRUE);
++      run_switch (adata, target, NULL, TRUE);
+     }
+ }
+ 
+@@ -1962,6 +1963,7 @@
+ 	      run_switch (res_data->adata,
+ 			  g_object_get_data (G_OBJECT (rbuttons->data),
+ 					     "fusa-applet-radio-display"),
++			  NULL,
+ 			  FALSE);
+ 	      break;
+ 	    }
+@@ -2278,6 +2280,7 @@
+ static void
+ run_switch (FusaAppletData *adata,
+ 	    FusaDisplay    *display,
++	    FusaUser       *user,
+ 	    gboolean        use_xnest)
+ {
+   GdkScreen *screen;
+@@ -2295,10 +2298,10 @@
+     }
+ 
+   if (use_xnest)
+-    fusa_manager_new_xnest (adata->manager, screen,
++    fusa_manager_new_xnest (adata->manager, screen, user,
+ 			    manager_new_xnest_cb, adata, NULL);
+   else
+-    fusa_manager_new_console (adata->manager, screen,
++    fusa_manager_new_console (adata->manager, screen, user,
+ 			      manager_new_console_cb, adata, NULL);
+ }
+ 
+diff -Nur fast-user-switch-applet-2.20.0/src/fusa-manager.c fast-user-switch-applet-2.20.0.new/src/fusa-manager.c
+--- fast-user-switch-applet-2.20.0/src/fusa-manager.c	2007-09-18 15:33:33.000000000 +0200
++++ fast-user-switch-applet-2.20.0.new/src/fusa-manager.c	2007-09-18 17:41:05.000000000 +0200
+@@ -1686,6 +1686,7 @@
+ void
+ fusa_manager_new_console (FusaManager                *manager,
+ 			  GdkScreen                  *screen,
++			  FusaUser                   *user,
+ 			  FusaManagerDisplayCallback  func,
+ 			  gpointer                    data,
+ 			  GDestroyNotify              notify)
+@@ -1694,9 +1695,14 @@
+ 
+   queue_authentication (screen);
+ 
+-  ask_gdm (gdm_callback_activate_display,
+-      new_fusa_manager_with_callback (manager, func, NULL, data),
+-      GDM_CMD_FLEXI_XSERVER);
++  if (user)
++    ask_gdm (gdm_callback_activate_display,
++        new_fusa_manager_with_callback (manager, func, NULL, data),
++        GDM_CMD_FLEXI_XSERVER_USER, fusa_user_get_user_name (user));
++  else
++    ask_gdm (gdm_callback_activate_display,
++        new_fusa_manager_with_callback (manager, func, NULL, data),
++        GDM_CMD_FLEXI_XSERVER);
+ }
+ 
+ /**
+@@ -1710,6 +1716,7 @@
+ void
+ fusa_manager_new_xnest (FusaManager                *manager,
+ 			GdkScreen                  *screen,
++			FusaUser                   *user,
+ 			FusaManagerDisplayCallback  func,
+ 			gpointer                    data,
+ 			GDestroyNotify              notify)
+@@ -1722,13 +1729,23 @@
+   
+   queue_authentication (screen);
+ 
+-  ask_gdm (gdm_callback_update_displays,
+-      new_fusa_manager_with_callback (manager, func, NULL, data),
+-      GDM_CMD_FLEXI_XNEST,
+-      gdk_display_get_name (gdk_screen_get_display (screen)),
+-      (int) getuid (),
+-      mit_cookie,
+-      XauFileName ());
++  if (user)
++    ask_gdm (gdm_callback_update_displays,
++        new_fusa_manager_with_callback (manager, func, NULL, data),
++        GDM_CMD_FLEXI_XNEST_USER,
++	fusa_user_get_user_name (user),
++        gdk_display_get_name (gdk_screen_get_display (screen)),
++        (int) getuid (),
++        mit_cookie,
++        XauFileName ());
++  else
++    ask_gdm (gdm_callback_update_displays,
++        new_fusa_manager_with_callback (manager, func, NULL, data),
++        GDM_CMD_FLEXI_XNEST,
++        gdk_display_get_name (gdk_screen_get_display (screen)),
++        (int) getuid (),
++        mit_cookie,
++        XauFileName ());
+ 
+   g_free (mit_cookie);
+ 
+diff -Nur fast-user-switch-applet-2.20.0/src/fusa-manager.h fast-user-switch-applet-2.20.0.new/src/fusa-manager.h
+--- fast-user-switch-applet-2.20.0/src/fusa-manager.h	2007-09-18 15:33:33.000000000 +0200
++++ fast-user-switch-applet-2.20.0.new/src/fusa-manager.h	2007-09-18 17:41:05.000000000 +0200
+@@ -107,11 +107,13 @@
+ 						 GDestroyNotify              notify);
+ void         fusa_manager_new_console           (FusaManager                *manager,
+ 						 GdkScreen                  *screen,
++						 FusaUser                   *user,
+ 						 FusaManagerDisplayCallback  func,
+ 						 gpointer                    data,
+ 						 GDestroyNotify              notify);
+ void         fusa_manager_new_xnest             (FusaManager                *manager,
+ 						 GdkScreen                  *screen,
++						 FusaUser                   *user,
+ 						 FusaManagerDisplayCallback  func,
+ 						 gpointer                    data,
+ 						 GDestroyNotify              notify);
+diff -Nur fast-user-switch-applet-2.20.0/src/gdm-queue.h fast-user-switch-applet-2.20.0.new/src/gdm-queue.h
+--- fast-user-switch-applet-2.20.0/src/gdm-queue.h	2007-09-18 15:33:33.000000000 +0200
++++ fast-user-switch-applet-2.20.0.new/src/gdm-queue.h	2007-09-18 17:45:26.000000000 +0200
+@@ -36,6 +36,8 @@
+ #define GDM_CMD_AUTH_LOCAL		"AUTH_LOCAL %s"
+ #define GDM_CMD_FLEXI_XSERVER		"FLEXI_XSERVER"
+ #define GDM_CMD_FLEXI_XNEST		"FLEXI_XNEST %s %d %s %s"
++#define GDM_CMD_FLEXI_XSERVER_USER	"FLEXI_XSERVER_USER %s"
++#define GDM_CMD_FLEXI_XNEST_USER	"FLEXI_XNEST_USER %s %s %d %s %s"
+ #define GDM_CMD_CONSOLE_SERVERS		"CONSOLE_SERVERS"
+ #define GDM_CMD_GET_CONFIG       	"GET_CONFIG %s" 
+ #define GDM_CMD_GET_CONFIG_FILE		"GET_CONFIG_FILE"

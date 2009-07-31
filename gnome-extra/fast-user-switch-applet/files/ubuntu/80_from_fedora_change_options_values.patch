@@ -1,0 +1,21 @@
+--- fast-user-switch-applet-2.17.3/data/fast-user-switch-applet.schemas.in.defaults	2007-02-13 16:13:15.000000000 -0500
++++ fast-user-switch-applet-2.17.3/data/fast-user-switch-applet.schemas.in	2007-02-13 16:17:01.000000000 -0500
+@@ -5,7 +5,7 @@
+       <key>/schemas/apps/fast-user-switch-applet/per-applet/display_style</key>
+       <owner>fast-user-switch-applet</owner>
+       <type>string</type>
+-      <default>text</default>
++      <default>username</default>
+       <locale name="C">
+ 	<short>Display Style</short>
+ 	<long>Specifies how to display the applet in the panel. Use "username"
+@@ -40,7 +40,7 @@
+       <applyto>/apps/fast-user-switch-applet/show_screen_item</applyto>
+       <owner>fast-user-switch-applet</owner>
+       <type>string</type>
+-      <default>always</default>
++      <default>never</default>
+       <locale name="C">
+ 	<short>Show "Other" Menuitem</short>
+ 	<long>When to show the "Other" item. Possible values include:
+

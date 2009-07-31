@@ -1,0 +1,3066 @@
+=== modified file 'configure.ac'
+--- configure.ac	2009-02-27 01:48:37 +0000
++++ configure.ac	2009-03-02 21:21:23 +0000
+@@ -313,6 +313,24 @@
+ AC_OUTPUT([
+ Makefile
+ data/Makefile
++data/icons/Makefile
++data/icons/16x16/Makefile
++data/icons/16x16/status/Makefile
++data/icons/16x16/actions/Makefile
++data/icons/22x22/Makefile
++data/icons/22x22/status/Makefile
++data/icons/22x22/actions/Makefile
++data/icons/24x24/Makefile
++data/icons/24x24/status/Makefile
++data/icons/24x24/actions/Makefile
++data/icons/32x32/Makefile
++data/icons/32x32/status/Makefile
++data/icons/32x32/actions/Makefile
++data/icons/48x48/Makefile
++data/icons/48x48/status/Makefile
++data/icons/scalable/Makefile
++data/icons/scalable/status/Makefile
++data/icons/scalable/actions/Makefile
+ help/Makefile
+ src/Makefile
+ po/Makefile.in
+
+=== modified file 'data/Makefile.am'
+--- data/Makefile.am	2007-09-13 03:15:45 +0000
++++ data/Makefile.am	2008-09-03 16:47:54 +0000
+@@ -2,6 +2,8 @@
+ 
+ AUTOMAKE_OPTIONS = 1.9
+ 
++SUBDIRS = icons
++
+ ##############################
+ # Bonobo .server
+ ##############################
+
+=== added directory 'data/icons'
+=== added directory 'data/icons/16x16'
+=== added file 'data/icons/16x16/Makefile.am'
+--- data/icons/16x16/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/16x16/Makefile.am	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,1 @@
++SUBDIRS = status actions
+
+=== added directory 'data/icons/16x16/actions'
+=== added file 'data/icons/16x16/actions/Makefile.am'
+--- data/icons/16x16/actions/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/16x16/actions/Makefile.am	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,19 @@
++
++iconsdir = $(pkgdatadir)/icons/hicolor/16x16/actions
++
++icons_DATA =  \
++	system-shutdown.png		\
++	system-restart.png		\
++	system-log-out.png
++
++system-shutdown.png: system-shutdown.png.uuencode
++	uudecode -o system-shutdown.png $(srcdir)/system-shutdown.png.uuencode
++
++system-restart.png: system-restart.png.uuencode
++	uudecode -o system-restart.png $(srcdir)/system-restart.png.uuencode
++
++system-log-out.png: system-log-out.png.uuencode
++	uudecode -o system-log-out.png $(srcdir)/system-log-out.png.uuencode
++
++CLEANFILES = $(icons_DATA)
++
+
+=== added file 'data/icons/16x16/actions/system-log-out.png.uuencode'
+--- data/icons/16x16/actions/system-log-out.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/16x16/actions/system-log-out.png.uuencode	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,13 @@
++begin 644 system-log-out.png.uunencode
++MB5!.1PT*&@H````-24A$4@```!`````0"`8````?\_]A````!'-"250("`@(
++M?`ADB````4Y)1$%4.(VEDT%+`D$8AI]QMPTZ="A"C=("[2)TZ"9$=1#RTO8K
++M]-`?T(1B3^%OV'Y%1K#'*,\>O&:!0M+6(0BZ;.9TJ%G4766A]S0SWS?/?._,
++M-X((.K;G#R72`1!BN'=5&MRKF!X%()'.;G$;@*;3O@.$BL6B`&8I4(%I&W)T
++M+B07((I-I^T`Z+'A_E2`:1N?^4(.3==^2Y>2[L-+[?GI36N4/4&()BM8B.D:
++M3:?M+^0+.800%=-^K4QN;I0]$;"@COGH>W.+J\870#J;()U-C.6I0P(`%;BU
++M&)AV<'VFA>^!MQ2:]:>=OJ=9%L.I@)L3WM7XZ-*H)=>7_0M-9>*TA&N!=QX`
++M3#X=P-KF"AM;27H=UP?T.NX9$`0`J$X;5:_CTGUTZT)2367BH;9\0-@E24']
++MNN2=FK91#=VM`-.:)(K^_1<B`Y3%`VO\Y7X`J]QH/P7HY"@`````245.1*Y"
++"8((`
++`
++end
+
+=== added file 'data/icons/16x16/actions/system-restart.png.uuencode'
+--- data/icons/16x16/actions/system-restart.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/16x16/actions/system-restart.png.uuencode	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,23 @@
++begin 644 system-restart.png.uunencode
++MB5!.1PT*&@H````-24A$4@```!`````0"`8````?\_]A````!'-"250("`@(
++M?`ADB````!ET15AT4V]F='=A<F4`=W=W+FEN:W-C87!E+F]R9YON/!H```,+
++M241!5#B-;9)-:%17%,?_Y[[[,LY7)J.3S\:8$4%%TQ8UIM"0ME#H8D1*%11!
++M+,6&@CNA^G0CV,U805<EE%:$DK2E4BDEK[.HK;9JH3$BFF#4-O.:F&2::6(F
++MF8\WF7ES3Q?.@UEXX.[.^?$_OW.)F>%6-!9?3T1G`;S!S"U$M`30!+,:`/"C
++M91KEFMY3``;(!41C\7=!]+4W$)1KPT&].5(/KZ[!ME>1^G<AE_HO4P'S1Y9I
++M?!N-Q?L!?`Z@@9@9T5A\*XA&0Y%&G\?C0<BOHS421"3D123D0\"K(Y,MX$IB
++MM)#-%^_XUNB[[6*ICAEKGP/VG/O"ZP]\(#1-V+DLE%*0@BJ-ZX*%[9L[`CNV
++MM%.=KD%JA,3M"=73M4%\-GB]Y%141%17.KAJVX*=,J]K;BY$VMI/.!6U/I5>
++MWG?MUOB];\R10LXN0I<:]K_]LNAH;@```J">`YC]0I#3U[OKLM#D,H"KEFFD
++M+-/X.3E\<N?TW.*QBY>O87YQ!59J!8Y2KDMV$ZB76IL^J0]X+W2V-W4!L&IL
++M2R(Z^F;/YE)'2QA-81^D$&X"EM6^\(V!PUF\N+YDYM?OCO]3O#\Q72000(!3
++M46L`L'N%50"Z&ZOF_0K@*(#R"\#2,HT9%^"<__@]#0"48MP8G52)W\>>@OE5
++MRS0RM5-GAAZVK:SD-_PP_,M-``WN"B`")F>7X9%`XK<'!.#3VN'N_B$_$25[
++M7MDT.#4]UPU``[`J`$`((@#H;*U':V,]/CS01Z&@[_S&/>=&HK'X[BKCB$>7
++MTII*'7_T.-E+1&7+-,K2U9G-EW#S7I+?ZMY$;8TA'-K[FF]D?'K77Y.SUZ.Q
++M>)TFI001SRD%(30BHJL`(*O6Z-+WM^V9^4SR[MA4YSM]7?Y0T(N.M@CY_'Y?
++M>BF/]+,L*HXB(00R"^D"F,\"@*B*HYGYS"5K^.3VY6S^_>]^^G/I2N).;NS)
++M+.87<\C993`3G'*IDEE(VV#NMTSC(0"X5_@*P!'+-+CZ>70`>XG$,8"W,7.8
++BB-(`_F#FTY9I_.W*_1_JNEZN.T\]P0````!)14Y$KD)@@@``
++`
++end
+
+=== added file 'data/icons/16x16/actions/system-shutdown.png.uuencode'
+--- data/icons/16x16/actions/system-shutdown.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/16x16/actions/system-shutdown.png.uuencode	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,19 @@
++begin 644 system-shutdown.png.uunencode
++MB5!.1PT*&@H````-24A$4@```!`````0"`8````?\_]A````!F)+1T0`````
++M``#Y0[M_````"7!(67,```W7```-UP%"*)MX````!W1)344'U@()$B\?C\T+
++M_@```DA)1$%4.,NMDTU+5'$4QG_G7]YQFBO59*.6O2F:DC@(+GQ9!RUFZUK&
++M")62:"/"H"!DB)$A4>!,X@<P(6IIM*M<"#9]!1.F*77T_N_,G>Z%V\([86[M
++M;,[FG.<<?N<YPK&8G9M)`@-`-Q`%=H$-8&5B/+5\O%Z.-'8"BWV]_3WQ>!=F
++MQ$1$\'T?;6NRV4T^?_FT#@Q/C*>^_2,0-*\E!X=BAF&0W\GA>BX@*!&J#(.Z
++MV@;*3IFEY4P>N%T148'08G)P*%;Z7>1[;@O/<Q$1HN>BB!(\SV4[MX7G>]Q-
++MWHL!BY4-U.S<3+*OM[\'!5I;*!$6YE\A(ERJOT+D3`W/G[Y`B;!_4"`<KJ:O
++MM[\G8(4"!N+Q+O:M/42$A?F7-#5?1^00SUGS+(6#/9[-+5`3,=DI_"(>[R(`
++MC0*ZS8B)ZWJ(".ETFI&140@$4,+C)].DTVE"H3">YV)&3((KH8"HB(#O_YV:
++MRV\?KFP5`M(JR(+O4ZF+5@1V?=]'*86(D$@DF)J<1D3Q(Y\C_S/'9&J*1"*!
++M456%4@K?]PG\@0(VM*TQC!`BPL-'8]QJ[Z"UJ9W6YC9:FMK05I',ZPRZJ#%.
++MA]"V)C`7"EC)9C>)U38@(ER[<97[8Z-8>A]M6VC;8G7U#:%J@Y)3Y$+T(MGL
++M)L`*P*D/:Q^_WFQON=/9T=D8K@Y3+CLX90>[J+%+FF+11ML6CE,B>KX6IU3B
++MW?NWZQ/CJ0='C32\M)S)XPN7ZQL)A\*'3!!$!,,(T5#7B%MV*TX<_K^_<))O
++8/''\`4UN\VOJ4U'D`````$E%3D2N0F""
++`
++end
+
+=== added directory 'data/icons/16x16/status'
+=== added file 'data/icons/16x16/status/Makefile.am'
+--- data/icons/16x16/status/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/16x16/status/Makefile.am	2009-03-11 16:59:32 +0000
+@@ -0,0 +1,27 @@
++
++iconsdir = $(pkgdatadir)/icons/hicolor/16x16/status
++
++icons_DATA =  \
++	user-online.png			\
++	user-offline.png		\
++	user-away.png			\
++	user-busy.png			\
++	user-invisible.png
++
++user-online.png: user-online.png.uuencode
++	uudecode -o user-online.png $(srcdir)/user-online.png.uuencode
++
++user-offline.png: user-offline.png.uuencode
++	uudecode -o user-offline.png $(srcdir)/user-offline.png.uuencode
++
++user-away.png: user-away.png.uuencode
++	uudecode -o user-away.png $(srcdir)/user-away.png.uuencode
++
++user-busy.png: user-busy.png.uuencode
++	uudecode -o user-busy.png $(srcdir)/user-busy.png.uuencode
++
++user-invisible.png: user-invisible.png.uuencode
++	uudecode -o user-invisible.png $(srcdir)/user-invisible.png.uuencode
++
++CLEANFILES = $(icons_DATA)
++
+
+=== added file 'data/icons/16x16/status/user-away.png.uuencode'
+--- data/icons/16x16/status/user-away.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/16x16/status/user-away.png.uuencode	2008-09-03 17:15:39 +0000
+@@ -0,0 +1,15 @@
++begin 644 user-away.png.uuencode
++MB5!.1PT*&@H````-24A$4@```!`````0"`8````?\_]A````!'-"250("`@(
++M?`ADB`````EP2%ES```-UP``#=<!0BB;>````!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```&5241!5#B-I9/-2AMA%(:?D\PWF<YTTMC4
++M'](80<-D0L%"(:!H+:%;;Z"KWD"ABRZZ$6F6QI16U%Y6EB5*`G$8[T&8S/>Y
++M":$_9DCINSV'YWWAG%>,,?R/<EG#<Y'NF<A1UH[,2_!5)%1*]0UPER3A9V.B
++M?TJ@X&Q_:\O>J=>5`[UY>P\">B*[JE#8?U&KY;?7URW+<0Y/1%XN#%!PV0Z"
++M1Q)%Y*.(@R`H.'"Q$.!4Y-#WO&!S;4W,:(0>#JFOKN;<8O%55^1M)J`CDK/A
++MO!V&'J,1)DE()Q/T<,CK1L.UX0<B,A?@P?OEI:7E:JF$&8_1@`:2FQLJOD^Y
++M7'[>@W</`CHBC@7==AAZYOJ:5&M2(`6TUB175^PVFUX>OG5$[+\`/GS<7%EQ
++MG]DVDSB>N>LI)+F]Y:D(M4KEL0\??@-\%RD)'.V%H9L.!FAC9N[I%`(P&0QH
++M-1JNB'PY$7D"8`$8.-ZN5BV_6$2W6K-8,G7X]5<5T-S84#_'XV/@DS6-<="/
++I8Z<?QW]>:9X<&]Y`1A<6568;%]$]=L]XVNFW==$`````245.1*Y"8((`
++`
++end
+
+=== added file 'data/icons/16x16/status/user-busy.png.uuencode'
+--- data/icons/16x16/status/user-busy.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/16x16/status/user-busy.png.uuencode	2008-09-03 17:15:39 +0000
+@@ -0,0 +1,17 @@
++begin 644 user-busy.png.uuencode
++MB5!.1PT*&@H````-24A$4@```!`````0"`8````?\_]A````!'-"250("`@(
++M?`ADB`````EP2%ES```-UP``#=<!0BB;>````!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```'G241!5#B-I9,Q3%-1%(:_\^BK2.V#8CH9
++M4TDT#`[0$%J3JD,3B`MN"G72Q<F2#C08%A<Q8CN0LAF9K;B5:(PD)L8P@$/I
++MB#%I2)PT6M]KK-!7>QEJ'\4J2OR3.]Q[_OO=<^[)$:44_R/7KP<+DV+4.TGH
++M;D9LFP$`7:=@5UG1MIF/9Y35ZI?6#-))B1YQ2388BO3T]0=UPQ<`P"IM4=S,
++MV_GUU:\[-34QE5*OV@#II$2[#=_RV/CU+L/0J%5>\\/^@-"!Y@Z@>RYBF35R
++MV<6*:97&FA!12K$P*08>>7_E1L)_[&@1N_P<$1TT%T('B`8(NN<2Y>\G6%J<
++M^\0W=3J>498+H-Y)8B@4Z3$,C9W2"QX^NW/PS_7>]=.+"8@+0'<STM<?U&N5
++M543<`$PG9PYDS*7N[77!MADP?*>HEW.(YG9,I=)G`%X^O@K`:&P)`)_ON./9
++M:Z,(B-:H^1!JE*!3L+YLG>_V!*A7-]M,S9?_"+"KK!3?Y<-#D0MZ*V#][1H;
++MA0UG/S@P2&@XW`[0MIG/K[VY=>;L.;_7,^H$0\/AM@N_S2">458Z*1.Y[*/E
++MR[&;7<W@DZ=93--TS%ZOE]CXM?T$I92S4E-$,[?EX_T'L^IO^NG9/PO0&*;*
++AR5F3?]!T<D;:`(?5+J&!UP^&3V(F`````$E%3D2N0F""
++`
++end
+
+=== added file 'data/icons/16x16/status/user-invisible.png.uuencode'
+--- data/icons/16x16/status/user-invisible.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/16x16/status/user-invisible.png.uuencode	2009-03-11 16:59:32 +0000
+@@ -0,0 +1,18 @@
++begin 700 user-invisible.png.uuencode
++MB5!.1PT*&@H````-24A$4@```!`````0"`8````?\_]A````!'-"250("`@(
++M?`ADB`````EP2%ES```-UP``#=<!0BB;>````!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```(-241!5#B-8WS_^CD#)8`%ET1:5IZB@!#O
++M>H;_C/_???D0-F?BE-O8U#%A$TS/SK:3D94Z%1^7]#$^/O&3K(3,B=3<7&=L
++M:AG1O9"9FY^DJJ'6$Q,9<TY-3?TE`P/#GUNW;DHO7;[4^.:M&U4S)DZ:CM6`
++MB5-G,MV^>[/7R-`X/#HZYIJXF/@M!@:&,U!U!B]?O=1:NG2)UKES9]<_??(\
++M?_WJY7_@!N04E/"Q<K"LMK6Q50@/C7C,S<U]BH&!`=W/BM^^?;-8L6JY_)%#
++M1YZ\?_\A>/[LZ1]8&!@8&+AYN)9Y>GH*^_KXW6=F9C[(P,#P`HMW[W-Q<7V)
++MCTUP%!(4$MVZ;>L:!@8&%R8&!@8&+BY.;1MKZ_?,S,Q'<&B&@=?,S,R';*RM
++MWW-Q<6LQ,$!CX>V[=[MNWKS%SL#`((Q',PP(W[QYB_W]^S>[X0;\_/Y]R\U;
++M-T48&!BDB#!`ZN:MFR+??_S:`C>`G9UKWYT[MV5^__XMPL#`P(9',\N?/W]$
++M[]RY+?_GYQ^$"R;U=7U]]^']^=NW;_]G8&"0Q&.`Q*U;MQC?O7]W>?[LZ1_@
++M!C`P,#!\>/]^XYV[M_D9&!BD\1@@?>?N;?Z/'S]N@CL)+O7OS_8;-ZZ7^OGZ
++M?V5@8%#%9<*-&]=E?O_[NQW&1TG*954UBP2$!&/QN(#AW?OWR^;.FAOS_O7S
++:_Q@&D`,`R[+7=)"B_2T`````245.1*Y"8((`
++`
++end
+
+=== added file 'data/icons/16x16/status/user-offline.png.uuencode'
+--- data/icons/16x16/status/user-offline.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/16x16/status/user-offline.png.uuencode	2008-09-03 17:15:39 +0000
+@@ -0,0 +1,12 @@
++begin 644 user-offline.png.uuencode
++MB5!.1PT*&@H````-24A$4@```!`````0"`8````?\_]A````!'-"250("`@(
++M?`ADB`````EP2%ES```-UP``#=<!0BB;>````!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```$2241!5#B-I9--4L)`$(4_JLAPB0@6.8M7
++M8.$R:_5(,6Y<<`7/`DI5#J"N2,R\=@$DPX#$*GHSTXOWTV^F1V;&-34&6-PO
++M[B:)*^IZF_X'Y)RKFK;-EZ_+MS'`)''%T\-C.L\R3$)FT2DD828D8_6^2LOG
++ML@!NQ@!UO4WG6<;WUR=>'N\]7D+>=WU_%[/I+4W3I-T(`";M@7O`2=\3FW2<
++M`8!D@;I'7E'?.Y"=(3"+%`,"!43>_^E`D5K<]Z.=/".`+%;4(/BL@W#6D.`<
++M.')@)VD/@8]#5&QY1Q`F?MG!03%,>P#<$3CGJO5ZG<YF4V2VLWQAR3XV&Y+$
++M51U!T[9Y^5(6A^\Y5$GBJA_?Y@"C:]?Y%Q!N>&PY!XP*`````$E%3D2N0F""
++`
++end
+
+=== added file 'data/icons/16x16/status/user-online.png.uuencode'
+--- data/icons/16x16/status/user-online.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/16x16/status/user-online.png.uuencode	2008-09-03 17:09:16 +0000
+@@ -0,0 +1,19 @@
++begin 644 user-online.png.uuencode
++MB5!.1PT*&@H````-24A$4@```!`````0"`8````?\_]A````!'-"250("`@(
++M?`ADB`````EP2%ES```-UP``#=<!0BB;>````!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```(J241!5#B-I9--2U11&("?]SWW7M,9-9E1
++MD4`$-1<VBBM="T(2!=6F/Z'X4\3^A`M;%$B!T-HV0]/40J?I"T(:QW0<1^/>
++MN>>TN#J:?4&]<#A?[WG.^RG..?Y'O,L',XO2I:I+ZLN<C=TD@!HIV,AM6&N7
++M-U?<X45]N6C!](+,>KZNCN=RW<-#PT'F:A\`>P<5RA_*X9MBL=:,[(,7#]WS
++MGP#3"S+;V=GY9'[^9JJ]RV>GL<51<P]12/L9!E)C'-<BGJX_:]3K]3MG$''.
++M,;,H7<;3M_?NWN^-KASPL9%'#8@*HB```H.I*<Q1#VMK:[MQ9$<V5]RA`JCJ
++MTG@NU]W>Y?/I.(_Q!.,+)@`3"*9-,('P.7Q).NN3F\AUJ^H20`+P96YX:#C8
++M^;:%&D%]T%.(YR>/39#L*]$VH]='`VV3N1;`QFXRT]/'<;R'&E`C&)^6%5X@
++M>$&R/I$]>K.]V"C)4"N-(B"2^*P&Q$@"\Y,9P,6"VD0O"<R9"T8*U?T*Z2"3
++M7,@I4`556C$1`VDO2_5K!>-)X=R%R&V\>U\.!SK&3K\Z'\Z!M6!C<!;Z@S%*
++MI5(81V[C'&#M\NMBL=;8#QGLF,)9L-9A8X=M0APZXM!QS9NB7HDHY(LUV[3+
++MORRD6[?G4^F,SY=HFQ-7153H##+TMXU1KS9Y_&B]4:]=*J0?2CG0U1L3N>[1
++MD9$@F^E#!:K[NY3*I?!5OEAKAK\IY3\VDW_:3,V_--._R'<0@_W5;MR,>P``
++*``!)14Y$KD)@@@``
++`
++end
+
+=== added directory 'data/icons/22x22'
+=== added file 'data/icons/22x22/Makefile.am'
+--- data/icons/22x22/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/22x22/Makefile.am	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,1 @@
++SUBDIRS = status actions
+
+=== added directory 'data/icons/22x22/actions'
+=== added file 'data/icons/22x22/actions/Makefile.am'
+--- data/icons/22x22/actions/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/22x22/actions/Makefile.am	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,19 @@
++
++iconsdir = $(pkgdatadir)/icons/hicolor/22x22/actions
++
++icons_DATA =  \
++	system-shutdown.png		\
++	system-restart.png		\
++	system-log-out.png
++
++system-shutdown.png: system-shutdown.png.uuencode
++	uudecode -o system-shutdown.png $(srcdir)/system-shutdown.png.uuencode
++
++system-restart.png: system-restart.png.uuencode
++	uudecode -o system-restart.png $(srcdir)/system-restart.png.uuencode
++
++system-log-out.png: system-log-out.png.uuencode
++	uudecode -o system-log-out.png $(srcdir)/system-log-out.png.uuencode
++
++CLEANFILES = $(icons_DATA)
++
+
+=== added file 'data/icons/22x22/actions/system-log-out.png.uuencode'
+--- data/icons/22x22/actions/system-log-out.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/22x22/actions/system-log-out.png.uuencode	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,24 @@
++begin 644 system-log-out.png.uuencode
++MB5!.1PT*&@H````-24A$4@```!8````6"`8```#$M&P[````!'-"250("`@(
++M?`ADB````UA)1$%4.(VM4UUL%%44_N[/S.[L+EEH;1=JM[2+NT"06I1""^4G
++M_C:%-BF$!!-?#+I&'_3!%Q,?W$3BF\]`)?:%2-3P5PAL2(QM+$$K%+KMTAJT
++MA9I68XT-C?LS<V?F^M"A:;>S#13/Y&1N<L[YYOO.=X=@&;'_F/:TU\O/F):H
++MXTRYG<^;!R^]FYN8WT.7`ZQIZJG-T>>WOMYRQ/-L=,M635-/%?8L"UB8>F,L
++MLH'U_?TMHC4Q)DR]\7\!5KAR_<[HH%57N@_#HT.6PI7KA3W<;;"U0]U$@"%7
++M4$4=T0W]Z/#=`2TUTE_'&;NMY^TW"OO((M`3\"F*/UU?NZ.J)ARA$A)2VI#.
++M,SXQAH&A_HPPS9O"$N]=C!MI-P*+&*M\Q?&*T)K0ZK(0_>I"YX+:SFV[$"SQ
++MX9677_/?NS?:E$JGAMS(`04[;C^I'E84?N"%Y^JU:S>Z,YRSS[OB!J&,?QH,
++MKLR4E*W";U,IC$SVH:HZO*0_"QA;-DYOC&W`X,B`-?U@^NX_X[F/VHY[FCDE
++M'S;4;_?=G[J#TA5K\%2P`E+:2^$NE-%^4CUDV?B&,W9?F-BM@`C)Y7##]FU!
++MB^60$UD$>`FN]?Z(YI:7D+S\W6*FC'Y\]DC^,]?]/(R#G8%SU=7A?155Y<J?
++MT^,(ET7PP_<_977#\+W:L@<2CJF.N8;,H#>90E?<(*[7#0#V)L"%*5IK(I7L
++MUS_26!N*XM;-=$Y8YFG&6=/5RSWKW>:H0A-`D7L,`-T)F&T=DDEF0U@F))&8
++MF9D!L<DOY][.O;644N`1_CQ+FHB$8P"SL:5QH^;Q*9^T?ZE]O;<3WB<$%NA)
++M]J$[V2=_'YO,US:N\Z\L#;2NDMY;![[0*A\;^-`)!`%("V*VD1LE4Y/3/>D;
++M8YGHYDJM,E+^#.$X7VR>`$!;ARI=*C)<4YY=&UOM?^AT(@&:"GN.@=(W&U[<
++MI/1>'31%3@]<>1]ZX?B<>4W-M6X?]>>S!ABE_P)`(@$;T-]IZU#C(``AQ`IX
++MX`66`.Y-IMPE49JEP`?%)!<+#@!=<8,Z9S;OS3#K`7&R'(!T<B[&?X870!:`
++M.;_&`:@`%">YRYG/4V8""ZX9F>A'"+.K$$Z:`&P.P'"2.`QI$<9P&`6`N=6I
++=.L-?`!X4*OD/P4\](F[NSE@`````245.1*Y"8((`
++`
++end
+
+=== added file 'data/icons/22x22/actions/system-restart.png.uuencode'
+--- data/icons/22x22/actions/system-restart.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/22x22/actions/system-restart.png.uuencode	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,33 @@
++begin 644 system-restart.png.uuencode
++MB5!.1PT*&@H````-24A$4@```!8````6"`8```#$M&P[````!'-"250("`@(
++M?`ADB````!ET15AT4V]F='=A<F4`=W=W+FEN:W-C87!E+F]R9YON/!H```2^
++M241!5#B-M95+;%15&,?_WSGWSIU'I].6/NEKVI)""D0T&@2,,?4!6-"8"$'#
++MPA7@4B4\9*$;'@TF))I`)&AB@AM1-$"%A>$E5D-K+`D0!-IF6NE[.N^9>^?>
++M>SXW4VBI"S;>Y+^YYSN_\S_?^9\<8F;\'Y]XDB+:?$H^25W3^D/A^G5'R@"`
++M_LMQ2\?!5I#8Q43MK+@&!)V`-`@3S+BH7/=4Q63YU=[>;?;,G.8W#U0I5W0+
++M=ML'NO9%YH")0,T=G2>8L,7G#WH\?I\FI0:/1X,F`'9=6);EIE/)M)G-:R#J
++M]&=R1RP?A"N\/<S<*B0U]I_9/:3-=MK<T?FUT/1-H8I*OU(*K%SHFH!'$S!T
++M#;HF($61U&LK0D2,2&1\[Q343H!&6L(UC:-C4VDKZR@`>`ANZCBX4DKYMK\X
++M%(A/CBOEND(*B;CK,#,<GU?/EI65^*NJ%NB*@9SI8NF2!A^K6M]4-!E<T=9`
++M/W1-.I8.->?P!(D=1#*0CD6YHK*2&EN:S;*:ZN\&S^T63%QEY9W71L>F3O?=
++M^#N;C">YKC*(:-+$5"J/EG`UZ5*`"20=F@MFT%K'L6GQDM98VY*FO_)Y)P:H
++MPP`0.;<G-G!VU_6!L[NVL'+6#$1&>G[ON9VI"GE05Q%$]\T1:%)`*34?#((1
++M"H4>M#37?AGR>T^"Q%V7/;''$S/8]7&?<M5>V[(UGU?'V'0&`&!X)!S7)6G0
++MW!XS.%M:$OP\Z/.>S>>-*;;HFV!]97)^%#N7"X$S+ZYJ,TJ+`Z@L"^*%Y;7P
++MZ!)@HJPMYH+#:;/I<E6_NO3>5@4`V-8Z+]_A=0=JH(D+Q/!?[KYIJ4)49Q++
++MS![-EU3`K`O2O*%SDL%%\V@`B)&"H%>EZ[_C&-.^_ZH!`,ZS$?GYTPEF\*,<
++M,Y>\_VZ[YM$?M3UK.?C^_'4K&LM]&.G:?:/PVP*`9[<?UX%2_^IE3YL+@OG2
++M:W_VK>X?&#[.C/+'>DQD&!(_7KT/9F#]RC"Z>^[FXLGLT<CY/2<?=Z>I0)4T
++MU#'#E_HI8:J*J>G$=I+2G1E_%#<""`33=M&\,`0I"$/C,8!H^:*U^^OG[5NB
++MV'75JD0JN[6G[];.>#P>!O/`PX5G=8B$(*Q9MA#W_HGCSG`<[VQ\WG>YY][+
++M]_H?W&G:<.@+4MP+*8>*0B6:;G@_\PBWY-??>E^R;8>EIMM.7IV8!R8`@@B"
++M7:QJJT8JY^#68!3+6NMD:[C:/S@\\5$LE<DE$UF12R4#5B8)W3#@#03@DQK%
++M)\9-,LUOYSM61,.CTWSZ0F^"B<6*Q77:BK:P?S1N(F^[J*@HTX*A4)!K&:YB
++MY"P'6<M!.F-B:FPT#<?]8/#2)^9#H\P,(I+AUP_8AJZEHY&>C<G^BV.E2S>]
++M$5S0L*.QOKRVO*Q4#Q0%A*9KR.1L9$P;R;2):#2F$K%$WLU$.X>O'#X*P`1@
++M,G-^!NP-KS\8R\7N;Q[_XZM;`'P%>4M:VI\J:GANB^8M?@8D#%T*VW:59&8H
++M.W,M,])W;/IVUPT`N8*RS)R=`5/#*_O>&OIE_Q4`7@#&+.D%26F$=%_5HC([
++M,1FS$D,Q`/E"KJT"-`7`8F:>]S01D9P%FY$&0`)@`&Y!=D%Y``XSN[,Y_P)8
++3%4N3I+^9VP````!)14Y$KD)@@@``
++`
++end
+
+=== added file 'data/icons/22x22/actions/system-shutdown.png.uuencode'
+--- data/icons/22x22/actions/system-shutdown.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/22x22/actions/system-shutdown.png.uuencode	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,33 @@
++begin 644 system-shutdown.png.uuencode
++MB5!.1PT*&@H````-24A$4@```!8````6"`8```#$M&P[````!F)+1T0`_P#_
++M`/^@O:>3````"7!(67,```W7```-UP%"*)MX````!W1)344'U@()$C`[?I3A
++ML0``!,A)1$%4.,M]E5EL$T<8Q_\[ZYWUO7%-L@Z)CU2J>DJE\(8J$:M2!:)2
++M$5!5/%1-'W!-27BI>G"H0J@M$%0)EP(!)$JACR6(2PZ5(*TH/)1#;1\`\4!L
++M)\)'2`#'=CSKW9D^8+LQ1U<:K6;TS6__^_^^;T;",Y[U`_&UC!EQQMA+AF$X
++M..<2(4102AFE]*;=KN[?NV?HT+/V2X\O]&]8M[)4*N_KB?3HJU>]ATBX!ZI=
++M!20)@G,P5L58*H7AX[]@+#TVY7:[8C]\OW_X?\'Q3V('IJ:F8CNW#R(8#"*7
++MRR&?SZ%6JS5C9%F&S^='=[`+$^,3V+1E(_Q^_Z&A?0=C<UGR7*C#X8PE=N^!
++M6;-P\]8-%(M%<,Y;E'#.4:F4D<OFX'*YL>;]-;AT^8]%"]YXO?OJE6NG6Q3W
++M;UBW,I\O'#]R^"?<O9O%O7N%)SP30CS52:?3A7`XA%A\+72]8U7#%@(`I5)Y
++MWXYO!S$Y.8E<+@?.^1-*%R]^$X00"`%P+B#$HU$JE9#-9O'UMF]0*I=_;,23
++M]0/QM3V1'KVK>SXRF7$0TJI2DJ06M;(L0Y)($RY)P.3D/00"`41"$>_Z@?C'
++M`$`8,^*K5JY&.I6:`ZQ72/\`+,MJ46Z:)OK[^YM^-_[LSITQK'AW!1@S/JN#
++MV8OA<!BE4J4>+,"YP-#002Q?_LY3O5ZV;!D.'#C8LCXS,X-@,`3&6!@`B&$8
++M3E55P3EO^B:$P/GSY]';V]N<-],E`=%H%!<N7(`0_R75-$THB@+#,&P`0#CG
++M$@0@25*+#?E\'HJBU+T$+EVZ"-.T((0`I13Y?+XEOB&L;@TAA!#!A8`LRRW*
++M=%U'M5JM5P&O6\3!.<`8@Z[K3RE%`?(H^Q*AE,XR5H73Z6@IL6@TBM'1T::J
++MAG(`&!T=130:;0$KB@+&#*@JM0`(HJKJK70Z!9?+U?+U6"R&9#*)D9$1,,8@
++M21(88Q@9&4$RF40L%FO&<\[1WMZ.\8EQ4$H+=3`=&CXQ#$W3T-:FP;*L)CR1
++M2""3R:"OKP_1:!1]?7W(9#)()!(M4,XY='T>3ITZ"688>QLM33[\Z(/<IB\W
++MM]M5.U+I-$S3!"&DF=#&^_'6YIS#LBR$0B&8IH%=W^VJ'CE\-`Q@F@"0(<2G
++M6[[:#)?'C4"G#IO-!M,T6S+=&(VY:9JHU6KH[`Q`T[S8NFTK\KG\8+-!`="_
++M__IG8N&BA<]?O7;EE:5O+X5LDR#+!.5RY0FP95FP+`NJJB(4"L+G\V''X';,
++M5F8OGQ@^N1M`"4!5!J``L-^\<>O/<"0<.7WFU`M+EO2BNVL^O%XW7"X/**6@
++ME,+A<$#3-`0"'>CN[D*Q6,07&S]'M5J]^OOHQ6V<\T*M5BLVP!(`25$4.9W*
++M7`ETZO>O7[^VX/;MVS04"D/7._"<SP>?OPT^7QL<#CL*A0*._7P,9Y-G:P8S
++MAG/9PE&/QSUN&+5"L5B<`5"3ZD>G`D#5-,VG:9KN=#H[7WWMY=5NC_LMSGF'
++M81@RYQR$$%!*N<TF/ZR49R_?GW[P6UN;+TNI,FY95F9Z>KIP[MROLP"$-.=Z
++M(@!4O]_O]7@\\^QVNR;+Q"5)Q$D(L0/"1H@,2JEP.IU5K]=3]GJ]%:_7^]#C
++B\4P">`"@NG/G(`>`?P'#CHX!#,V)=0````!)14Y$KD)@@@``
++`
++end
+
+=== added directory 'data/icons/22x22/status'
+=== added file 'data/icons/22x22/status/Makefile.am'
+--- data/icons/22x22/status/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/22x22/status/Makefile.am	2009-03-11 16:59:32 +0000
+@@ -0,0 +1,27 @@
++
++iconsdir = $(pkgdatadir)/icons/hicolor/22x22/status
++
++icons_DATA =  \
++	user-online.png			\
++	user-offline.png		\
++	user-away.png			\
++	user-busy.png			\
++	user-invisible.png
++
++user-online.png: user-online.png.uuencode
++	uudecode -o user-online.png $(srcdir)/user-online.png.uuencode
++
++user-offline.png: user-offline.png.uuencode
++	uudecode -o user-offline.png $(srcdir)/user-offline.png.uuencode
++
++user-away.png: user-away.png.uuencode
++	uudecode -o user-away.png $(srcdir)/user-away.png.uuencode
++
++user-busy.png: user-busy.png.uuencode
++	uudecode -o user-busy.png $(srcdir)/user-busy.png.uuencode
++
++user-invisible.png: user-invisible.png.uuencode
++	uudecode -o user-invisible.png $(srcdir)/user-invisible.png.uuencode
++
++CLEANFILES = $(icons_DATA)
++
+
+=== added file 'data/icons/22x22/status/user-away.png.uuencode'
+--- data/icons/22x22/status/user-away.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/22x22/status/user-away.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,20 @@
++begin 644 user-away.png
++MB5!.1PT*&@H````-24A$4@```!8````6"`8```#$M&P[````!'-"250("`@(
++M?`ADB`````EP2%ES```3"```$P@!AKF%NP```!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```)A241!5#B-M97?2Y-A%,<_Y_TQ?TZFDFZH
++M\UW.[1VID$04B!($U5TW17=>YGUI!5U8@:53_P#_EKKP-@@"+[9W$HS1=K-=
++MM`N=--_WZ<(I6NI>E;YPX%R<\^%[#@_/$:44_T.:W\(5D<=K(H_\UHL?QQ]%
++MKIF0%ZCOP_`KI:K->GPY-N%M:R`0,`.!3@U>^^EIZOB3R'4#G`>IE+%O&'S9
++MVOKMP<B"4C^OY-B$I5!;FTK&8J2B48(='9K`AV9]YX+716XJ>#J32)A2KZ/7
++M:DS;MB$PNRHR=FFP@K5(,.A:@X.H7`[E.(Q$(O2%0BZ0OA1X5>2^!_>F;=M@
++M=Q=5**"*152URE0J92AXF!:9N1A81`36XST];KB_'^4XH!0>X&:S1'I[B?;U
++MN0+K%P*GX9D'XU.IE$ZUBBJ54'``+I=Q*Q7NVK:N1";3(D]\@3=$3`V6)\)A
++M%>KN1F4R1U#5B/U,ANZN+NR!`4^#](:(V11<A3E$!N[8ME`NXU4J>`WP452K
++MN*42D\FDAJ9%?\'S<\$K(D$-WMT>&M+:.SMQL]E_H8VH.P[MK:U,6)9H\'Y%
++M)'@F6."EH>O!R43BZ`6<!79W=G`+!<;C<0S#Z`+F3P4OB?0++$Q9EA%H:<%U
++MG!-[_1L,X.9RM.@ZM^)Q78/YM$CXD&<<)B8L=IBF?B,>QZO58'CX^"0G1CN>
++MJUJ-9"S&]WS>V-O;6P3FH/$)I45&!3+3EJ6/6M8)EZ?EI^E'L<C7[6U78.R%
++M4EF#@^)90-_,Y]G,Y\]H]26]P7ISN(IE@<]7(38,JEWX!CXOR&7D^^9=5'\`
++4@<+IDD2!N2<`````245.1*Y"8((`
++`
++end
+
+=== added file 'data/icons/22x22/status/user-busy.png.uuencode'
+--- data/icons/22x22/status/user-busy.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/22x22/status/user-busy.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,27 @@
++begin 644 user-busy.png
++MB5!.1PT*&@H````-24A$4@```!8````6"`8```#$M&P[````!'-"250("`@(
++M?`ADB`````EP2%ES```3"```$P@!AKF%NP```!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```..241!5#B-M9512&1E%,=_Y[MW)G5FY(Z.
++MPX"9E>R2VD.0$FRY[^YC$.4:LKE;$2P$JTX05-#;.KNR3\$&._@2^;)0&[;Y
++M$I3EMF"Q^["R.BN4;J3NJ(,S.N;<>[\>1N\X[;@9T1\^N'SWG/\Y_W.^\WVB
++MM>;_@/E/!HFXM!@.'2@Z`'"9=@RFAX;U_*/\Y*",1P:D7QE<<%W"(HI(-&8#
++MI%>63*U=E&+==1@\=U$G#T6<B$O,ITFZFNX7NKIT2]LQ"5E-F*8/`-LND,TL
++M,C\SI6].3HH2KA>$_J%AO70@<2(N,5-S)V2%:[M?[C,CL5;L_"^XA5]Q"_<1
++M%,K_!,KW%$;5<ZPNS_#UU5$[FUG?L(7V_>1J?Q2?)AFRPK6OG?G`K(M$V4Z/
++ML),9Q=Z:1-L+N/8"3OY'"AN?L9/YA+J&1GK>_-BLM>IJ?9JRDG@9CPQ(/\*5
++M5T^_2UTDRM:#!)OY:D0,1$P0A:!`!)!=;Q]^ZS29U16NC5W&-2+OJ?K>Y,#`
++M1VGO5"B#"YTO=NE(K%6V5R^QE:_F\V_/5FQL.?)`""*#`.<=K=N`4^9N;5L,
++MEW!+VS'L[5NXA05$-0#P^LD^K'#X$`%@8F*<5.IVR*NQX=`AH@A93>C"XJYT
++M`P`K'*:ZJ@J?:1:78?!@\2?L[?72GNDC4!,@$`@@3JX>]@9$T1&)QFS3?,S\
++MT_X=$;-(O@O;MMG<S`%P]^<D-[Z)4Q.*\<K96RAEHI3"[_<7C=VMB)=Q.52Q
++M45+AU[]`,2V7Z?3*DNDX!92O"==>Q.O\W_#,\V]@-;1BU1]!J0HW@JI)>\2.
++MP;3ANF0SBX2"S;CYJ3);K37+R\LXKE/<\#6SMK&#;/Q!-!I%J9(Z;017/>*A
++M83U_*2[K]V:FK,[C?>+D;\!VUC->6/B-+[_ZHJ*"KI>Z:&][MD2L:K*E4@"N
++MP^#-[[^[\O313NH:>M#94<^XN?E)3O;THMWR>T5$"`:#)5+$,_`TG+NHDTJX
++M/GXU:=NN'[]URG/(Y_.D4BGF4K-E:W9NEFRVI$P0=^^[K/H%H3^;6;LS]NF'
++MM<=/O&5""(!<+L?LW-V',D:$ADB$<(4!*B,>&M9+B;BT9S-KR6MCE[MWQY3&
++MQL=YY^W#C/<!Q'ODP(G$^T?CP/F)B7$"@4!%9XWH_?+OS:>\,WK@TZ3J>Y..
++MUFVIU.V0.+GZO8E"U:2U$5S=Z_[#T>0'>,33]%_Q%]<(;9$6[\*C`````$E%
++&3D2N0F""
++`
++end
+
+=== added file 'data/icons/22x22/status/user-invisible.png.uuencode'
+--- data/icons/22x22/status/user-invisible.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/22x22/status/user-invisible.png.uuencode	2009-03-11 16:59:32 +0000
+@@ -0,0 +1,24 @@
++begin 700 user-invisible.png.uuencode
++MB5!.1PT*&@H````-24A$4@```!8````6"`8```#$M&P[````!'-"250("`@(
++M?`ADB`````EP2%ES```3"```$P@!AKF%NP```!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```,/241!5#B-M=5O:!-W',?Q]]TUMDU,,X4$
++MC7(*%6T9I:DZXW`P_SU1*%4'>S2M;)!!+!D,]]1'P@83!JD&%_=X/AAK*T@J
++MS%7\;]1E*U9):8_:DYO2Q%QCFZ3SFKL],1HM-8G@!WY/CM_O=5]^W]_O3M!3
++MCWD?J:MF4B`86H)H?B,(_&=O<$9_^O'[N4IKA$H5!X(AMZU>[&_9T+H9()E,
++M#AO/BUW12/C).\.!8*BMT=%X?M/&CJ9]70<2``/G^C8F$HG<[%R^\Y?>DW_7
++M#']]I*=SV?+EO_K]_LR!_9^-NUP?Y(%B-COM[.O_?5T\'G<_U?4OSISL[:L:
++M#O3T?.==Z?UAV[9/DONZ]D_9;+8IX!)@`I\:AN$=.-?ON7[]6JOVKW;LS*E3
++MQ]\*!X*A):+$S\W-S=T[=NZZO7OG[@(P#MQZ@0((P&:@]>+0Q<9+0W]N413E
++M;&.#XZORIKZ$`\&0NZY>&FC[L&W3WCU[;[:W^P#^`NXOLHWK@:W#P_\0&XQ]
++M/#)R[[6F"GKJ,5]^&_0X)>>=4I-D63:!J\"C1=!25@#;556M*S4UGYOS1R-A
++M302H,X3.#E^[L_O0X80LRP5@L`H4X`D0DV4YUWWH<,+G\]D%R?P<0"S-R!<*
++M=KO=(0*C@%X%6LHSX+[=[A#SA8+=-"WQ%5R4+J12J7I%42S`6P-:BE=1%"N5
++M2M4+EC3X$HY&PEIV6A\95\9<@(<JK_J+B(!W7!ESZ1G]4302?O"J8F`VESNO
++MJI.K`0E860/L`6RJ.KFZ4)B-E;\-`,&R!C5-\Z33Z7EJVXY5Z71Z7M,TCR6P
++M$)Z:RMS(9#(SHV/)!F!5+?#H6++A:29C4)2&%L#]OYV=U[/Z'^JDZ@:<0%,5
++MJ`-8IDZJ[NRT?C4:"<\N@`%,LQB;>#BQQC`,"U@++*TPUAJ&84T\G%@S7RS&
++MRJW7NU]V[%I:6CJ`CDHE*XIBEA^S4A9\W4)'C][=\I%?=KJ:9BJA`#/99\[X
++MG?AT[XD3ZQ>O&'@^ES]X^<KE(X@LK086+2MGF=+I-Y]7_#6]:_X'>?UF?R2N
++.Y<<`````245.1*Y"8((`
++`
++end
+
+=== added file 'data/icons/22x22/status/user-offline.png.uuencode'
+--- data/icons/22x22/status/user-offline.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/22x22/status/user-offline.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,16 @@
++begin 644 user-offline.png
++MB5!.1PT*&@H````-24A$4@```!8````6"`8```#$M&P[````!'-"250("`@(
++M?`ADB`````EP2%ES```3"```$P@!AKF%NP```!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```&X241!5#B-M96Q;L(P%$7O2R*PQ`+B`R)5
++MRLR_9.=OJG9@Z3]TS[^P,96*SMV:%%K\;@?'H29."P-/LAQ9RO7Q]<V+D,0M
++M*O,/95G.TY$L!;*@0*X1$8($U_:+SU55O;LU$F59SD<F>S'&3(JBZ([@3W,^
++MNV<`H)M);%^W<M@?ZJ_#\:ZJJO<,`-*1+(TQDX?[Q]08`Y(@%=K.)$$E2$)!
++M4-NU=BB)IJFQ6JTFEG8)X"D#`($LBJ*@,09U_0&K1ZAJ?-`)*T]K(H+I=(8\
++MS[G9;!:=Q]Y34F'M$4<[(,SX9B+NW=]:V<DTY^$@:4_8!L14.I'S5!"$*@>I
++MG+"-$R?B+(K%S1$KK+KAJ7B)%4A<8A@1)MSMNB-&R*CA)H%PE[]AXLO\#3=)
++MI/\]!<3N\@8N,+JI[0GVB?%/*A@F054'14/B-FY]'VV4^+\*B)6,DETK>D;L
++M:>.)N$;TC)C#'O,ZT4Y8"/JXB200D=-($H@":9H,BV2>CT[+"Q-<;U^WR[II
++M,)W.NA;I6^8EU7Q^8K=[$X)K!^L;_3A[&9OQ),]SW\*#3_3O(G:[-]GO#_5W
++?V^C%$]WDUW2+^@$(MKM&WTSWVP````!)14Y$KD)@@@``
++`
++end
+
+=== added file 'data/icons/22x22/status/user-online.png.uuencode'
+--- data/icons/22x22/status/user-online.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/22x22/status/user-online.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,25 @@
++begin 644 user-online.png
++MB5!.1PT*&@H````-24A$4@```!8````6"`8```#$M&P[````!'-"250("`@(
++M?`ADB`````EP2%ES```3"```$P@!AKF%NP```!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```-$241!5#B-M97/3UQ5%,<_Y[YWQQIFT'D,
++MA+093(18*0E@.C%5NH46=6UBW+$U(5WP9[`P)&[9U;VFEH#;$JL26YJ46I5%
++M2]&&SKPA,&/5=^<>%_-FF"G6-OXXR<E[+[GW<[[WOGN^5U25_R/"9PV8FI=A
++M;RBIFA*`B-\PGHWU)=W^NWGR-,7GYF5.C"RJDA<1HBA*`.(XMJJ*"%7UNG!]
++M29>?"_SF1S(86%E6979B<EQ/CYR1Z.4"UC87ER2.>+_,W9^V=//F+1%AI9'H
++MW#>?Z,.G@E/H[6Q/KG=Z>B8\.5BD\O@>!TF9NJN`0,[VD<L4*)QXA=V'.ZRM
++MK;E:[?"@D>A8)[P+_-8E<S7;DYO^X/T/0PT<=_>O47-[B`$$1`2D.;8W,\!K
++M+YT'%W#YT\NN5CO\\JN/_3LMENG<4U5FIZ=G0@T<-RM7J/D]3"B84`BL8"P$
++M:=9UC\W]*TBFP86+,Z$JL^?F9>X86(PL3DR.Z\G!(C\<7,/+'YA`,"%I"D%:
++MI)4$"=OU=8JGBKQQ=ES%R&(7>&I>AE7)GQXY(Y7?[C67'P@FH`GO*!"DZELK
++MJ.D>L;O/Z.B8J)*?FI?A-M@;2B)"E"]0<V7$'$$E2!4'J5)+=Y%0J/LRA;Y^
++M1`1O*+7!JJ8415%B;4B]44$,[6RK[@`%]FA;)(#'5+&9D*@O2EJ-U-5YDOYY
++M,1U/(VF!5'UZ0E!0#R#IO.X&,4V@WXCCV";.D<U$:96C;!9J0DV0[F^J5@QD
++MPPCG''$EMB)^HPTVG@U5):Z6R=K^KLKRY$M+78?";%B@'#]"53&>(_#ZDFZ+
++M4/W^QRTMO#!$KQUHSE#05OIF^H;22$`;S>^L&2`?#K%U9TM%J+;,J7V.U>O"
++MYHU;LOO+#B.]YS%J4Z"F4,4WP#OP3FDDBGC+JR?>YL'N#M]]O2GJ=>%8@UQ?
++MTF415E97UQQ)R$3^/7+!0%ME"]B"]M#/V(OOXG\/^>*S52?"2J?3_;4)97.]
++M%R[.A,5312K)?7YME*EKC(C08R-R88'(#O'@YQVN?K[J#@^?84(=\&559B?/
++MCNOHZV-2R/=C,R$(..>H5!^Q=>>VWOCV.6VS,XX9?5]J])5_:/1/QG]^-?W;
++6^!.@7Z\8FX`<,@````!)14Y$KD)@@@``
++`
++end
+
+=== added directory 'data/icons/24x24'
+=== added file 'data/icons/24x24/Makefile.am'
+--- data/icons/24x24/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/24x24/Makefile.am	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,1 @@
++SUBDIRS = status actions
+
+=== added directory 'data/icons/24x24/actions'
+=== added file 'data/icons/24x24/actions/Makefile.am'
+--- data/icons/24x24/actions/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/24x24/actions/Makefile.am	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,19 @@
++
++iconsdir = $(pkgdatadir)/icons/hicolor/24x24/actions
++
++icons_DATA =  \
++	system-shutdown.png		\
++	system-restart.png		\
++	system-log-out.png
++
++system-shutdown.png: system-shutdown.png.uuencode
++	uudecode -o system-shutdown.png $(srcdir)/system-shutdown.png.uuencode
++
++system-restart.png: system-restart.png.uuencode
++	uudecode -o system-restart.png $(srcdir)/system-restart.png.uuencode
++
++system-log-out.png: system-log-out.png.uuencode
++	uudecode -o system-log-out.png $(srcdir)/system-log-out.png.uuencode
++
++CLEANFILES = $(icons_DATA)
++
+
+=== added file 'data/icons/24x24/actions/system-log-out.png.uuencode'
+--- data/icons/24x24/actions/system-log-out.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/24x24/actions/system-log-out.png.uuencode	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,25 @@
++begin 644 system-log-out.png.uuencode
++MB5!.1PT*&@H````-24A$4@```!@````8"`8```#@=SWX````!F)+1T0`_P#_
++M`/^@O:>3````"7!(67,```!(````2`!&R6L^```#7$E$051(Q[U376P4910]
++MW\_,[NPN66AM%VJWM*N[0H!2E$*K%8B_3;%-"B&1Q!>#+M$'?>#%Q`<WT?CF
++M,U")?2$2-8I6`AL28AM+@`J%;KNT!FVAIL588T/C_LQ\,_/QP)1LV]FV:=`S
++MN9F9W#/WW/N=.\!_#++2#U\[JCWN]?)O34O4<:;<R.?-_6?>R4W,Y]&5"FB:
++M>G)+].GM!UL.>39'MVW7-/6D&V_%`L+4&V.1#:SO[V\0K8DQ8>J-CU1`X<JE
++MFZ.#5EWI7@R/#ED*5RZY\7BQ`JT=ZB8"#+D65]01W=`_&;XUH*5&^NLX8S?T
++MO/V&&]?5Y-;C\"F*/UU?^VQ533A")22DM"&=:WQB#`-#_1EAFM>$)=[],6ZD
++MBS7J.H'*5QVK"*T+K2T+T2]_Z)R3>V['\PB6^/#R2Z_Z;]\>;4JE4T-89!L7
++M>-!^0GU=4?B^9[;6:Q>O=F<X9Y]UQ0U"&?\X&%R=*2E;@]^G4AB9[$-5=7A)
++M#Q=,8-DXM3&V`8,C`];TO>E;_XSG/F@[YFGFE!QIJ-_INS-U$Z6KUN&Q8`6D
++MM)>JOW"T]A/J`<O&UYRQ.\+$+@5$2"Z'&W;N"%HLAYS((L!+<+'W,II;7D3R
++M[(6%73/ZX7>'\I\6-;D0^SL#IZNKPWLKJLJ5/Z?'$2Z+X.>?KF1UP_"]TK(;
++M$H[YSA(8,H/>9`I=<8,4-7D6>Q+@PA2M-9%*]MO=--:'HKA^+9T3EGF*<=9T
++M_FS/4Z[&*C2QZ!;-HCL!LZU#,LEL",N$)!(S,S,@-OGU]-NYMY8T`,O\DRUI
++M(A*.`<S&ML:-FL>G?-3^A?;5GDYX'Y&`0$^R#]W)/OG'V&2^MO$)_^K20.L:
++MZ;V^[W.M<L4"!XXC"$!:$`_(W"B9FISN25\=RT2W5&J5D?(G"<?WB]5XN$5M
++M':ITR<IP37EV?6RM?W8S$@G05-AS%)2^V?#")J7W_*`I<GK@W'O0W03FF-S4
++M7.O6@#^?-<`H_1<`$@G8@'ZXK4.-@P"$$"O@@1=8AD!O,N4^)J59"KR_'+^*
++M"G3%#>J\LX([<WPB3I0#D$X\Q/@O\`+(`C#GYV8%5`"*$]SEF1=P36#.>I*)
++M?H2<(Q).F`#L0@'#">)T3(M,`*?#0,&1JCK#7P#NS>_^?\%]934](M%OTA``
+++````245.1*Y"8((`
++`
++end
+
+=== added file 'data/icons/24x24/actions/system-restart.png.uuencode'
+--- data/icons/24x24/actions/system-restart.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/24x24/actions/system-restart.png.uuencode	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,33 @@
++begin 644 system-restart.png.uuencode
++MB5!.1PT*&@H````-24A$4@```!@````8"`8```#@=SWX````!F)+1T0`_P#_
++M`/^@O:>3````"7!(67,```!(````2`!&R6L^```$KDE$051(Q^536VQ4511=
++M^]Q[Y\Y,.YVVT$Y+2SMM32$5(FH,`L:8^D!HU)B(0:,?_HA^JD1H,(9$>04C
++MB282#)J8P`\J&J&5#S45L1I:0DF`5`I]2I_3>;_NW'O.]L,ITI9)_/+'G:SD
++MW)MS]EIGK;.!_T]M.:']FVW!)_<%:S=^6#[W384V-F[>VPP2;S-1*RNN!L$@
++M(`G"-#-^4E)^63&S].R%"]OLN3,-3^\)*"FZ!<O6H<YW1@H0,#6V'3C*A*T>
++MK\_E\GIT3=/A<NG0!<!2PK(LF4S$D]ET3@?1`6\J<\CR0$CA[F'F9J%1_>"I
++MG:,`H"]2WG;@<Z$;6_P5E5ZE%%A)&+J`2Q<P#1V&+J")8LVHJ?`3,49&IMI#
++M4-L!&F\*5M=/3(:25MI1<_WF$00W[UU+@I[SEOB+HC-32DDI-*$A*AUFAN-Q
++M&^GR\E)O(+#$4`QDLA)WKZSSL*KQA&;COC4M=?1UQXQC&;A%(&XG$"1>(]**
++MDI%9KJBLI/JFQFQY==6)X8Z=@HD#5LYY8F(R=++OTA_I>#3.M94^S,:S""5R
++M:`I6D:$),($TA^Y,P*"-CF/3BI7-D9:5#1=S.2<"J(,`,-K1'ADZO>/\T.D=
++M6UDY&P9'QGM^Z[F:"OA=J*WPH?OR.'1-0"E5F``$T^_WWVQJK#GB][J/@<0U
++MR:[(PIR&.W?U*:G:;<O6/6X#D^$4`,!T:7"D),VD.V?`X'19J>\CG\=]*I<S
++M0VS1%[[EE?'%3WC_:B;^[N%U+69921$JRWUX:'4-7(8&,%':%@5"3F8;N@(W
++M5-<K+RL4J/J->ZHE\1EB>+NZ+UN*^6]QG!?)[-(]\5OGY\U!0]O^&087WZDQ
++M,1(0]+@FO?V.&?84$L`Y-D<Z=T\#Q(OG@+GT]1=;=9?Q3S1IR\%7WY^W9B.9
++M-T<[=U[*_[8`X/Y7CQA`F7?]JGNS2WRYLG,7^M;?&!S[%*"E!3(@,DT-WYR]
++M#F9@T]H@NGNN9:+Q]">C9]J/+52KJZ*`9JK#IB?Q;2RK*D+AV#;2-#GOZ<\C
++M((!`R-H2C<O\T`1A="H"$*UN>N+]Y8O\T%`BI5H72Z1?ZNF[LCT:C0;!/#A/
++MQ`('20C"AE7+,/!G%/UC4;SPU(.>KIZ!1P=NW.P/MNW[F!3W0M-&B_VENFW+
++M#UQ"EO[R:^\CMNVPIANVDU-'"Q(0`$$$P1+K6JJ0R#BX,C2+5<VU6G.PRCLT
++M-OU6))'*Q&-ID4G$BZQ4'(9IPEU4!(^F4W1Z*DO9[/'"-U!$8Q-A/GFF-\;$
++M8LV*6GU-2]`[$<TB9TM45)3K/K_?QS4,J1@9RT':<I!,91&:G$C"D6\,=^W.
++MSG?QMG5I<^N[`\-3R>A8[S.AB\</A;*^B?Z16)-T<EY#"&&Z#/*X#4C)L&R)
++M5-I">#:LPC,A2R9G#X[\^-[Q?$\&(!?.@3NX:5\D$[G^_-3OGUT!X,G#7=K4
++M>D]QW0-;=7?)?2!A&IJP;:DT9H:R4^=2XWV'PU<[+@'(Y)'.8QX!U3VVZ]G1
++M'_;\#,`-P+P-1AZ:9OH-3^"N<CLV$[%BHQ$`N?Q<6/GFB?R:%Q(LM,Y8`'W!
++M]24`.X\<`&?.EO^T_@+8L3&R"+8"00```!ET15AT4V]F='=A<F4`=W=W+FEN
++::W-C87!E+F]R9YON/!H`````245.1*Y"8((`
++`
++end
+
+=== added file 'data/icons/24x24/actions/system-shutdown.png.uuencode'
+--- data/icons/24x24/actions/system-shutdown.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/24x24/actions/system-shutdown.png.uuencode	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,34 @@
++begin 644 system-shutdown.png.uuencode
++MB5!.1PT*&@H````-24A$4@```!@````8"`8```#@=SWX````!F)+1T0`_P#_
++M`/^@O:>3````"7!(67,```W7```-UP%"*)MX````!W1)344'U@()$C$.,3P4
++MTP``!-A)1$%42,>]E%ML%%48Q_]S9O?,WJ?KTLZ6=B\U,5X3$=Z("=V8&`@F
++M$L`8'HSU@;5(X<5XX1)#B`J4F+`B4"!!!!^E!)!L,8'5(#S()>H#$!YH=]NP
++ME]("V]WMGMF9<WQ@=^F4QNB#3G)FYLR<<W[?]__^^8#_^)+^[N?Z#;UK&=-[
++M&6//Z;KNY)Q+A!!!*664TIL.AW)@W]Z!P_\:T+=QW<I2J;R_*]JEK5[U%J*1
++M+B@.!9`D",[!6!7#(R,8//$#AM/#$QZ/._[-UP<&_Q&@]X/XP8F)B?BN'?T(
++MA4+(Y7+(YW.HU6K--;(LP^\/H#/4@;'1,6S>N@F!0.#PP/Y#\=GGR;,/=SI=
++M\<2>O3!J)F[>NH%BL0C.N643YQR52AFY;`YNMP=KWEZ#2Y=_7;3@E9<[KUZY
++M=F;.#/HVKEN9SQ=.'#WR'>[>S>+>O<(3Z0HAYA3!Y7(C$@DCWKL6FM:V:J9<
++MI/%2*I7W[_RR'^/CX\CE<N"</Q'YXL6O@A`"(0#.!81X-$JE$K+9+#[?_@5*
++MY?*W,_>0AENZHEU:1^=\9#*C(,0:M21)ENAE688DD29$DH#Q\7L(!H.(AJ.^
++M]1MZW[<`&--[5ZU<C?3(R(R#Z]+U;8!IFI9,#,-`7U]?LQZ-3._<&<:*-U>`
++M,?VC60#V;"020:E4J6\2X%Q@8.`0EB]_8\Y:+%NV#`</'K)\GYJ:0B@4!F,L
++M8@'HNNY2%`6<\Z:N0@B</W\>W=W=S7FSK!(0B\5PX<(%"/&X^(9AP&ZW0]=U
++MFP7`.9<@`$F2+/+D\WG8[?:ZUL"E2Q=A&":$$*"4(I_/6]8W`JQ+1A[?"!%<
++M",BR;(E4TS14J]6Z:WA=.@[.`<88-$V;P\("Y)%+I":`4CK-6!4NE]-BS5@L
++MAE0JU8RRD0D`I%(IQ&(Q"\!NMX,Q'8I"30"B"5`4Y58Z/0*WVVV))AZ/(YE,
++M8FAH"(PQ2)($QAB&AH:03"81C\>;ZSGG:&UMQ>C8*"BEA5D`.C!X<A"JJJ*E
++M185IFDU((I%`)I-!3T\/8K$8>GIZD,EDD$@D+(=SSJ%I\W#Z]"DP7=\WNU60
++M=]][)[?YTRVM#L6!D70:AF&`$-(L?.,YNV5PSF&:)L+A,`Q#Q^ZO=E>/'CD6
++M`3`)P"#-IB?$AUL_VP*WUX-@NP:;S0;#,"S.:(S&W#`,U&HUM+<'H:H^;-N^
++M#?E<OG]F(VUT4_K'[W^.+5RT\.FKUZZ\L/3UI9!M$F29H%RN/`$P31.F:4)1
++M%(3#(?C]?NSLWX'IRO3EDX.G]@`H`:@",!L`.P#'S1NW?HM$(]$S/YY^9LF2
++M;G1VS(?/YX';[06E%)12.)U.J*J*8+`-G9T=*!:+^&33QZA6JU=_25W<SCDO
++MU&JU8AW`Y1FUD.QVNYP>R5P)MFOWKU^_MN#V[=LT'(Y`T]KPE-\/?Z`%?G\+
++MG$X'"H4"CG]_'&>39VLZTP=SV<(QK]<SJNNU0K%8G`)0LQ2YGH6BJJI?557-
++MY7*UO_C2\ZL]7L]KG/,V7==ESCD((:"4<IM-?E@I3U^^/_G@YY86?Y92^ZAI
++MFIG)R<G"N7,_33=L*LUV$P`E$`CXO%[O/(?#H<HR<4L2<1%"'("P$2*#4BI<
++M+E?5Y_.6?3Y?Q>?S/?1ZO>,`'@"H[MK5S_%_77\!_8R0^)=IAAH`````245.
++%1*Y"8((`
++`
++end
+
+=== added directory 'data/icons/24x24/status'
+=== added file 'data/icons/24x24/status/Makefile.am'
+--- data/icons/24x24/status/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/24x24/status/Makefile.am	2009-03-11 16:59:32 +0000
+@@ -0,0 +1,26 @@
++
++iconsdir = $(pkgdatadir)/icons/hicolor/24x24/status
++
++icons_DATA =  \
++	user-online.png			\
++	user-offline.png		\
++	user-away.png			\
++	user-busy.png			\
++	user-invisible.png
++
++user-online.png: user-online.png.uuencode
++	uudecode -o user-online.png $(srcdir)/user-online.png.uuencode
++
++user-offline.png: user-offline.png.uuencode
++	uudecode -o user-offline.png $(srcdir)/user-offline.png.uuencode
++
++user-away.png: user-away.png.uuencode
++	uudecode -o user-away.png $(srcdir)/user-away.png.uuencode
++
++user-busy.png: user-busy.png.uuencode
++	uudecode -o user-busy.png $(srcdir)/user-busy.png.uuencode
++
++user-invisible.png: user-invisible.png.uuencode
++	uudecode -o user-invisible.png $(srcdir)/user-invisible.png.uuencode
++
++CLEANFILES = $(icons_DATA)
+
+=== added file 'data/icons/24x24/status/user-away.png.uuencode'
+--- data/icons/24x24/status/user-away.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/24x24/status/user-away.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,22 @@
++begin 644 user-away.png
++MB5!.1PT*&@H````-24A$4@```!@````8"`8```#@=SWX````!'-"250("`@(
++M?`ADB`````EP2%ES```4PP``%,,!%7!-0@```!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```*V241!5$B)S97/;U1E&(6?\]T9YU>QM.FD
++M'9JVS#"=N9-H*RF@0BIKXU*71C<NC"$F$A?&P`*"D3HE_<\D+@QE.I1.&D+1
++MD!!@2BGW?J\+AZ;8P=Z6F'B2=W%O[CG/=][%_61F_)=R!_FX*9V[(<T=Q*.D
++M#9:DX1C6@"V@_+U9-XDO<8,(?D0:,*D(7$SJ2]1@09H,H#TW.9E^(?%;I[.I
++MOUO\L9\W48,`K@;.!:=J-<[4:J12J1QP.8EW7\""]"[PQ=ERV66S60J9#*<K
++M%0%?7Y>J;PP(8"&73ON9:A4>/L0V-CA9J9#)9)2"G]\(T)3.&WP\7ZT&J70:
++M?^L6MKS,6T'`V>GIP."S7Z0SAP8X:![-9N-ZN8S=OP^/'L'3I_CU=<*I*=[.
++MYV,'BX<"-*5//9P^7ZL%3L*6EP'P0-1JX;SG7!@&!O.+TB<'`ER14H*%TL!`
++M7)Z8P#H=Z';Q/8!M;1'?O<OQ8\<H#@[&0/.*U#>K[\L<?&5PXJ,P#/`>6UG!
++M8&<\$+7;V/8V'S8:@4$C!U\F`BQ*!0=7*T-#OC0VAMVY@SU_OG/ZG8DBHG:;
++ML9$1)HI%'\!/2U)N7X#!=P;%^4;#L;V-7UW=$_ZR2;2VAG_VC/?#T'DHO8!O
++M_Q5P0QH1_/#.Z"A#P\/X5@L?1:^LQW:!O/=$MV]S='"0<'S<'%Q:DH9?"XCA
++MLJ3\!V$(FYOX3N?5P#Y-XGOWL,>/.5FO2\X5(KC4%[`HE07?G!H?U\"1(\0K
++M*W@)[]R>L=[@'$A$K1:%?)Z9J2D)+ER7CK_,3>V"74L[Y^;J=0Q@=A8W.[MS
++MBMV[]_]<=$\ST]/\OKX>6!1=`SZ'WN^Z*;TG^'6T4%"]5-JS<_H\OTZK#Q[P
++MYY,GYF#NHMG-5,]<$;#1[;+1;N\3D4@^A@IP,_&5>5@=Z-+_7P+^`E!P#>]5
++/Y+1V`````$E%3D2N0F""
++`
++end
+
+=== added file 'data/icons/24x24/status/user-busy.png.uuencode'
+--- data/icons/24x24/status/user-busy.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/24x24/status/user-busy.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,28 @@
++begin 644 user-busy.png
++MB5!.1PT*&@H````-24A$4@```!@````8"`8```#@=SWX````!'-"250("`@(
++M?`ADB`````EP2%ES```4PP``%,,!%7!-0@```!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```.V241!5$B)M95-3%Q5%,=_Y\Z;#P89IL40
++M9*`P`:PM,<'25A(3#<)$%_W0125H7+1)NVB[H@)--4$6F@!A=-$:TR8L3`RZ
++MT52KE)8FW=5$JTT:"AW&%-+25I)IM5,&RKQYU\4;1J`#E*C_Y"7OW=QS?O><
++M=\ZYHK7F_Y3Q))LZ.\63]X`:+6P#$,W/<1]7.CKT[&JVLE($X5;9+W`83;4&
++MQR)#2"$,:SC>TJ-/K0G0W2XE+DV?91&JW%BERZHV2T%A.?GKRP#XZ]X$L:EQ
++M)L:NZ>CU,5&*\W/"OK8N?6M50/B([!!%O]OC];[^9I,*!.M`6UCF7:SD31!0
++MSC*4400H)F]<XNRW7UF/9A,);='<TJO/+`OH;I<2I\5(>65E;L.N`^)VYY%\
++M.,C<]#E$IT`4@@(1$!?.W!#&4XW,S<89.OVY'H]&II.*30LC40MI+DV?V^/U
++M-NPZ($XCR4RLA^3T``I!E!NEW,C\(PHS<8&Y^R=P.36AW0?%[<GUNC1]62,(
++MM\I^-"??>'LO@?+MS,1ZF?S#X$XLB(BRSR(""((L3K3RX<C92OS^)"-7?P%G
++MZ?<I=T7XZ'L?7,R4J<#ABHU5.A"LD^3#0;0YR9U8/9<C+V4KCBR*`S[(?15@
++M)Q:_`C:@LU,\/DUU6=5F06N2TQ<0<:9/#NVMQYX08JNKYV/`-"#=:.DF<A04
++MEF.EIA!2B+A`_BE]TTQBFJ;]H343D4$`RIY]+9TZ,`P#PW#:64O%BC(`+6P3
++M(']]$,N\!N)`Q+$HUZ9I,C.3`.!F]#Q#7S<#T-C43VEE"("<'&\&@/5G,2RI
++M(IC_A0KF?^R_E`'V;$'@P;T)"@HW`&([E^Q&I96--#;U9]ZS2OEO9P!Q'U=\
++M<5*QJ7''T\75H-RKG$LR:5E.EJ/@;@;0T:%G/VF5X?'H\///U>P0I[<!,S&T
++MR.!Z9)3!<V?)-KO\^7[>VM.T9-4P,P``#<>CHY&3DS=^(A"LQTJ.P@)GQ<\$
++MV/)"K;USB?)]^<M&D@&T].A3G[;)GH%OOFQX]U"U<OG>`?5;9F->7AZU6VJ7
++M=;0J`&!.V*=G$R-#IS_+#>T^*`[/5NP.A>CO8_PX\,,:4I0%T-:E;X6/2/-X
++M--+_Q8GWO1MJ#BFPPR\)E/+B]KKL`/^Z=`\\?D$^MM+2J\]TM\LF>33=-W+U
++M<B@]6_#[U_'*R_79\[""5KPR>S[:^YWEJMJY9J^`UG0>;3OVX8J7?LI=$;:G
++MHFFH5*QHOOU1_MMVG1OFLL;*NKAJ!/^%_@81XV`?&09KDP````!)14Y$KD)@
++!@@``
++`
++end
+
+=== added file 'data/icons/24x24/status/user-invisible.png.uuencode'
+--- data/icons/24x24/status/user-invisible.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/24x24/status/user-invisible.png.uuencode	2009-03-11 16:59:32 +0000
+@@ -0,0 +1,26 @@
++begin 700 user-invisible.png.uuencode
++MB5!.1PT*&@H````-24A$4@```!@````8"`8```#@=SWX````!'-"250("`@(
++M?`ADB`````EP2%ES```4PP``%,,!%7!-0@```!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```-I241!5$B)M97?3YM5',8_[UL&1;%4V3K2
++M#@?&P.+4@#]P@E%3KV3$39V;UUX,LR(Q9O^`%XL:8R(3<#"S"Q-'XG2HV<HR
++M,W0S=@Q-<+*VZ0\@E*Z=I;PM;0>E+WU?+V@;Z)AI49_+<[[G^9QSGF_.$2)S
++M0?Y/E11:V-W;+SH<$X>`E%Y?]<-'Q]Z7"UDG%'*"SG>/ZF0E-;C#:&H#N'G3
++M_W-J.7W@U$#?_+\&'#[255>R13CWR.Y'&\SFEZX"C(Q<>M9NM\^HZ53[B9X^
++MYZ8!'1;+\V7EY6>;&INT>]O:Q^KK&T0`M]NEG+>>:Q[_8UQ)IA8/#ASONU`T
++MH,/2^99.7WGBZ:>:I?W[7K4;#`:`46`%:`V%0L)WWP_M_NWWL:W1A>C1DSV]
++MGQ8$Z.[M%^W.B8^KJZO?>Z9YC_?UUP[XM%JM#/P$A#)E58`YF4R6?7OVFP>O
++MC8T^'/SKULD'=%66_/#7`;)A/E1;U];2TCK>]O+>F$:CD3+FB;S-E0/F=#J]
++MU3I\7F>S_=HT/3UU1_@Y0'Z8+7M:TH`/^"5S+1M)`[0"=;91FV:C\(7(7)##
++M1[I,VGM*K^>%.0&,`^I=S-?J<:#1[7:IV?`7Y>237W3W>$H`5%%MKZVMJSIT
++M\,T1H]$$<`68+L`XJS^!A?KZAN<J*BJN1:)1L]/I>`7X1`005<693"X1B\<%
++M8+%(\ZQF@$0L'A>2R240Q`D`$2`4DFQ21(IYO9Y*X#Y`MPG`O8#>Z_541B+2
++MTNW8[<LYP-"9P95X//&C/^"OR10;-P$P`?@#_II8+#%R^LM3RSD``&G%&@P$
++MMX7#H32P8Q,`8S@<2@<#P6V*JEJS@SF`*,H7)&D>E\==!FQGM04+E0`871YW
++MF23-(RC"\!V`SS_K#T0BTG7?C,_`ZC.^O0B``=CBF_$9(E+$-=!W/-<DXMHJ
++M65ZQSL[Z=LJRK)*YTP)EDF59G?7/[EQ.I:QK)]8!%!@.SX=+)Z<FBP9,3DVJ
++MX?!<J:!1AM=.K/O1PK?"5_4ZW8+7ZZG<U;!+!)Y8Y?ZC!.!^K]>CDR1I,1%-
++M7KDK8.C,X,K;7>]<]`?\+P(.X+%"C^`/^&OBB<2E;'MN"`!(*WQEOW'CC0\^
++M//9"H>8`@6``15%/YX]O^.%T6#KW(PJ-Q0!05$=_;\_7!0'^2_T-.".Q\`5L
++.G68`````245.1*Y"8((`
++`
++end
+
+=== added file 'data/icons/24x24/status/user-offline.png.uuencode'
+--- data/icons/24x24/status/user-offline.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/24x24/status/user-offline.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,16 @@
++begin 644 user-offline.png
++MB5!.1PT*&@H````-24A$4@```!@````8"`8```#@=SWX````!'-"250("`@(
++M?`ADB`````EP2%ES```4PP``%,,!%7!-0@```!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```&W241!5$B)M55+3L,P$'TN254E7`7.T'9#
++MQ&>'(@KGX2@%*6+'EM)R!7H8TC3,8]$X<6RG-)4ZDN78L=Z;>>,9*Y(XI07F
++M(DW3"W7&.P##(_$*_JKW+,O6>D/I"!YF]W,A'H]VU32%E^SU[:DF2-/T`@/Y
++MOKF^19(D"((`($$24LW-$&O=C$U18/&YP&JY!&1PF679.@``=<8[$DBN$@R4
++MPB;/0<H.7':SD$#]+?4^*:#L_H=AB.EX@M5RB4KJM<[!$`"",,`FSY'G/Q`*
++M1*JAB>KU;J;Q+4)$48PXCM'"-*5CY5T+W"8P_M%R0JIH3',(*+3`I=FCO>\Z
++M85_[-H'0\DI+X1*XYZID0_80H`K51]#EO9$#?7:O1/Y$MF7S1:DCL,TOD2F%
++M3>#UWM5^3P2TP)OP^X([!+IP7"FZ"?YKEE8$C1QV$?F*ZY!.W)EDIXBD[?VA
++M;=Y3:+XBJFY)3W!_!-Z^PSJJO@_4WB2W[WA_<).@`(!M42`,AXBBV&C3;G5V
++MV6@TPK8L];*H"?BKWC'@\\?G`M/Q!'%T#J+I]8?:MBSQ];5"C0GCR4QG]W.<
++>ZLG4=M)'_U3V!S%N(MKUS%LZ`````$E%3D2N0F""
++`
++end
+
+=== added file 'data/icons/24x24/status/user-online.png.uuencode'
+--- data/icons/24x24/status/user-online.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/24x24/status/user-online.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,27 @@
++begin 644 user-online.png
++MB5!.1PT*&@H````-24A$4@```!@````8"`8```#@=SWX````!'-"250("`@(
++M?`ADB`````EP2%ES```4PP``%,,!%7!-0@```!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```.P241!5$B)M97;3UQ5%,9_:Y_#9"Y@6RY#
++M;(?ID*)4H9$78WG09%JHI?H/^`@);Z3A3R&&MR;TT3^@%UI12/I2C0\2@52D
++ME<N,&NX2AIGI9,Y>/IPSPXR*;1-9R9>UD[//]ZVU+]\65>4TPWV=2>EA"1>:
++MZ!/A0P!5?H@<,C]W5XNO^E?^JX/^<1E59$R4'@6G[D?P5%@2=/+IA-YY(X&K
++MMR6!D2F4P8YD0B\F4]+6&J?U7!R`G?TMMG>V6-]8T\Q&5A!FL#KRW9>:?:7`
++M1^/RN4&^:@B%H]>OI4U7JAM5)5\^(%?>0X#&4#-1]PP@/%]=9G9VSI9*Q;Q%
++MO_A^0N^?*'#UMB3$R+/S%Q*QFP.W)!*.D,DMDCU:0"F#`1%_KA&7CL8K)&*]
++M%`H%IK]^J+]ELT=J];W:3DQ=^4:F&D+AZ,V!6V(:+#_M3I/)_PA.&>,*CBO5
++M+*Y'MCC/PL$CG+`R].EG$@J%HQB9JJ.L#/K'911E\/JUM(F$(RS_^82<W<$X
++MXL,%X^#G0,BX0D%W6<D](=H88>!&VJ`,]H_+Z#\$%!GK2":T*]5-]FB1HX!<
++MG(#8":JOB-4@SRY_%!=YM^LRR<Z$*C)6)Y`>EK`H/1>3*0$EFU]`C"#&)Y<Z
++M4JE;+A_P>VD1,4IG9Z>(TI,>EG!5H-!$GX+3UAJGX!V@4JY6+HX$F>.E"N!4
++MQHZ`\2CJ`>WQ=A2<0A-]58'*#6T]%R?G[?G5"X@(QAR3B\._5'^\/T?>/FVM
++M;=1RUEN%@/@??9A*KBQ7(&+\N0!J046P*&(`*_4'$WQO`?^&QAJ:`Y5C2`W\
++MCH(N@A/F%R(T-C2SL[M%+:<!B!PR+^!M[VP1=<]@Y`0/#(JK=E=SBXQQB9@S
++M;&YM(N!%#IFO"LS=U:(*2^L;:RH(B=B5RMFMRZH!+-@R6`]4%13.AWH!875U
++M3558JCAMM09!)S/K65E97281[27FMAX3!J1J%?7`EA6OK-BR8CV(T,+;H1Y^
++M>?XSZR\R(NADW1X`/)W0.P@SWWXS9_/Y`MUO?4+,::D26P^?W//'MNPCHLU<
++M"G_,42[/H_NS%F&FUK[KO<CJ2*E4S$\_?J!>T=![=HB.<!]8MRKB$RMX#A<:
++M/N#]Z!#E@G#OW@,MO2SFL3I2MVTGV74H%(X.W$B;=RY=1D0IV`/RWAYB(.8V
++M$W'.`L+*BV<\?CAG2R]?PZXK4?O@)%,)3:52$H^WT]821X"=_6TVMS9975O3
++HC5\S;_;@U,:I/9E_CU-[]/^/^`L:-,T6;]P\E`````!)14Y$KD)@@@``
++`
++end
+
+=== added directory 'data/icons/32x32'
+=== added file 'data/icons/32x32/Makefile.am'
+--- data/icons/32x32/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/32x32/Makefile.am	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,1 @@
++SUBDIRS = status actions
+
+=== added directory 'data/icons/32x32/actions'
+=== added file 'data/icons/32x32/actions/Makefile.am'
+--- data/icons/32x32/actions/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/32x32/actions/Makefile.am	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,15 @@
++
++iconsdir = $(pkgdatadir)/icons/hicolor/32x32/actions
++
++icons_DATA =  \
++	system-restart.png		\
++	system-log-out.png
++
++system-restart.png: system-restart.png.uuencode
++	uudecode -o system-restart.png $(srcdir)/system-restart.png.uuencode
++
++system-log-out.png: system-log-out.png.uuencode
++	uudecode -o system-log-out.png $(srcdir)/system-log-out.png.uuencode
++
++CLEANFILES = $(icons_DATA)
++
+
+=== added file 'data/icons/32x32/actions/system-log-out.png.uuencode'
+--- data/icons/32x32/actions/system-log-out.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/32x32/actions/system-log-out.png.uuencode	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,35 @@
++begin 644 system-log-out.png.uuencode
++MB5!.1PT*&@H````-24A$4@```"`````@"`8```!S>GKT````!'-"250("`@(
++M?`ADB```!3%)1$%46(7%E^]O4U48Q[_G_NQ=VXV6S0U&QN\)"`.5`0'!:1AA
++M(-L(Q*"``28D^LI7O#":\!_XRJ"4(29F-2'(^*%D($(B"&/@0+8289/1T3'7
++MT4%I>WMO>\_QQ6ZAZ]K1#8A/\N2<>^_SXW.>\YR<%OB?A;SH@.M<EJD\!S<H
++M+6,$E!!REA'NTZ,[U.Z7#E"[US*%LW`=;\^OYDN+RV#0&#SWKN!2VZ\!%N5G
++M'_DDU)?JP[U(`"*S,\L6O,/G%^7B?/]^_!$X"'N>@OESWG!`BGV=SN>%`E#&
++MIDZ>6(JV@5.(&B%H1AAWPA=15#B1,,8J7SH``*C&`!CHDV?&*")L(*.]D$W0
++M]USR&IZP'QB%(ZT!@??83GTR1\B=6[YKTPH*IJ`OU`D`4*1\>'LZ&"'D='K7
++M9\AZES1;$.26#:NV6BVB+:W-3^>^5Q\%!A82QD6(!1TS9I7PSE=LH(S"W_L0
++M=V_W!A`5TC;AB`#KOD4.S\MM*Y=73;'9;<2G71_RG6<B\L69T%6#-IT_?I/&
++MM$7@+(4\!S>CM`Q9',,1MX`7+/M?FS5O4D%>,>E4+^!&<U<\$M2>^"QY<RF,
++M`AVY-B=7/F]QZ96_FILII9L;Z_0E(\5-EHQ-6/.-N-WI&%^[8/I2\9[6"F]G
++MKQZ-Q`X?VZ43'MCB=#HC,XK+T!NYC;;`:4R;-%M<O:)FKB//<6E]O=1<NU_9
++MG0U`VBVHV`-A7(G4MW'5-D<0/G3U>]BMJSU>(Z[-X7EQKB@I9VO>W933I]V"
++M+^PQ`W$HL;^.(F4FM%@4ATX>Q+%=^C-[+&,%B,'994%!)!Y$YY^]$4)9%:.*
++M@W#\+Y5OK<T)&7[XPAXPQL`8@R3(&#"Z<#UP%'9Y7#:+SPQP;@_BX,GNAI]=
++MVH4S+2$]3C?%J7Z7%VG3LO(*ARQ)Z'AX$8PQ@`&28($D6/'WU1XHLCWKY,`(
++M37ADA_I5Q7?8>VX;-`!8?T`^/&=6V<SB_*G<=?\)&,P``/"<"*MLQ\U6GQIZ
++MI"H@!`R`),JHW@>6'),1,(Z1JJ.[M*;$NZPNHYIZR^?%A<5?5"Q<J]P(-"&D
++M!0``',<ASSH>W1W]4;\O>(@:=.NBE:_"1B>@Q%X&0H866-<UN)OV/FBLT_.?
++M68$APNB7E>4;+)Z'OR&D!<`80,##82V$_]]^P]\3;!?MT8]C07EU3(L5A.3[
++M\(3O#PL34^FP=UD!,`H+"/`XUH=QMO'0=!6YPD3D8@(NM]_D8X)>U?@^]'7U
++MV-+Z^S]-F>)PA/0Q1CX:-4!"K$HN/"W=*%U0!%[@8)?RD:-8]6@4*P'=?;Q.
++M.X51_L88U6U("$$XJ*+]LE=]'.N'2AY@;<5&2<FQUM>ZI`]&$VM,``F):T:=
++MY[)7O1=J@XH`UBS?J(P58G0`YJ%JW*F[AT"000C+&""&]$#U/HFE,Y)$&4CY
++MTKA3=]>Z)+2W>.M1#F62;2YJ5GRHN$^Z&@"XQP0``-MK/QN6#`"Z'ET#^/00
++M-RYU-TRO7`R_<3O;O)D!HL9C=$;.#[?D@4@X"HXC_E2(ZGUHL`M%\$9;GQ_`
++M?;P^HS'A\(`QLGG46;(%2+D^"9Z>:9*B$M*>]R=[QYL/+/5#)@!B.G'FG$N9
++M)X_)8)G$!H":B9/'9&4)`&Z,R@,034T5)X`H``U`W$R86D4*@`HIA,D)4E>=
++MF`.#6Y!C+D`&@"@-)A?:GK2XL`F26@DD*@`\W:_AU]70/DB,/(`8`-U4_'CB
++M0+)/"(!J:MBT32O/^^>4P^`6""84`6!@L.PQ<SZB_`<1[R;%,!+MK0````!)
++'14Y$KD)@@@``
++`
++end
+
+=== added file 'data/icons/32x32/actions/system-restart.png.uuencode'
+--- data/icons/32x32/actions/system-restart.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/32x32/actions/system-restart.png.uuencode	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,54 @@
++begin 644 system-restart.png.uuencode
++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
++KT7--YW\`G,^H3)A=`,"4@=A/K#3)_@M0@$4\&EPK50````!)14Y$KD)@@@``
++`
++end
+
+=== added directory 'data/icons/32x32/status'
+=== added file 'data/icons/32x32/status/Makefile.am'
+--- data/icons/32x32/status/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/32x32/status/Makefile.am	2009-03-11 16:59:32 +0000
+@@ -0,0 +1,27 @@
++
++iconsdir = $(pkgdatadir)/icons/hicolor/32x32/status
++
++icons_DATA =  \
++	user-online.png			\
++	user-offline.png		\
++	user-away.png			\
++	user-busy.png			\
++	user-invisible.png
++
++user-online.png: user-online.png.uuencode
++	uudecode -o user-online.png $(srcdir)/user-online.png.uuencode
++
++user-offline.png: user-offline.png.uuencode
++	uudecode -o user-offline.png $(srcdir)/user-offline.png.uuencode
++
++user-away.png: user-away.png.uuencode
++	uudecode -o user-away.png $(srcdir)/user-away.png.uuencode
++
++user-busy.png: user-busy.png.uuencode
++	uudecode -o user-busy.png $(srcdir)/user-busy.png.uuencode
++
++user-invisible.png: user-invisible.png.uuencode
++	uudecode -o user-invisible.png $(srcdir)/user-invisible.png.uuencode
++
++CLEANFILES = $(icons_DATA)
++
+
+=== added file 'data/icons/32x32/status/user-away.png.uuencode'
+--- data/icons/32x32/status/user-away.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/32x32/status/user-away.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,27 @@
++begin 644 user-away.png
++MB5!.1PT*&@H````-24A$4@```"`````@"`8```!S>GKT````!'-"250("`@(
++M?`ADB`````EP2%ES```;KP``&Z\!7AJ1'````!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```.>241!5%B%[9?+3QM7%(>_,V.;L3'(=H4#
++MXN$X@%\*#30D)1`B=5FI2I--5WU)W711NJC4JJE4M6E5A1C2=-U_H7]#UUUU
++M5\D&A"4G2H*4YD%$K`+#/5W,V`)32'"@6;17.IJ9>W7/[SM']YY[1U25E]FL
++MEZH.!%J=>%7$:8=?%?ZLP>5O5$TK?EK.0!AF%":!BQ%XMU4_TLH:F!6)V[`,
++MQ/VN6PYD9E37#^JKI0S8\"403R<2#'1U`0S\!3.M^#HP0%&D#_@48+I0X'P^
++M7Q_Z:E8DON?$PP(0N`HX(ST])&(QDIV=9'M[`>(!N'*D`#=$"@(?6"*\GLTV
++M^L]ELXAEH3#SHTC_D0$8N*9@C_?W$XU&X>E36%LC%HDPEDH!.`:^/Q*`ZR+G
++M@8LAV^9T)@.`ELMHN0S`^/`PP4``A??F15X]=``;K@-,IM.T.0X\?HS>NX>N
++MK,"C1X1#(<X,#@)8!F8/%6!>Y&V%R?9@D).>"%HJ-<9-J80"(R=.$&YK0^#-
++MHL@;AP+PBXBM<`W@PM`0@6`0O7\???#``P',PX>8E15"MLTY?W$*%!&1%P:H
++MPH=`_A7'(9-.>Z)^]%H'`$RYC%$ET]]/+!H%&)^#=UX(X*9(6+U]SX7Z5KMS
++M!YX\:8@W(-;6,+=O8XDPD<O57?SPLTBP98!-K^+U]D6CI/KZP!AT80'8&7W]
++MZ2XLH%M;I+J[2<9B`(.K\'%+`#=%$I97\YG.Y4`$K5:A5MLANB,3Z^NXE0H`
++M$X5"W=7719&.`P.X<$4A-AR/<ZR[&UP775K:+=J<A>5E=&.#8XD$J602H$O@
++MBP,!^.7T$P&F_,-&*Q5T8V.7Z"YS7387%U'@3#X/WD;X[">1GN<&V(+O`.=4
++M,DDLD8#U=4RE\LSHZWUNM8K6:L0Z.LA[!U5D$[Y]+H!YD9/`^[8(9_WHS=(2
++MZKK[BFX?0Q77+]%CV2R692'PT0V17+/>+@"_Z%AG>WN)='2@M1JF6GVF:$/<
++M;^;N771UE4@XS*GCQU&PC5_0]@28$YD&WG(LB[%,QG.ZN(B*H):UPTS3MUH6
++M-)GK;]F1X6%"P2#`I3F1J>V:S;?B(L!4*D4H$D$!&1W%&AU%_`BM?\A`W?9J
++MH6"0TT-#_%8J>24:&A"-#,R+7`8F.@,!"H.#J#&H,1C_J<9XA6B;-8_M9[F!
++M`=H=!X7)HLBENF[C5CPG\COPVCZ!'&;[XW/5D1T9`&[]2^((+#;>__/_AO\#
++6_`T#*(,1>"*XF0````!)14Y$KD)@@@``
++`
++end
+
+=== added file 'data/icons/32x32/status/user-busy.png.uuencode'
+--- data/icons/32x32/status/user-busy.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/32x32/status/user-busy.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,31 @@
++begin 644 user-busy.png
++MB5!.1PT*&@H````-24A$4@```"`````@"`8```!S>GKT````!'-"250("`@(
++M?`ADB`````EP2%ES```;KP``&Z\!7AJ1'````!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```0_241!5%B%Q9==:%1'%,=_9^[N8FN61*M(
++MUFP^"NKB@V+\0$@BA89J,<:^E;:"%J3/1FH$$=-8^V5IDJ="H2U(ZK.D+6H:
++MH<'$4B.FX(--?*C9W1@H6EV;35GWWCO3A_TPZZZ;C8GXA]F]PYS[/_\Y,^?<
++M&3'&\"*A7JAWP#,?XYYVJ7<U>Q4T&J@"5J>'[@A,:ABV%'V'3IO14CFEE"7H
++M:9<&K?D6")7(.Z84!P^=-E<6)*"S4Y:437-*H`U0%<O+6;N^CNK:&LK*JUFR
++MM!J`Q$R$^,,(D8DPMV[>)G;_(8`VT!WW<[RCPR3F+:#[L&PSBC-`R+(\O+:K
++MA74;=R+RY+:1G)XQFO$;_0Q>^`G7=0#&1+._K<N,E"R@^[!L,Q9#&'R!8)#F
++MU@/X*ZH`@_MH'&V'<>TPQHX`@O+5HKRU6-Y:E&\-B!"/33+0]SU3T0@(27%I
++M*B0B3T!GIRSQ3_,'$-K6U,3FQG=0RD([=TD^[$4G;X,H0"$B/$ZD5"24[U5\
++MY>^BK!5H[7)]Z"Q7AP8!QJ;];'IR.?+2L&R:4T`H$`RFG2OLF5])W/L,;8<1
++M\:::\B+B2S_[LLTXDSRZWXWSWS!*>=BR8Q^!ZAJ`4)J;IPKH:9<&@3;+\M#<
++M>@"E+.R90>Q_SP$F[<SS6$3&>49(YA]P9L[C)GY#E)<W]GZ`97D0:.MIEX:G
++M+D'7A_(G$'J]Y2U"&]]$N_=(W/L<,9IO?CZ6MU<6@J-'CDE.!'K:I1X(52PO
++M9]V&G0`D8V<1HT&L174^&]E*Z&KV"K!N?1TB%CIY"VU/(.)!Y''!/'ID89'X
++MXLM/<_IJUD,C0+"V!A!<.X*(E6W/"]FII6L[9>4UJ;X=3:6;6`67X,&#?W+Z
++M?T=_Y]JE$P!L;3[)JN#VG/%ERUXI*&!V%JP&4N55!&U'$%2JY56_?%R[=(*[
++M4Z/<G1K-"BD%^<R2^5'I"$A!L\7";.8[`(F9:,J]KR8M)-.*8VOS258&ZED9
++MJ&=K\\F2!63W@,"D@;7Q6(2RB@U8WAIT<BPU(G,+6!7<3LO[OY3L.(-L!#0,
++M`T0GPJD!;_6\R9X%V0A8BCZM.3%^\R\V[]`HWQJ4MP[C1*'`%_-B_P4BT4A1
++M\D!E@);=>XK:9".0/D:-Q>['&+]Q$1!\Y6^#>(!\`8[CS#$W\'CF/O'E6"C%
++M0:VY/'BA3U75;L1?48UWZ2[L^/F\%^>:6:G(R:]#I\T5`]VNZS#PXW=HXV"]
++MW(C7W[(HS@HA+T9Q/\?]T^R>BH1#UX=^8$O3/JR7&H#)'+O^@7["X8FBY)65
++ME>S9W5K4)J_"='28A&CV(R2O7A[D7._'Q&/1O!<=VRY*#."QYKD',FCK,B/=
++MAZ7)*,Y,1<*AWJ\_@A6=.3;[WML_)WDI>&J-;>LR(]-^-AGXRG4=O2C>"J#D
++MB\FCE9\,+Z;CO!-1,91RPWE6E!2!YXD7?CO^'^I[@891B3RA`````$E%3D2N
++#0F""
++`
++end
+
+=== added file 'data/icons/32x32/status/user-invisible.png.uuencode'
+--- data/icons/32x32/status/user-invisible.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/32x32/status/user-invisible.png.uuencode	2009-03-11 16:59:32 +0000
+@@ -0,0 +1,29 @@
++begin 700 user-invisible.png.uuencode
++MB5!.1PT*&@H````-24A$4@```"`````@"`8```!S>GKT````!'-"250("`@(
++M?`ADB`````EP2%ES```;KP``&Z\!7AJ1'````!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```/U241!5%B%Q9==3%ME`(:?TU-^N@&"8;4,
++M90D(M+@!QB4"B6:;WNAF(D;IA7<FSAG`1"^\\'J7QBA_VYC)+KSPP@N,;JM_
++M80G&,9,I$0C]H2493*&L/:==J\!.3X\7;;&LI_RT-;Q);WK:[WW.][WO^<XG
++MR/>6V4\9]M4=,.;ZQ[/]O78TX3P"84T3AB\/#5[)91QAKTM0=:A&>+WGM?,F
++MD^FCYJ9F`-P>-QOK&X-:7'A_=&1`_=\`WOO@PX/K&VM?5%8]TGWL:*OZS/'C
++MDP"_W;[=.3,[+89"H1^4#=5^Y?*%4,$!WNT_]X2J&;^IJ:EIMUE;_CEU\M2O
++M34W-!@"/QQT?OS'^K-,U=V!Y>=E%W/#*Z,B`MV``Y_IZ.S3!,-90WV!I;&Q:
++M/7WFS*RYVBP"ZX`"E*\&5M5K5Z\>G9_WF'T+/DD3U#=&!T;&\P9XNZ__S2*C
++M^'F+K:6TOOY)7_>KW8LFD\D`2,`X$`-.`):UM;7XV-=C=0L+WH8YYUQ,56+]
++MEX:'+N8$D!ZVUF.M-#=;IUY^Z?1]410!EH")I#DDZMP!-*JJRG7'M0JWV_7T
++M],STCN'4!=`+6U='5VJ`6>!W0-,9KP4X#@@W;]T4=Q/.#(!MPJ8"DX!/=\K^
++MT^/`\T#1;L*Y!6"'L-T`5G<P3ZD2>`$HVRF<FP#O]/:]*!89O]TF;'_OTCRE
++M4N`D8'XXG#%5Z1D='!Z#M+U`$_C$9K65MK6U3]E[['>3YDN`(P=S2,S:]\""
++MR60RV'OL=]O:VJ=L5IL13?@L]:/TS:BDK*R<SHXN.9ET#XEICY&[XL#/P*PH
++MBG1V=,EE9>6@49(!(*!-R"$9][PK=?$!^DG/10\`W/.N$CDD`\)$!D`<@T,*
++M!EF\LV1.?E5;(//-L1;O+)FE8!`!S9$!4&(L^4F2)24<#AU1%$4#JH`#!3`O
++M!LR*HFCA<.B()$L8#,IW&0!#GWY\/Q:+_2*'Y&*O;[.JA9B%&D#P^KS((;DX
++M%HO]<6'PTE\9``":ICDD*8C/YZTH($`M@,_GK9"D(((@7$^_N`5`T$1',"CA
++M]_OKTNGS!#@,X/?[ZX)!B7BBUOH`HR,#,]%HY,](-%(="`14$NMW*`_S2N!@
++M(!!0(]%(=30:"0=6`I-9`0`$-(<D2>EUS&<9:B%1/TF20!-^'/OJRRW/E0R`
++M`M?Q,.C7+RN`3AT?)?%<WZN,P&/9ZI<50*>.0NI.]B@+(&:K7SIEAI)U/.'S
++M>2ML5EL$>"[YV;.RU2\EW9.13AUS5K;Z;7IE>R<\V]?GL5EMC1:+)2^`E945
++MG$[G\KW58-W##8#MCF9QPUM.E_.BT^5\*B\"F$.,]^N90PY'LT)KWT_'_P+A
++3.57)KI\/^P````!)14Y$KD)@@@``
++`
++end
+
+=== added file 'data/icons/32x32/status/user-offline.png.uuencode'
+--- data/icons/32x32/status/user-offline.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/32x32/status/user-offline.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,20 @@
++begin 644 user-offline.png
++MB5!.1PT*&@H````-24A$4@```"`````@"`8```!S>GKT````!'-"250("`@(
++M?`ADB`````EP2%ES```;KP``&Z\!7AJ1'````!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```)1241!5%B%Q9?!;=M`$$7?RBF!DFBH!@-J
++M(CX:]D45)$B`-!%W$<.I0!78@;H(Z`X$.(1\B<^9GP.YU))<BI),0W,B=RF^
++MOW]F5DLGB5/&Z*1TX$-XLU@L4G>FKY(^`;.!66M)]TYG=\OE\MD/.I^"Q6*1
++MNI%^"R4#@QOA-IB[\"(J!\J5)_/YG.NK&](T10@$DB%`$DA(0@B5<\5CY7@U
++MS_99B3S_P\/C(UF6)7+V!;B%H`9*V[F^NN'\_#"X1>$6W(LD&7/Y\;)8K'.?
++M/3>L@1E`FDXQB=?7O\@,DPH1INK:)&0%P#S(PFO_N_)Y$]/)E&0\KK&:`@HG
++M2NO,K/8"R0,;<%-#B#6$^FL`:U5$2T"8MQ;<MK9NX=O5UD37X"I3TB[)M@,^
++MQZ']P<OK*0D$]3I6%&J_`(2,[GQW6EZ'5V-^OBS4?@$&PB(K.23?H>CM._83
++M0-E:$?ANRW=WB&_C7@&H87\37A/2TR%2-1^MP)@`*Y7&5[)GOB..=46\#=D-
++M;[5@3X?LBG@7-$!MRX>!QP4<!:]OU?O"=PK866RUW!\/[Q1`K8J[M]=8A\1V
++MN\,=@/Y\QWK]0'A<`$`3'MV4ZO\3QT:[#<TJ!_;)]UO@40'^]+-/ODUO@\<%
++M!+M:[_8Z0'0+"."Q<\%0$0I8`[,\STG&"9-)6IZ.ZKMCUY_*/K%Y>0E90'`J
++M=L[]!'C\]4">Y^\"7ZU6`$BZ]^.5`_KG?C#B6Y8])5GV=#2H/]S&:73G[RH'
++MELOE,^8NG'.W!!8-&&M)W\.O(@@^S4X5)_\Z_@^G1"2E/E&KE0````!)14Y$
++$KD)@@@``
++`
++end
+
+=== added file 'data/icons/32x32/status/user-online.png.uuencode'
+--- data/icons/32x32/status/user-online.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/32x32/status/user-online.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,35 @@
++begin 644 user-online.png
++MB5!.1PT*&@H````-24A$4@```"`````@"`8```!S>GKT````!'-"250("`@(
++M?`ADB`````EP2%ES```;KP``&Z\!7AJ1'````!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```46241!5%B%Q9??3Q17%,<_Y\ZRA;(+"-L%
++MA5*UL5EC$]12&Q9M:TR+#R;]$QH37S7AW4??2>IKDZ9_@C&F:INJ$9:DBM"T
++M"9L8ZR\0V"[BLKN`9?>>/LS,[LZB+=0TG.3LW-D[<[[?^[WWGGM&5)7M-+.M
++MZ$!H*P\/#,MA5?,5Z%&4'J#;ZYI%F`$9%;&7QD?TWF9CRF:F8."L#*J1;X'$
++M)N.FQ>J9\8LZ]D8$CI^6QM6HN8#H,&"BT0B]>[O9U=/%CI88;<TQ`%X4LRPM
++M9WDV,\^3/V;)YPL`%I61IKP]?^,[7=LR@>0Y.6)%O@<2QAB2R0'Z#O1CC/SC
++MB%25J=\G2*526&L!TD;UZ]0W^LNF"23/R1%KY#9*.!Z/\\6)(=K;.E`@]W*>
++M_'J6PGJ6?"F+"$0;8D0;8D3",=K"70`\?['(]9^ND5G(@/"7L7KL520V$#A^
++M6AI76V022/0=[&/PD\]PC&&UE.=^;HSE]0PB(`)X+GBJ"+0TQ-G7.DBC$Z5<
++M+C,Z?HNIR5\!TDW+>JA^.C9LP]6HN0`DXO%X!7RV.,WDXF7RI0S&`>,(X@C&
++M<W'P_H>"S3"U=)FYM6E"(8=CR<^)=\8!$EYL7DM@X*P,(CILC.&+$T,XQO!L
++M99I'^3L@)1?,5`%K@27DWHL#F!*/5^XPMS:-$S*<'')C(3H\<%8&7TO`VVHF
++MF4S2WM;!6CG/X\*D&]@(8CQ`XX,'E:CWIVM3O-0\'>TQ!C]-`A@/8R.!@6$Y
++M#"2BT0A]!SX"X'YN#)529=1B/'<$XQ,R025,C3J8$@^**3!PN*^?EI8(0,+#
++M"A)P,QST[NW&&"&W/D^^E$%$:H"K2E1!):"$^&WON8+-D"_-8QS#[@^Z`UAU
++M4Z!'`7;U=(%`83U;!?-6O1BICM)L7(`;VRZ1HLTB!GIV[PQ@0>U9X.9V=K3&
++M$(%".>MN,?&EEV#;5/O<YZH)2E41!56WKV@70:"C+1;`"A+P#A8_O>;7W22#
++M<8-7P&O;_KU/HD)`7'#KYIBB740$6KW85`^QUYR&?G+Q@U;`/4*F.B4!)?S7
++M%=2"10!7C4KBJK/:;3@+D%O)(D`TW%$%]U\,$)+*VO#GNK(@`VM':`YU`+"\
++MLAC`"A(09@"6EK,`1!IB0<;UJM22\Q0P3HU2-<2C(5?ZY\M_!K#J%)!1@-FG
++M\^Y+#3&V:NK]U!]OS1Z!IP_G`U@!`B+V$L"3![-8J[2&NV@)Q>L":Q5`O?\4
++MU"K6@I;!6L"Z:T`5HJ$X+4XG5I6'Z9D`5H"`5T:E\_D"4[]-`,+[K8,80A6@
++MX%5=$-_+BBVI>[5NGVB(/8T#@#!Q[R[+N0)`NK9D"YP%8O4,8,?&4BPN96DR
++M47J;#Z&JU=$&@+UV&6R-:]GM[PD?Y"V)LKB8Y?;/8P#6P^"5!,8OZA@J(]9:
++MKO]XC7+9LK-I/WO>_A@A%!RQY[:L%7>)*%B'=\/]=(83E$N6*U>N4K865$;J
++MZ\0-]4!3WIX'TIF%#+=3-RF7+5U-^^EK.T74B;N@UI79'VWUJD0DSH?-I^CR
++MP&_>NL'"LPQ`VHL=L'\OR3KCG/QRB/;V&")*KK1`T68IEK*5%!L-Q6@.Q8B$
++M8K0V=`)"]GF6'ZY<96%NBR59@(17E#K&,'@LR:&^?C?1^,F@-DEYIFJ9F+K+
++MZ(V4*_M_*4I]VU"6MT1X;U\W/;U=M+>]0UO$W=\YKRR?>33'H_NS_FI_L[*\
++FUK;MPV0#D>WZ-/L_;=N_CO\&FU6-*R16]\P`````245.1*Y"8((`
++`
++end
+
+=== added directory 'data/icons/48x48'
+=== added file 'data/icons/48x48/Makefile.am'
+--- data/icons/48x48/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/48x48/Makefile.am	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,1 @@
++SUBDIRS = status
+
+=== added directory 'data/icons/48x48/status'
+=== added file 'data/icons/48x48/status/Makefile.am'
+--- data/icons/48x48/status/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/48x48/status/Makefile.am	2009-03-11 16:59:32 +0000
+@@ -0,0 +1,27 @@
++
++iconsdir = $(pkgdatadir)/icons/hicolor/48x48/status
++
++icons_DATA =  \
++	user-online.png			\
++	user-offline.png		\
++	user-away.png			\
++	user-busy.png			\
++	user-invisible.png
++
++user-online.png: user-online.png.uuencode
++	uudecode -o user-online.png $(srcdir)/user-online.png.uuencode
++
++user-offline.png: user-offline.png.uuencode
++	uudecode -o user-offline.png $(srcdir)/user-offline.png.uuencode
++
++user-away.png: user-away.png.uuencode
++	uudecode -o user-away.png $(srcdir)/user-away.png.uuencode
++
++user-busy.png: user-busy.png.uuencode
++	uudecode -o user-busy.png $(srcdir)/user-busy.png.uuencode
++
++user-invisible.png: user-invisible.png.uuencode
++	uudecode -o user-invisible.png $(srcdir)/user-invisible.png.uuencode
++
++CLEANFILES = $(icons_DATA)
++
+
+=== added file 'data/icons/48x48/status/user-away.png.uuencode'
+--- data/icons/48x48/status/user-away.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/48x48/status/user-away.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,39 @@
++begin 644 user-away.png
++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
++?]TL"S]M>$GC>]C^\R'UZ/Y@>+`````!)14Y$KD)@@@``
++`
++end
+
+=== added file 'data/icons/48x48/status/user-busy.png.uuencode'
+--- data/icons/48x48/status/user-busy.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/48x48/status/user-busy.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,45 @@
++begin 644 user-busy.png
++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
++#0F""
++`
++end
+
+=== added file 'data/icons/48x48/status/user-invisible.png.uuencode'
+--- data/icons/48x48/status/user-invisible.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/48x48/status/user-invisible.png.uuencode	2009-03-11 16:59:32 +0000
+@@ -0,0 +1,39 @@
++begin 700 user-invisible.png.uuencode
++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
++LPT\__OQ9^%X4%]V_Z)YKYOUO)>:]@/\!GTW@>EAU98X`````245.1*Y"8((`
++`
++end
+
+=== added file 'data/icons/48x48/status/user-offline.png.uuencode'
+--- data/icons/48x48/status/user-offline.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/48x48/status/user-offline.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,27 @@
++begin 644 user-offline.png
++MB5!.1PT*&@H````-24A$4@```#`````P"`8```!7`OF'````!'-"250("`@(
++M?`ADB`````EP2%ES```IA@``*88!(NS?C````!ET15AT4V]F='=A<F4`=W=W
++M+FEN:W-C87!E+F]R9YON/!H```.C241!5&B!U9K!3MLP&,?_3B?4<-D-MO,N
++M[$#$D*;Q#G`9AU(.>P6>9">>`E5LNP2)=Y@&5:4!EST$0VH04OOMT-BQ'?NS
++M$]JR?A<2UXE__[^_SW4:!!%AE2-Y:8#GQLH+>.5J[/5Z:Z)#)X3I`4CL`'B]
++M9"X9]Q`T%$ARFHC3P6#P9'<0=@WT^Y_?3='Y#B!;%F5DC!),#L_.?OS1&PT!
++MO5YO#<GT)_X_>!DC3)./^DP8*20Z=$(T@T_3%/VC8V3;&=;74Q``(@((``A2
++M.(%`!(!FQR""^F1V4=E>]D79)HTK^ZO[:7_'18&;F]_(\QQ%40!`)CIT`N"K
++M9#:*F(CVY7'_Z!A[G_9:P5,D/!GP]?:TV\7N[B[V#PXJ1DRK$WL&`'R0!]EV
++M5J*$X'5(J.,:O'T]58+4;%GMLN_[K2W-9;'#"5"KC>[\P\-?=4,JP4@_)QB?
++M&7V]UVC]X+@/$38WWH!`2+NID]$EH!*J.6\,Q@D`U?MZX%4_..XCV[69\X5?
++M`.G3[W++AG0(#;GOO)=N1@G/;'>\`O3"#,)S`GSN!^&UPF:V:TP*::M*6_<9
++MP5X!5CO:IE`\?#7X\]PWS=#AF0R*+&)VP&JP*/=]JY1MF!(J%_.F`@P'0NY;
++M`@+7.`4XEU+U3=1<@((/IDX#`:S[I@#(_NU32.T1(MS7G&M<N&[WH42@[3*J
++M;QE"[D<("*:.:P9X>%Z`@G?,0,W]*E_Y0H\3H-(G`,\*D/"U09WN4VT%B1+`
++MNA^&YP5H3G#%&100#2_[\<MFM(!J&OVK"XSVV%0+"&@8@:V$EM<^]YWK=TOW
++M6T1P,\<5)RO`Y_X<X5D!$K[FGA/>$M$P=9X3S8J8A8\0,&=X5H`J8M1S.];]
++M>J'/%YX5X(.?#>Q.J]INDG%_7L%_$SN@R+<EX`0L")X5((%L6'Y#ACJ\71-S
++M#O:!QK6"^-WW"%@@/"L`VJ!Q\`X!"X9G!1CPG``CI>!T?Y$15\11[EL"E@#/
++M"E!%[-O/.-=V.7/+@><%S%0TW)!5URPKHK;3<>XWW\O/(VP!]RA__1T78Z3=
++M%`3"YL9;K0X`]<BOT@51CW]MHWA\M!E5V&\IK^7!S>VM\4SP4O``<'=W5YT(
++M&NJ?&0*$$!?R^"+/\>OJ"N-B_*+.7P^'N+R\K!B1Y'H?(X5H(DZ1T!<`65$4
++M^'9^OC"XEC&BB3C5&XP9&`P&3PDFAP!&2\6*BU&"R:']KKCVGAA8\1?=JQ8K
++;_[\2*R_@'S,ZS$TC9^S-`````$E%3D2N0F""
++`
++end
+
+=== added file 'data/icons/48x48/status/user-online.png.uuencode'
+--- data/icons/48x48/status/user-online.png.uuencode	1970-01-01 00:00:00 +0000
++++ data/icons/48x48/status/user-online.png.uuencode	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,53 @@
++begin 644 user-online.png
++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
++&3D2N0F""
++`
++end
+
+=== added file 'data/icons/Makefile.am'
+--- data/icons/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/Makefile.am	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,15 @@
++SUBDIRS = scalable 16x16 22x22 24x24 32x32 48x48
++
++gtk_update_icon_cache = gtk-update-icon-cache -f -t $(pkgdatadir)/icons/hicolor
++
++install-data-hook: update-icon-cache
++uninstall-hook: update-icon-cache
++update-icon-cache:
++	@-if test -z "$(DESTDIR)"; then \
++		echo "Updating Gtk icon cache."; \
++		$(gtk_update_icon_cache); \
++	else \
++		echo "*** Icon cache not updated.  After (un)install, run this:"; \
++		echo "***   $(gtk_update_icon_cache)"; \
++	fi
++
+
+=== added directory 'data/icons/scalable'
+=== added file 'data/icons/scalable/Makefile.am'
+--- data/icons/scalable/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/scalable/Makefile.am	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,1 @@
++SUBDIRS = status actions
+
+=== added directory 'data/icons/scalable/actions'
+=== added file 'data/icons/scalable/actions/Makefile.am'
+--- data/icons/scalable/actions/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/scalable/actions/Makefile.am	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,8 @@
++
++iconsdir = $(pkgdatadir)/icons/hicolor/scalable/actions
++
++icons_DATA =  \
++	system-restart.svg \
++	system-log-out.svg \
++	system-shutdown.svg
++
+
+=== added file 'data/icons/scalable/actions/system-log-out.svg'
+--- data/icons/scalable/actions/system-log-out.svg	1970-01-01 00:00:00 +0000
++++ data/icons/scalable/actions/system-log-out.svg	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,284 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<!-- Created with Inkscape (http://www.inkscape.org/) -->
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://web.resource.org/cc/"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:xlink="http://www.w3.org/1999/xlink"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="48"
++   height="48"
++   id="svg5157"
++   sodipodi:version="0.32"
++   inkscape:version="0.45"
++   version="1.0"
++   sodipodi:docname="system-log-out.svg"
++   sodipodi:docbase="/home/dobey/Projects/gnome-icon-theme/scalable/actions"
++   inkscape:output_extension="org.inkscape.output.svg.inkscape">
++  <defs
++     id="defs5159">
++    <linearGradient
++       inkscape:collect="always"
++       id="linearGradient7130">
++      <stop
++         style="stop-color:#4e9a06;stop-opacity:1"
++         offset="0"
++         id="stop7132" />
++      <stop
++         style="stop-color:#73d216;stop-opacity:1"
++         offset="1"
++         id="stop7134" />
++    </linearGradient>
++    <linearGradient
++       id="linearGradient7121">
++      <stop
++         style="stop-color:#ffffff;stop-opacity:1;"
++         offset="0"
++         id="stop7123" />
++      <stop
++         style="stop-color:#8ae234;stop-opacity:1"
++         offset="1"
++         id="stop7125" />
++    </linearGradient>
++    <linearGradient
++       id="linearGradient6998"
++       inkscape:collect="always">
++      <stop
++         id="stop7000"
++         offset="0"
++         style="stop-color:#000000;stop-opacity:1;" />
++      <stop
++         id="stop7002"
++         offset="1"
++         style="stop-color:#000000;stop-opacity:0;" />
++    </linearGradient>
++    <linearGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient7130"
++       id="linearGradient7145"
++       gradientUnits="userSpaceOnUse"
++       x1="11.5"
++       y1="68.75"
++       x2="-13.247213"
++       y2="21.843145" />
++    <linearGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient7121"
++       id="linearGradient7147"
++       gradientUnits="userSpaceOnUse"
++       x1="-33.040741"
++       y1="10.966461"
++       x2="-30.919424"
++       y2="17.448257" />
++    <radialGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient6998"
++       id="radialGradient7161"
++       gradientUnits="userSpaceOnUse"
++       gradientTransform="matrix(1,0,0,0.3222749,0,20.728756)"
++       cx="19.688505"
++       cy="30.585787"
++       fx="19.688505"
++       fy="30.585787"
++       r="4.6624851" />
++    <radialGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient6998"
++       id="radialGradient7163"
++       gradientUnits="userSpaceOnUse"
++       gradientTransform="matrix(1,0,0,0.3222749,0,20.728756)"
++       cx="19.688505"
++       cy="30.585787"
++       fx="19.688505"
++       fy="30.585787"
++       r="4.6624851" />
++  </defs>
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     gridtolerance="10000"
++     guidetolerance="10"
++     objecttolerance="10"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="1"
++     inkscape:cx="197.95843"
++     inkscape:cy="28.49025"
++     inkscape:document-units="px"
++     inkscape:current-layer="layer2"
++     width="48px"
++     height="48px"
++     inkscape:window-width="872"
++     inkscape:window-height="624"
++     inkscape:window-x="684"
++     inkscape:window-y="208"
++     showborder="false"
++     inkscape:showpageshadow="false"
++     showgrid="false"
++     showguides="true"
++     inkscape:guide-bbox="true"
++     gridspacingx="0.5px"
++     gridspacingy="0.5px"
++     gridempspacing="2"
++     inkscape:grid-points="true" />
++  <metadata
++     id="metadata5162">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title>System-log-out</dc:title>
++        <dc:date>2007-08-27</dc:date>
++        <dc:creator>
++          <cc:Agent>
++            <dc:title>Lapo Calamandrei</dc:title>
++          </cc:Agent>
++        </dc:creator>
++        <dc:source />
++        <cc:license
++           rdf:resource="http://creativecommons.org/licenses/GPL/2.0/" />
++        <dc:contributor>
++          <cc:Agent>
++            <dc:title>Kalle Persson</dc:title>
++          </cc:Agent>
++        </dc:contributor>
++        <dc:subject>
++          <rdf:Bag>
++            <rdf:li>logout</rdf:li>
++            <rdf:li>exit</rdf:li>
++            <rdf:li>man</rdf:li>
++            <rdf:li>sign</rdf:li>
++            <rdf:li>running</rdf:li>
++          </rdf:Bag>
++        </dc:subject>
++      </cc:Work>
++      <cc:License
++         rdf:about="http://creativecommons.org/licenses/GPL/2.0/">
++        <cc:permits
++           rdf:resource="http://web.resource.org/cc/Reproduction" />
++        <cc:permits
++           rdf:resource="http://web.resource.org/cc/Distribution" />
++        <cc:requires
++           rdf:resource="http://web.resource.org/cc/Notice" />
++        <cc:permits
++           rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
++        <cc:requires
++           rdf:resource="http://web.resource.org/cc/ShareAlike" />
++        <cc:requires
++           rdf:resource="http://web.resource.org/cc/SourceCode" />
++      </cc:License>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:label="shadow"
++     inkscape:groupmode="layer"
++     id="layer1"
++     style="display:inline">
++    <g
++       id="g6227"
++       transform="matrix(0.6759778,0,0,0.8422279,-72.059226,25.879981)"
++       style="opacity:0.33000004" />
++    <g
++       id="g7008"
++       style="opacity:0.5"
++       transform="matrix(1.2209709,0,0,1.465165,4.32932,-3.7089664)">
++      <path
++         transform="matrix(1.356682,0,0,1.1785115,-7.0105312,-5.8165354)"
++         d="M 24.35099 30.585787 A 4.6624851 1.5026019 0 1 1  15.02602,30.585787 A 4.6624851 1.5026019 0 1 1  24.35099 30.585787 z"
++         sodipodi:ry="1.5026019"
++         sodipodi:rx="4.6624851"
++         sodipodi:cy="30.585787"
++         sodipodi:cx="19.688505"
++         id="path6984"
++         style="opacity:0.5;fill:url(#radialGradient7161);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.80000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0.69999992;stroke-opacity:1"
++         sodipodi:type="arc" />
++      <path
++         transform="matrix(3.7061179,0,0,1.3310245,-58.247641,-11.710432)"
++         d="M 24.35099 30.585787 A 4.6624851 1.5026019 0 1 1  15.02602,30.585787 A 4.6624851 1.5026019 0 1 1  24.35099 30.585787 z"
++         sodipodi:ry="1.5026019"
++         sodipodi:rx="4.6624851"
++         sodipodi:cy="30.585787"
++         sodipodi:cx="19.688505"
++         id="path6986"
++         style="opacity:0.25;fill:url(#radialGradient7163);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.80000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0.69999992;stroke-opacity:1"
++         sodipodi:type="arc" />
++    </g>
++  </g>
++  <g
++     inkscape:groupmode="layer"
++     id="layer2"
++     inkscape:label="omino">
++    <g
++       id="g7138"
++       transform="translate(40,0)">
++      <g
++         id="g7094">
++        <path
++           id="path5955"
++           d="M -7.5,5.5 C -9.708,5.5 -11.5,7.292 -11.5,9.5 C -11.5,11.708 -9.7080001,13.5 -7.5,13.5 C -5.292,13.5 -3.5000001,11.708 -3.5,9.5 C -3.5,7.292 -5.2920001,5.5 -7.5,5.5 z M -20.6875,11.5 C -21.228728,11.552698 -21.725172,11.823486 -22.0625,12.25 L -26.0625,17.25 C -26.752856,18.112945 -26.612945,19.372144 -25.75,20.0625 C -24.887055,20.752856 -23.627856,20.612945 -22.9375,19.75 L -19.53125,15.5 L -15.75,15.5 L -22.1875,23.3125 C -22.420945,23.645583 -22.50685,24.06221 -22.5,24.5 L -22.5,31.5 L -30.5,31.5 L -30.5,35.5 L -20.5,35.5 C -19.395476,35.49989 -18.50011,34.604524 -18.5,33.5 L -18.5,27.3125 L -13.5,32.3125 L -13.5,40.5 L -9.5,40.5 L -9.5,31.5 L -9.5,30.65625 L -10.09375,30.09375 L -14.84375,25.34375 L -11.5,21.28125 L -11.5,22.5 C -11.49989,23.604524 -10.604524,24.49989 -9.5,24.5 L -2.5,24.5 C -1.778728,24.510201 -1.113613,24.122995 -0.75,23.5 C -0.386387,22.877006 -0.386387,22.122995 -0.75,21.5 C -1.113613,20.877004 -1.778728,20.489799 -2.5,20.5 L -7.5,20.5 L -7.5,16 C -10.390638,16 -12.843604,14.110886 -13.6875,11.5 L -20.5,11.5 C -20.562466,11.497069 -20.625034,11.497069 -20.6875,11.5 z "
++           style="opacity:1;fill:url(#linearGradient7145);fill-opacity:1;fill-rule:evenodd;stroke:#4e9a06;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline" />
++      </g>
++      <path
++         d="M -20.625,12.5 C -20.883516,12.532601 -21.119099,12.669978 -21.28125,12.875 L -25.28125,17.875 C -25.632167,18.313646 -25.563646,18.930333 -25.125,19.28125 C -24.686354,19.632167 -24.069667,19.563646 -23.71875,19.125 L -20.3125,14.875 C -20.122073,14.638438 -19.834933,14.500611 -19.53125,14.5 L -15.75,14.5 C -15.36741,14.504084 -15.020291,14.724946 -14.854508,15.069775 C -14.688724,15.414605 -14.733008,15.823641 -14.96875,16.125 L -21.375,23.875 C -21.378721,23.880309 -21.37135,23.900494 -21.375,23.90625 L -21.40625,23.9375 C -21.46879,24.048638 -21.50412,24.205427 -21.5,24.46875 C -21.499838,24.479166 -21.499838,24.489584 -21.5,24.5 L -21.5,31.5 C -21.503016,32.051031 -21.948969,32.496984 -22.5,32.5 L -29.5,32.5 L -29.5,34.5 L -20.5,34.5 C -19.938773,34.499944 -19.500056,34.061227 -19.5,33.5 L -19.5,27.3125 C -19.504078,26.903415 -19.259899,26.532643 -18.882467,26.374807 C -18.505035,26.216972 -18.069603,26.303544 -17.78125,26.59375 L -12.78125,31.59375 C -12.595622,31.786381 -12.494406,32.045043 -12.5,32.3125 L -12.5,39.5 L -10.5,39.5 L -10.5,31.5 L -10.5,31.09375 L -10.78125,30.8125 C -10.791666,30.812662 -10.802084,30.812662 -10.8125,30.8125 L -15.5625,26.0625 C -15.923992,25.696513 -15.95096,25.116711 -15.625,24.71875 L -12.28125,20.65625 C -12.013038,20.330928 -11.570348,20.207488 -11.172497,20.347084 C -10.774646,20.486681 -10.506139,20.859664 -10.5,21.28125 L -10.5,22.5 C -10.499944,23.061227 -10.061227,23.499944 -9.5,23.5 L -2.5,23.5 C -2.1471898,23.50499 -1.8109749,23.318639 -1.625,23 C -1.439414,22.682027 -1.4394134,22.317974 -1.625,22 C -1.8109749,21.68136 -2.1471889,21.49501 -2.5,21.5 L -7.5,21.5 C -8.0510308,21.496984 -8.4969843,21.051031 -8.5,20.5 L -8.5,16.84375 C -11.109944,16.483168 -13.278833,14.83457 -14.3125,12.5 L -20.5,12.5 C -20.520828,12.500648 -20.541672,12.500648 -20.5625,12.5 C -20.578034,12.499271 -20.578204,12.5 -20.59375,12.5 C -20.609296,12.5 -20.609466,12.499271 -20.625,12.5 z "
++         id="path7104"
++         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#8ae234;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
++         inkscape:original="M -20.6875 11.5 C -21.228728 11.552698 -21.725172 11.823486 -22.0625 12.25 L -26.0625 17.25 C -26.752856 18.112945 -26.612945 19.372144 -25.75 20.0625 C -24.887055 20.752856 -23.627856 20.612945 -22.9375 19.75 L -19.53125 15.5 L -15.75 15.5 L -22.1875 23.3125 C -22.420945 23.645583 -22.50685 24.06221 -22.5 24.5 L -22.5 31.5 L -30.5 31.5 L -30.5 35.5 L -20.5 35.5 C -19.395476 35.49989 -18.50011 34.604524 -18.5 33.5 L -18.5 27.3125 L -13.5 32.3125 L -13.5 40.5 L -9.5 40.5 L -9.5 31.5 L -9.5 30.65625 L -10.09375 30.09375 L -14.84375 25.34375 L -11.5 21.28125 L -11.5 22.5 C -11.49989 23.604524 -10.604524 24.49989 -9.5 24.5 L -2.5 24.5 C -1.778728 24.510201 -1.113613 24.122995 -0.75 23.5 C -0.386387 22.877006 -0.386387 22.122995 -0.75 21.5 C -1.113613 20.877004 -1.778728 20.489799 -2.5 20.5 L -7.5 20.5 L -7.5 16 C -10.390638 16 -12.843604 14.110886 -13.6875 11.5 L -20.5 11.5 C -20.562466 11.497069 -20.625034 11.497069 -20.6875 11.5 z "
++         inkscape:radius="-1.0054175"
++         sodipodi:type="inkscape:offset" />
++      <path
++         sodipodi:nodetypes="cccccccsscccscccccccccccccsccccc"
++         id="path7106"
++         d="M -1.625,22 C -1.810975,21.68136 -2.147189,21.49501 -2.5,21.5 L -7.5,21.5 C -8.051031,21.496984 -8.496984,21.051031 -8.5,20.5 L -8.5,16.84375 C -11.109944,16.483168 -13.278833,14.83457 -14.3125,12.5 L -20.5,12.5 C -20.520828,12.500648 -20.541672,12.500648 -20.5625,12.5 C -20.578034,12.499271 -20.578204,12.5 -20.59375,12.5 C -20.609296,12.5 -20.609466,12.499271 -20.625,12.5 C -20.883516,12.532601 -21.119099,12.669978 -21.28125,12.875 L -25.28125,17.875 C -25.632167,18.313646 -25.563646,18.930333 -25.125,19.28125 M -10.5,31.5 L -10.5,31.09375 L -10.78125,30.8125 C -10.791666,30.812662 -10.802084,30.812662 -10.8125,30.8125 L -15.5625,26.0625 C -15.923992,25.696513 -15.95096,25.116711 -15.625,24.71875 M -12.5,32.3125 L -12.5,39.5 M -14.854508,15.069775 C -14.688724,15.414605 -14.733008,15.823641 -14.96875,16.125 L -21.375,23.875 C -21.378721,23.880309 -21.37135,23.900494 -21.375,23.90625 L -21.40625,23.9375 C -21.46879,24.048638 -21.50412,24.205427 -21.5,24.46875 C -21.499838,24.479166 -21.499838,24.489584 -21.5,24.5 L -21.5,31.5 C -21.503016,32.051031 -21.948969,32.496984 -22.5,32.5 L -29.5,32.5 L -29.5,34.5"
++         style="opacity:0.3;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;display:inline" />
++      <path
++         inkscape:export-ydpi="90"
++         inkscape:export-xdpi="90"
++         inkscape:export-filename="/home/kalle/Desktop/system-log-out.png"
++         sodipodi:type="arc"
++         style="color:#000000;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:url(#linearGradient7147);stroke-width:0.6666649;stroke-linecap:round;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
++         id="path7119"
++         sodipodi:cx="-31.5"
++         sodipodi:cy="16"
++         sodipodi:rx="2"
++         sodipodi:ry="2"
++         d="M -29.5 16 A 2 2 0 1 1  -33.5,16 A 2 2 0 1 1  -29.5 16 z"
++         transform="matrix(1.500004,0,0,1.500004,39.750134,-14.500064)" />
++    </g>
++    <g
++       id="g7055"
++       transform="translate(130,0)">
++      <path
++         sodipodi:nodetypes="ccc"
++         id="path7045"
++         d="M -28.5,33.5 L -20.5,33.5 L -20.5,24.5"
++         style="opacity:0.4089219;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline" />
++      <path
++         sodipodi:nodetypes="ccc"
++         id="path7047"
++         d="M -24.5,18.5 L -20.5,13.5 L -11.5,13.5"
++         style="opacity:0.5;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
++      <path
++         sodipodi:nodetypes="ccc"
++         id="path7049"
++         d="M -2.5,22.5 L -9.5,22.5 L -9.5,13.5"
++         style="opacity:0.5;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
++      <path
++         sodipodi:nodetypes="ccc"
++         id="path7051"
++         d="M -11.5,38.5 L -11.5,31.5 L -18.5,24.5"
++         style="opacity:0.5;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
++      <path
++         sodipodi:nodetypes="cc"
++         id="path7053"
++         d="M -10,14 L -19.5,25.5"
++         style="opacity:0.5;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
++    </g>
++  </g>
++</svg>
+
+=== added file 'data/icons/scalable/actions/system-restart.svg'
+--- data/icons/scalable/actions/system-restart.svg	1970-01-01 00:00:00 +0000
++++ data/icons/scalable/actions/system-restart.svg	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,397 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<!-- Created with Inkscape (http://www.inkscape.org/) -->
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://web.resource.org/cc/"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:xlink="http://www.w3.org/1999/xlink"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   inkscape:export-ydpi="90.000000"
++   inkscape:export-xdpi="90.000000"
++   inkscape:export-filename="c:\Tango\git\view-refresh.png"
++   width="48"
++   height="48"
++   id="svg11300"
++   sodipodi:version="0.32"
++   inkscape:version="0.45"
++   sodipodi:docbase="/home/dobey/Projects/gnome-icon-theme/scalable/actions"
++   sodipodi:docname="view-refresh.svg"
++   version="1.0"
++   inkscape:r_cx="true"
++   inkscape:r_cy="true"
++   inkscape:output_extension="org.inkscape.output.svg.inkscape">
++  <defs
++     id="defs3">
++    <linearGradient
++       inkscape:collect="always"
++       id="linearGradient5335">
++      <stop
++         style="stop-color:#ffffff;stop-opacity:1;"
++         offset="0"
++         id="stop5337" />
++      <stop
++         style="stop-color:#ffffff;stop-opacity:0;"
++         offset="1"
++         id="stop5339" />
++    </linearGradient>
++    <linearGradient
++       id="linearGradient5313">
++      <stop
++         id="stop5315"
++         offset="0"
++         style="stop-color:#99b8df;stop-opacity:1" />
++      <stop
++         style="stop-color:#3969a8;stop-opacity:1;"
++         offset="0.23705086"
++         id="stop5333" />
++      <stop
++         style="stop-color:#4f7eba;stop-opacity:1;"
++         offset="0.54706067"
++         id="stop5317" />
++      <stop
++         id="stop5321"
++         offset="0.74557692"
++         style="stop-color:#96b6d7;stop-opacity:1" />
++      <stop
++         style="stop-color:#a0bddc;stop-opacity:1"
++         offset="0.87321436"
++         id="stop5331" />
++      <stop
++         id="stop5319"
++         offset="1"
++         style="stop-color:#729fcf;stop-opacity:1;" />
++    </linearGradient>
++    <linearGradient
++       id="linearGradient8152">
++      <stop
++         style="stop-color:#3465a4;stop-opacity:1;"
++         offset="0"
++         id="stop8154" />
++      <stop
++         id="stop3174"
++         offset="0.5"
++         style="stop-color:#4f7eba;stop-opacity:1;" />
++      <stop
++         style="stop-color:#729fcf;stop-opacity:1;"
++         offset="1"
++         id="stop8156" />
++    </linearGradient>
++    <linearGradient
++       id="linearGradient3207">
++      <stop
++         style="stop-color:#eeeeec;stop-opacity:0.47058824;"
++         offset="0"
++         id="stop3209" />
++      <stop
++         style="stop-color:#eeeeec;stop-opacity:0;"
++         offset="1"
++         id="stop3211" />
++    </linearGradient>
++    <linearGradient
++       inkscape:collect="always"
++       id="linearGradient2847">
++      <stop
++         style="stop-color:#3465a4;stop-opacity:1;"
++         offset="0"
++         id="stop2849" />
++      <stop
++         style="stop-color:#3465a4;stop-opacity:0;"
++         offset="1"
++         id="stop2851" />
++    </linearGradient>
++    <linearGradient
++       id="linearGradient2831">
++      <stop
++         style="stop-color:#3465a4;stop-opacity:1;"
++         offset="0"
++         id="stop2833" />
++      <stop
++         id="stop2855"
++         offset="0.33333334"
++         style="stop-color:#5b86be;stop-opacity:1;" />
++      <stop
++         style="stop-color:#83a8d8;stop-opacity:0;"
++         offset="1"
++         id="stop2835" />
++    </linearGradient>
++    <linearGradient
++       inkscape:collect="always"
++       id="linearGradient8662">
++      <stop
++         style="stop-color:#000000;stop-opacity:1;"
++         offset="0"
++         id="stop8664" />
++      <stop
++         style="stop-color:#000000;stop-opacity:0;"
++         offset="1"
++         id="stop8666" />
++    </linearGradient>
++    <linearGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient2831"
++       id="linearGradient1486"
++       gradientUnits="userSpaceOnUse"
++       gradientTransform="matrix(1.0818662,0,0,1.1166851,-0.8207482,-1.8622434)"
++       x1="13.478554"
++       y1="10.612206"
++       x2="15.419417"
++       y2="19.115122" />
++    <linearGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient2847"
++       id="linearGradient1488"
++       gradientUnits="userSpaceOnUse"
++       gradientTransform="matrix(-1.0818662,0,0,-1.1166851,50.09459,49.644854)"
++       x1="37.128052"
++       y1="29.729605"
++       x2="37.40255"
++       y2="26.800913" />
++    <radialGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient8662"
++       id="radialGradient1503"
++       gradientUnits="userSpaceOnUse"
++       gradientTransform="matrix(1,0,0,0.536723,0,16.87306)"
++       cx="24.837126"
++       cy="36.421127"
++       fx="24.837126"
++       fy="36.421127"
++       r="15.644737" />
++    <linearGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient8152"
++       id="linearGradient8158"
++       x1="49.412277"
++       y1="37.904068"
++       x2="11.881318"
++       y2="19.776045"
++       gradientUnits="userSpaceOnUse" />
++    <linearGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient2831"
++       id="linearGradient8170"
++       gradientUnits="userSpaceOnUse"
++       gradientTransform="matrix(-1.0818662,0,0,-1.1166851,48.639854,47.862243)"
++       x1="13.478554"
++       y1="10.612206"
++       x2="15.419417"
++       y2="19.115122" />
++    <linearGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient2847"
++       id="linearGradient8172"
++       gradientUnits="userSpaceOnUse"
++       gradientTransform="matrix(1.0818662,0,0,1.1166851,-2.2754847,-3.644854)"
++       x1="37.128052"
++       y1="29.729605"
++       x2="37.40255"
++       y2="26.800913" />
++    <linearGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient8152"
++       id="linearGradient8174"
++       gradientUnits="userSpaceOnUse"
++       x1="49.412277"
++       y1="37.904068"
++       x2="11.881318"
++       y2="19.776045" />
++    <linearGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient3207"
++       id="linearGradient8178"
++       gradientUnits="userSpaceOnUse"
++       x1="5.8925977"
++       y1="20.540676"
++       x2="45.198921"
++       y2="27.721035" />
++    <linearGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient5313"
++       id="linearGradient8180"
++       gradientUnits="userSpaceOnUse"
++       x1="61.572533"
++       y1="28.049652"
++       x2="10.969182"
++       y2="20.333939" />
++    <linearGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient5335"
++       id="linearGradient5341"
++       x1="8.6878577"
++       y1="25.265626"
++       x2="52.122673"
++       y2="25.265626"
++       gradientUnits="userSpaceOnUse" />
++  </defs>
++  <sodipodi:namedview
++     stroke="#3465a4"
++     fill="#729fcf"
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#e8e8e8"
++     borderopacity="0.86666667"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="1"
++     inkscape:cx="48.628749"
++     inkscape:cy="21.704614"
++     inkscape:current-layer="layer1"
++     showgrid="true"
++     inkscape:grid-bbox="true"
++     inkscape:document-units="px"
++     inkscape:showpageshadow="false"
++     inkscape:window-width="892"
++     inkscape:window-height="938"
++     inkscape:window-x="374"
++     inkscape:window-y="37"
++     width="48px"
++     height="48px"
++     borderlayer="true" />
++  <metadata
++     id="metadata4">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:creator>
++          <cc:Agent>
++            <dc:title>Jakub Steiner</dc:title>
++          </cc:Agent>
++        </dc:creator>
++        <dc:source>http://jimmac.musichall.cz</dc:source>
++        <cc:license
++           rdf:resource="http://creativecommons.org/licenses/GPL/2.0/" />
++        <dc:title>View Refresh</dc:title>
++        <dc:subject>
++          <rdf:Bag>
++            <rdf:li>reload</rdf:li>
++            <rdf:li>refresh</rdf:li>
++            <rdf:li>view</rdf:li>
++          </rdf:Bag>
++        </dc:subject>
++        <dc:contributor>
++          <cc:Agent>
++            <dc:title>Ricardo 'Rick' González</dc:title>
++          </cc:Agent>
++        </dc:contributor>
++      </cc:Work>
++      <cc:License
++         rdf:about="http://creativecommons.org/licenses/GPL/2.0/">
++        <cc:permits
++           rdf:resource="http://web.resource.org/cc/Reproduction" />
++        <cc:permits
++           rdf:resource="http://web.resource.org/cc/Distribution" />
++        <cc:requires
++           rdf:resource="http://web.resource.org/cc/Notice" />
++        <cc:permits
++           rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
++        <cc:requires
++           rdf:resource="http://web.resource.org/cc/ShareAlike" />
++        <cc:requires
++           rdf:resource="http://web.resource.org/cc/SourceCode" />
++      </cc:License>
++    </rdf:RDF>
++  </metadata>
++  <g
++     id="layer1"
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer"
++     inkscape:r_cx="true"
++     inkscape:r_cy="true">
++    <path
++       transform="matrix(-1.5146484,0,0,-0.7917058,60.923237,69.528413)"
++       d="M 40.481863 36.421127 A 15.644737 8.3968935 0 1 1  9.1923885,36.421127 A 15.644737 8.3968935 0 1 1  40.481863 36.421127 z"
++       sodipodi:ry="8.3968935"
++       sodipodi:rx="15.644737"
++       sodipodi:cy="36.421127"
++       sodipodi:cx="24.837126"
++       id="path8660"
++       style="opacity:0.36111109;color:#000000;fill:url(#radialGradient1503);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
++       sodipodi:type="arc"
++       inkscape:r_cx="true"
++       inkscape:r_cy="true" />
++    <path
++       style="color:#000000;fill:url(#linearGradient1486);fill-opacity:1;fill-rule:nonzero;stroke:url(#linearGradient1488);stroke-width:1.04300582000000008;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:block;overflow:visible;opacity:0.51807229"
++       d="M 20.478497,9.7711467 C 20.478497,9.7711467 12.632988,7.9438002 14.368023,21.024298 L 5.1028658,21.024298 C 5.1028658,21.024298 6.0085332,7.5377773 20.478497,9.7711467 z "
++       id="path2865"
++       inkscape:r_cx="true"
++       inkscape:r_cy="true"
++       sodipodi:nodetypes="cccc" />
++    <g
++       id="g1878"
++       transform="matrix(-0.6129282,-0.5154381,-0.5178496,0.610074,58.686164,13.911361)"
++       inkscape:r_cx="true"
++       inkscape:r_cy="true"
++       style="fill:url(#linearGradient8158);fill-opacity:1;stroke:#204a87;stroke-width:1.24932528;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">
++      <path
++         sodipodi:nodetypes="ccccccc"
++         id="path1880"
++         d="M 45.862102,50.273522 C 62.924432,34.96305 47.150241,15.929711 22.760624,12.513943 L 22.113577,3.1522143 L 7.613534,20.510135 L 22.703188,33.23244 C 22.703188,33.23244 22.454828,23.347105 22.454828,23.347105 C 41.289895,24.339584 54.775794,35.675041 45.862102,50.273522 z "
++         style="opacity:1;color:#000000;fill:url(#linearGradient8180);fill-opacity:1;fill-rule:nonzero;stroke:#204a87;stroke-width:1.24977946000000006;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:block;overflow:visible"
++         inkscape:r_cx="true"
++         inkscape:r_cy="true" />
++    </g>
++    <g
++       style="fill:none;fill-opacity:1;stroke:url(#linearGradient5341);stroke-width:1.24928653000000001;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;opacity:0.54819277"
++       inkscape:r_cy="true"
++       inkscape:r_cx="true"
++       transform="matrix(-0.612811,-0.5154406,-0.5177506,0.6100769,58.675633,13.911365)"
++       id="g3185">
++      <path
++         sodipodi:type="inkscape:offset"
++         inkscape:radius="-1.197237"
++         inkscape:original="M 22.125 3.15625 L 7.625 20.5 L 22.71875 33.21875 C 22.718749 33.21875 22.46875 23.34375 22.46875 23.34375 C 41.298509 24.342727 54.468144 35.661007 45.5625 50.25 C 62.614067 34.952315 46.852277 15.923275 22.46875 12.5 L 22.125 3.15625 z "
++         style="opacity:1;color:#000000;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:url(#linearGradient5341);stroke-width:1.24928653000000001;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:block;overflow:visible"
++         id="path3189"
++         d="M 21.0625,6.3125 L 9.3125,20.34375 L 21.46875,30.59375 C 21.39688,27.754893 21.28125,23.375 21.28125,23.375 C 21.27502,23.044409 21.405774,22.725958 21.642519,22.495132 C 21.879264,22.264306 22.200923,22.141654 22.53125,22.15625 C 32.170255,22.667629 40.441027,25.773015 45.28125,30.875 C 48.676469,34.453835 50.102049,39.131532 49.125,44.21875 C 50.368339,42.205641 51.107893,40.194594 51.375,38.21875 C 51.870422,34.55401 50.856988,30.946652 48.5625,27.59375 C 43.973525,20.887947 34.236978,15.361613 22.3125,13.6875 C 21.732114,13.606381 21.295727,13.117098 21.28125,12.53125 L 21.0625,6.3125 z "
++         transform="translate(1.0080026e-6,8.5223784e-7)" />
++    </g>
++    <g
++       id="g2424"
++       transform="matrix(0.190868,0.16126,0.16126,-0.190868,-0.719083,15.30613)"
++       inkscape:r_cx="true"
++       inkscape:r_cy="true"
++       style="opacity:0.5;fill:none;fill-opacity:1;stroke:#ffffff;stroke-opacity:1" />
++    <path
++       sodipodi:nodetypes="cccc"
++       inkscape:r_cy="true"
++       inkscape:r_cx="true"
++       id="path8160"
++       d="M 27.340608,36.228853 C 27.340608,36.228853 35.186117,38.0562 33.451082,24.975702 L 42.71624,24.975702 C 42.71624,24.975702 41.810572,38.462223 27.340608,36.228853 z "
++       style="color:#000000;fill:url(#linearGradient8170);fill-opacity:1;fill-rule:nonzero;stroke:url(#linearGradient8172);stroke-width:1.04300582000000008;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:block;overflow:visible;opacity:0.51807229" />
++    <g
++       style="fill:url(#linearGradient8174);fill-opacity:1;stroke:#204a87;stroke-width:1.24932528;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
++       inkscape:r_cy="true"
++       inkscape:r_cx="true"
++       transform="matrix(0.6101332,0.5154999,0.5154881,-0.6101471,-10.618024,32.088556)"
++       id="g8162">
++      <path
++         inkscape:r_cy="true"
++         inkscape:r_cx="true"
++         style="opacity:1;color:#000000;fill:url(#linearGradient8180);fill-opacity:1;fill-rule:nonzero;stroke:#204a87;stroke-width:1.25256376;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:block;overflow:visible;enable-background:accumulate"
++         d="M 45.862102,50.273522 C 62.924432,34.96305 47.150241,15.929711 22.760624,12.513943 L 22.113577,3.1522141 L 7.6135337,20.510135 L 22.703188,33.23244 C 22.703188,33.23244 22.454828,23.347105 22.454828,23.347105 C 41.289895,24.339584 54.775794,35.675041 45.862102,50.273522 z "
++         id="path8164"
++         sodipodi:nodetypes="ccccccc" />
++    </g>
++    <g
++       id="g8166"
++       transform="matrix(0.6128107,0.5154406,0.5177504,-0.6100769,-10.856505,32.088635)"
++       inkscape:r_cx="true"
++       inkscape:r_cy="true"
++       style="fill:none;fill-opacity:1;stroke:#204a87;stroke-width:1.24928653;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">
++      <path
++         transform="matrix(0.9972307,-2.4605589e-3,-2.4605593e-3,0.9980642,0.2457029,0.2077351)"
++         d="M 21.0625,6.3125 L 9.3125,20.34375 L 21.46875,30.59375 C 21.39688,27.754893 21.28125,23.375 21.28125,23.375 C 21.27502,23.044409 21.405774,22.725958 21.642519,22.495132 C 21.879264,22.264306 22.200923,22.141654 22.53125,22.15625 C 32.170255,22.667629 40.441027,25.773015 45.28125,30.875 C 48.676469,34.453835 50.102049,39.131532 49.125,44.21875 C 50.368339,42.205641 51.107893,40.194594 51.375,38.21875 C 51.870422,34.55401 50.856988,30.946652 48.5625,27.59375 C 43.973525,20.887947 34.236978,15.361613 22.3125,13.6875 C 21.732114,13.606381 21.295727,13.117098 21.28125,12.53125 L 21.0625,6.3125 z "
++         id="path8168"
++         style="opacity:1;color:#000000;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:url(#linearGradient8178);stroke-width:1.24973191;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.70588235;visibility:visible;display:block;overflow:visible"
++         inkscape:original="M 22.125 3.15625 L 7.625 20.5 L 22.71875 33.21875 C 22.718749 33.21875 22.46875 23.34375 22.46875 23.34375 C 41.298509 24.342727 54.468144 35.661007 45.5625 50.25 C 62.614067 34.952315 46.852277 15.923275 22.46875 12.5 L 22.125 3.15625 z "
++         inkscape:radius="-1.197237"
++         sodipodi:type="inkscape:offset" />
++    </g>
++  </g>
++</svg>
+
+=== added file 'data/icons/scalable/actions/system-shutdown.svg'
+--- data/icons/scalable/actions/system-shutdown.svg	1970-01-01 00:00:00 +0000
++++ data/icons/scalable/actions/system-shutdown.svg	2009-03-02 21:21:23 +0000
+@@ -0,0 +1,247 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<!-- Created with Inkscape (http://www.inkscape.org/) -->
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://web.resource.org/cc/"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:xlink="http://www.w3.org/1999/xlink"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   sodipodi:docname="gnome-shutdown.svg"
++   sodipodi:docbase="/home/dobey/Projects/gnome-icon-theme/scalable/apps"
++   inkscape:version="0.45"
++   sodipodi:version="0.32"
++   id="svg11142"
++   height="48"
++   width="48"
++   version="1.0"
++   inkscape:output_extension="org.inkscape.output.svg.inkscape">
++  <defs
++     id="defs3">
++    <linearGradient
++       id="linearGradient4749">
++      <stop
++         id="stop4751"
++         offset="0"
++         style="stop-color:#ffffff;stop-opacity:1;" />
++      <stop
++         style="stop-color:#ffffff;stop-opacity:0.0000000;"
++         offset="0.50000000"
++         id="stop4757" />
++      <stop
++         id="stop4753"
++         offset="1.0000000"
++         style="stop-color:#ffffff;stop-opacity:1.0000000;" />
++    </linearGradient>
++    <linearGradient
++       id="linearGradient11264"
++       inkscape:collect="always">
++      <stop
++         id="stop11266"
++         offset="0"
++         style="stop-color:#000000;stop-opacity:1;" />
++      <stop
++         id="stop11268"
++         offset="1"
++         style="stop-color:#000000;stop-opacity:0;" />
++    </linearGradient>
++    <linearGradient
++       id="linearGradient11178">
++      <stop
++         style="stop-color:#d1d1cc;stop-opacity:1.0000000;"
++         offset="0.0000000"
++         id="stop11180" />
++      <stop
++         id="stop4735"
++         offset="0.50000000"
++         style="stop-color:#d1d1d1;stop-opacity:1.0000000;" />
++      <stop
++         style="stop-color:#b9b9b9;stop-opacity:1.0000000;"
++         offset="1.0000000"
++         id="stop11188" />
++    </linearGradient>
++    <linearGradient
++       id="linearGradient11164">
++      <stop
++         id="stop11166"
++         offset="0"
++         style="stop-color:#eeeeec;stop-opacity:1;" />
++      <stop
++         style="stop-color:#c6c6bf;stop-opacity:1.0000000;"
++         offset="0.26988637"
++         id="stop11172" />
++      <stop
++         id="stop11176"
++         offset="0.37900311"
++         style="stop-color:#f9f9f8;stop-opacity:1.0000000;" />
++      <stop
++         id="stop11174"
++         offset="0.75000000"
++         style="stop-color:#c8c8c2;stop-opacity:1.0000000;" />
++      <stop
++         id="stop11168"
++         offset="1.0000000"
++         style="stop-color:#eeeeec;stop-opacity:1.0000000;" />
++    </linearGradient>
++    <linearGradient
++       gradientUnits="userSpaceOnUse"
++       y2="23.071428"
++       x2="42.471249"
++       y1="23.071428"
++       x1="7.1433797"
++       id="linearGradient11170"
++       xlink:href="#linearGradient11164"
++       inkscape:collect="always" />
++    <radialGradient
++       gradientTransform="matrix(1.364252,-9.115392e-17,9.115392e-17,1.364252,-9.47947,-5.618016)"
++       gradientUnits="userSpaceOnUse"
++       r="18.672388"
++       fy="17.224812"
++       fx="24.673435"
++       cy="17.224812"
++       cx="24.673435"
++       id="radialGradient11234"
++       xlink:href="#linearGradient11178"
++       inkscape:collect="always" />
++    <radialGradient
++       gradientUnits="userSpaceOnUse"
++       r="18.214285"
++       fy="23.071428"
++       fx="25.785715"
++       cy="23.071428"
++       cx="25.785715"
++       id="radialGradient11270"
++       xlink:href="#linearGradient11264"
++       inkscape:collect="always" />
++    <linearGradient
++       gradientUnits="userSpaceOnUse"
++       y2="8.5882788"
++       x2="25.785715"
++       y1="21.978363"
++       x1="25.785715"
++       id="linearGradient4755"
++       xlink:href="#linearGradient4749"
++       inkscape:collect="always" />
++  </defs>
++  <sodipodi:namedview
++     inkscape:window-y="423"
++     inkscape:window-x="840"
++     inkscape:window-height="606"
++     inkscape:window-width="750"
++     stroke="#555753"
++     fill="#edd400"
++     inkscape:showpageshadow="false"
++     inkscape:document-units="px"
++     inkscape:grid-bbox="true"
++     showgrid="false"
++     inkscape:current-layer="layer1"
++     inkscape:cy="-10.815272"
++     inkscape:cx="85.353158"
++     inkscape:zoom="1"
++     inkscape:pageshadow="2"
++     inkscape:pageopacity="0.0"
++     borderopacity="0.32941176"
++     bordercolor="#666666"
++     pagecolor="#ffffff"
++     id="base"
++     showguides="true"
++     inkscape:guide-bbox="true" />
++  <metadata
++     id="metadata4">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++        <dc:title>Shutdown</dc:title>
++        <dc:creator>
++          <cc:Agent>
++            <dc:title>Jakub Steiner</dc:title>
++          </cc:Agent>
++        </dc:creator>
++        <cc:license
++           rdf:resource="http://creativecommons.org/licenses/GPL/2.0/" />
++        <dc:source>http://jimmac.musichall.cz</dc:source>
++        <dc:subject>
++          <rdf:Bag>
++            <rdf:li>lock</rdf:li>
++            <rdf:li>key</rdf:li>
++            <rdf:li>secure</rdf:li>
++          </rdf:Bag>
++        </dc:subject>
++      </cc:Work>
++      <cc:License
++         rdf:about="http://creativecommons.org/licenses/GPL/2.0/">
++        <cc:permits
++           rdf:resource="http://web.resource.org/cc/Reproduction" />
++        <cc:permits
++           rdf:resource="http://web.resource.org/cc/Distribution" />
++        <cc:requires
++           rdf:resource="http://web.resource.org/cc/Notice" />
++        <cc:permits
++           rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
++        <cc:requires
++           rdf:resource="http://web.resource.org/cc/ShareAlike" />
++        <cc:requires
++           rdf:resource="http://web.resource.org/cc/SourceCode" />
++      </cc:License>
++    </rdf:RDF>
++  </metadata>
++  <g
++     inkscape:groupmode="layer"
++     inkscape:label="Layer 1"
++     id="layer1">
++    <path
++       sodipodi:type="arc"
++       style="opacity:1;color:#000000;fill:url(#radialGradient11270);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.8505457;stroke-linecap:round;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
++       id="path11262"
++       sodipodi:cx="25.785715"
++       sodipodi:cy="23.071428"
++       sodipodi:rx="18.214285"
++       sodipodi:ry="18.214285"
++       d="M 44 23.071428 A 18.214285 18.214285 0 1 1  7.5714302,23.071428 A 18.214285 18.214285 0 1 1  44 23.071428 z"
++       transform="matrix(1.269833,0,0,1.269833,-9.24356,-4.225444)" />
++    <path
++       transform="matrix(1.175715,0,0,1.175715,-6.816669,-3.911156)"
++       d="M 44 23.071428 A 18.214285 18.214285 0 1 1  7.5714302,23.071428 A 18.214285 18.214285 0 1 1  44 23.071428 z"
++       sodipodi:ry="18.214285"
++       sodipodi:rx="18.214285"
++       sodipodi:cy="23.071428"
++       sodipodi:cx="25.785715"
++       id="path11152"
++       style="opacity:1;color:#000000;fill:url(#linearGradient11170);fill-opacity:1;fill-rule:evenodd;stroke:#74796e;stroke-width:0.8505457;stroke-linecap:round;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
++       sodipodi:type="arc" />
++    <path
++       sodipodi:type="arc"
++       style="opacity:1;color:#000000;fill:url(#radialGradient11234);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.93590021;stroke-linecap:round;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
++       id="path11154"
++       sodipodi:cx="25.785715"
++       sodipodi:cy="23.071428"
++       sodipodi:rx="18.214285"
++       sodipodi:ry="18.214285"
++       d="M 44 23.071428 A 18.214285 18.214285 0 1 1  7.5714302,23.071428 A 18.214285 18.214285 0 1 1  44 23.071428 z"
++       transform="matrix(1.06849,0,0,1.06849,-4.051771,-2.437299)" />
++    <path
++       sodipodi:nodetypes="czs"
++       id="path4743"
++       d="M 19.1468,14.674063 C 12.154448,18.486901 15.316371,29.412893 23.310313,29.412893 C 31.220984,29.412893 34.766419,19.054547 27.473824,14.674063"
++       style="opacity:1;color:#000000;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#555753;stroke-width:3;stroke-linecap:round;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
++    <path
++       id="path4745"
++       d="M 23.364832,19.364034 L 23.364832,11.95091"
++       style="opacity:1;color:#000000;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#555753;stroke-width:2.99999905;stroke-linecap:round;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
++    <path
++       transform="matrix(1.04555,0,0,1.04555,-3.460245,-1.908039)"
++       d="M 44 23.071428 A 18.214285 18.214285 0 1 1  7.5714302,23.071428 A 18.214285 18.214285 0 1 1  44 23.071428 z"
++       sodipodi:ry="18.214285"
++       sodipodi:rx="18.214285"
++       sodipodi:cy="23.071428"
++       sodipodi:cx="25.785715"
++       id="path4747"
++       style="opacity:0.88235294;color:#000000;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:url(#linearGradient4755);stroke-width:0.95643449;stroke-linecap:round;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
++       sodipodi:type="arc" />
++  </g>
++</svg>
+
+=== added directory 'data/icons/scalable/status'
+=== added file 'data/icons/scalable/status/Makefile.am'
+--- data/icons/scalable/status/Makefile.am	1970-01-01 00:00:00 +0000
++++ data/icons/scalable/status/Makefile.am	2009-03-11 16:59:32 +0000
+@@ -0,0 +1,10 @@
++
++iconsdir = $(pkgdatadir)/icons/hicolor/scalable/status
++
++icons_DATA =  \
++	user-online.svg			\
++	user-offline.svg		\
++	user-away.svg			\
++	user-busy.svg			\
++	user-invisible.svg
++
+
+=== added file 'data/icons/scalable/status/user-away.svg'
+--- data/icons/scalable/status/user-away.svg	1970-01-01 00:00:00 +0000
++++ data/icons/scalable/status/user-away.svg	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,93 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<!-- Created with Inkscape (http://www.inkscape.org/) -->
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://web.resource.org/cc/"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:xlink="http://www.w3.org/1999/xlink"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="16px"
++   height="16px"
++   id="svg4908"
++   sodipodi:version="0.32"
++   inkscape:version="0.44+devel"
++   sodipodi:docbase="/home/andreas/project/gossip/16x16"
++   sodipodi:docname="status-away.svg"
++   inkscape:output_extension="org.inkscape.output.svg.inkscape"
++   inkscape:export-filename="/home/andreas/project/gossip/16x16/status-away.png"
++   inkscape:export-xdpi="90"
++   inkscape:export-ydpi="90"
++   sodipodi:modified="true">
++  <defs
++     id="defs4910">
++    <linearGradient
++       inkscape:collect="always"
++       id="linearGradient5917">
++      <stop
++         style="stop-color:#f80000;stop-opacity:1"
++         offset="0"
++         id="stop5919" />
++      <stop
++         style="stop-color:#e70000;stop-opacity:1"
++         offset="1"
++         id="stop5921" />
++    </linearGradient>
++    <linearGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient5917"
++       id="linearGradient5923"
++       x1="6.5096536"
++       y1="8.5893564"
++       x2="9.9108915"
++       y2="11.540099"
++       gradientUnits="userSpaceOnUse"
++       gradientTransform="matrix(1,0,0,0.9925682,6.043956e-8,1.1147803e-2)" />
++  </defs>
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="22.627417"
++     inkscape:cx="13.206814"
++     inkscape:cy="4.0564985"
++     inkscape:current-layer="layer1"
++     showgrid="false"
++     inkscape:grid-bbox="true"
++     inkscape:document-units="px"
++     inkscape:window-width="1674"
++     inkscape:window-height="969"
++     inkscape:window-x="0"
++     inkscape:window-y="26" />
++  <metadata
++     id="metadata4913">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     id="layer1"
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer">
++    <path
++       style="fill:url(#linearGradient5923);fill-opacity:1;fill-rule:evenodd;stroke:#8a0000;stroke-width:0.99999988px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
++       d="M 1.5,13.5 L 14.499999,13.5 L 7.9789933,1.4999999 L 1.5,13.5 z "
++       id="path4944"
++       sodipodi:nodetypes="cccc" />
++    <path
++       style="opacity:0.3;fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:1.00000012px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
++       d="M 3.2186016,12.488535 L 12.832121,12.488535 L 8.0098272,3.5671249 L 3.2186016,12.488535 z "
++       id="path4946"
++       sodipodi:nodetypes="cccc" />
++  </g>
++</svg>
+
+=== added file 'data/icons/scalable/status/user-busy.svg'
+--- data/icons/scalable/status/user-busy.svg	1970-01-01 00:00:00 +0000
++++ data/icons/scalable/status/user-busy.svg	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,140 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<!-- Created with Inkscape (http://www.inkscape.org/) -->
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://web.resource.org/cc/"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:xlink="http://www.w3.org/1999/xlink"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="16px"
++   height="16px"
++   id="svg6941"
++   sodipodi:version="0.32"
++   inkscape:version="0.44+devel"
++   sodipodi:docbase="/home/andreas/project/gossip/16x16"
++   sodipodi:docname="status-busy.svg"
++   inkscape:output_extension="org.inkscape.output.svg.inkscape"
++   inkscape:export-filename="/home/andreas/project/gossip/16x16/status-busy.png"
++   inkscape:export-xdpi="90"
++   inkscape:export-ydpi="90"
++   sodipodi:modified="true">
++  <defs
++     id="defs6943">
++    <linearGradient
++       inkscape:collect="always"
++       id="linearGradient5899">
++      <stop
++         style="stop-color:#fce94f;stop-opacity:1"
++         offset="0"
++         id="stop5901" />
++      <stop
++         style="stop-color:#edd400;stop-opacity:1"
++         offset="1"
++         id="stop5903" />
++    </linearGradient>
++    <radialGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient5899"
++       id="radialGradient5905"
++       cx="9.466115"
++       cy="8.9839392"
++       fx="9.466115"
++       fy="8.9839392"
++       r="6.7474474"
++       gradientTransform="matrix(1.1671849,-3.2679277e-3,2.7524467e-3,1.0150183,-1.6222549,-0.2024225)"
++       gradientUnits="userSpaceOnUse" />
++  </defs>
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="15.696217"
++     inkscape:cx="17.665904"
++     inkscape:cy="9.7718474"
++     inkscape:current-layer="layer1"
++     showgrid="false"
++     inkscape:grid-bbox="true"
++     inkscape:document-units="px"
++     inkscape:window-width="1674"
++     inkscape:window-height="969"
++     inkscape:window-x="0"
++     inkscape:window-y="26" />
++  <metadata
++     id="metadata6946">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     id="layer1"
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer">
++    <path
++       sodipodi:type="arc"
++       style="opacity:1;fill:url(#radialGradient5905);fill-opacity:1;stroke:#8d7300;stroke-width:0.97113222;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
++       id="path4926"
++       sodipodi:cx="7.9737625"
++       sodipodi:cy="7.7221532"
++       sodipodi:rx="6.2618814"
++       sodipodi:ry="6.3632426"
++       d="M 14.235644 7.7221532 A 6.2618814 6.3632426 0 1 1  1.7118812,7.7221532 A 6.2618814 6.3632426 0 1 1  14.235644 7.7221532 z"
++       transform="matrix(1.0380267,0,0,1.0214918,-0.2769782,0.1118841)" />
++    <path
++       sodipodi:type="arc"
++       style="opacity:0.6;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:1.14770162;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
++       id="path5897"
++       sodipodi:cx="7.9737625"
++       sodipodi:cy="7.7221532"
++       sodipodi:rx="6.2618814"
++       sodipodi:ry="6.3632426"
++       d="M 14.235644 7.7221532 A 6.2618814 6.3632426 0 1 1  1.7118812,7.7221532 A 6.2618814 6.3632426 0 1 1  14.235644 7.7221532 z"
++       transform="matrix(0.8783303,0,0,0.8643392,0.996403,1.3254404)" />
++    <rect
++       style="opacity:1;fill:#eeeeec;fill-opacity:1;stroke:#888a85;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
++       id="rect5886"
++       width="9.000001"
++       height="9"
++       x="5.5"
++       y="5.5"
++       rx="0"
++       ry="0" />
++    <rect
++       style="opacity:1;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
++       id="rect5969"
++       width="7"
++       height="7"
++       x="6.5"
++       y="6.5"
++       rx="0"
++       ry="0" />
++    <path
++       sodipodi:type="arc"
++       style="opacity:1;fill:#8d7300;fill-opacity:1;stroke:none;stroke-width:1.46393549;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
++       id="path5888"
++       sodipodi:cx="10.676733"
++       sodipodi:cy="7.8460393"
++       sodipodi:rx="1.4415842"
++       sodipodi:ry="1.4866337"
++       d="M 12.118317 7.8460393 A 1.4415842 1.4866337 0 1 1  9.2351488,7.8460393 A 1.4415842 1.4866337 0 1 1  12.118317 7.8460393 z"
++       transform="matrix(0.6936814,0,0,0.6726606,2.5937487,2.7222784)" />
++    <path
++       style="fill:none;fill-rule:evenodd;stroke:#888a85;stroke-width:0.99999994px;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1"
++       d="M 7.4772272,10.5 L 11.522773,10.5"
++       id="path5883" />
++    <path
++       style="fill:none;fill-rule:evenodd;stroke:#888a85;stroke-width:1px;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1"
++       d="M 7.4872926,12.5 L 11.524094,12.5"
++       id="path5885" />
++  </g>
++</svg>
+
+=== added file 'data/icons/scalable/status/user-invisible.svg'
+--- data/icons/scalable/status/user-invisible.svg	1970-01-01 00:00:00 +0000
++++ data/icons/scalable/status/user-invisible.svg	2009-03-11 16:59:32 +0000
+@@ -0,0 +1,78 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<!-- Created with Inkscape (http://www.inkscape.org/) -->
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://creativecommons.org/ns#"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="16px"
++   height="16px"
++   id="svg4908"
++   sodipodi:version="0.32"
++   inkscape:version="0.46"
++   sodipodi:docbase="/home/andreas/project/gossip/16x16"
++   sodipodi:docname="user-invisible.svg"
++   inkscape:output_extension="org.inkscape.output.svg.inkscape"
++   inkscape:export-filename="/Users/kwwii/Desktop/user-invisible.png"
++   inkscape:export-xdpi="270"
++   inkscape:export-ydpi="270"
++   sodipodi:modified="true">
++  <defs
++     id="defs4910" />
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#efebe7"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="49.332695"
++     inkscape:cx="8.0156251"
++     inkscape:cy="8.0034278"
++     inkscape:current-layer="layer1"
++     showgrid="false"
++     inkscape:grid-bbox="true"
++     inkscape:document-units="px"
++     inkscape:window-width="1343"
++     inkscape:window-height="894"
++     inkscape:window-x="18"
++     inkscape:window-y="36"
++     gridtolerance="10000">
++    <inkscape:grid
++       type="xygrid"
++       id="grid2386"
++       visible="true"
++       enabled="true" />
++  </sodipodi:namedview>
++  <metadata
++     id="metadata4913">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     id="layer1"
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer">
++    <path
++       style="opacity:0.6;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;marker:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
++       d="M 8,2 L 2,7 L 4,14 L 12,14 L 14,7 L 8,2 z M 8.03125,3.28125 L 12.875,7.34375 L 11.28125,13 L 4.75,13 L 3.15625,7.34375 L 8.03125,3.28125 z"
++       id="path3169" />
++    <path
++       style="fill:#555753;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;marker:none;stroke-miterlimit:4;stroke-dasharray:1, 24;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
++       d="M 7.90625 1 C 7.7115832 1.0193883 7.5268771 1.0954437 7.375 1.21875 L 1.375 6.21875 C 1.0663414 6.4776493 0.94315913 6.8964687 1.0625 7.28125 L 3.0625 14.28125 C 3.1850026 14.699518 3.5642702 14.99029 4 15 L 12 15 C 12.447322 15.004039 12.842922 14.710529 12.96875 14.28125 L 14.96875 7.28125 C 15.088091 6.8964689 14.964909 6.4776491 14.65625 6.21875 L 8.65625 1.21875 C 8.4462475 1.047164 8.1755683 0.96821579 7.90625 1 z M 8 2 L 14 7 L 12 14 L 4 14 L 2 7 L 8 2 z "
++       id="path2388" />
++    <path
++       style="opacity:0.38251367;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;marker:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
++       d="M 8,2 L 14,7 L 12,14 L 4,14 L 2,7 L 8,2 z"
++       id="path3182" />
++  </g>
++</svg>
+
+=== added file 'data/icons/scalable/status/user-offline.svg'
+--- data/icons/scalable/status/user-offline.svg	1970-01-01 00:00:00 +0000
++++ data/icons/scalable/status/user-offline.svg	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,101 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<!-- Created with Inkscape (http://www.inkscape.org/) -->
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://web.resource.org/cc/"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:xlink="http://www.w3.org/1999/xlink"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="16px"
++   height="16px"
++   id="svg6941"
++   sodipodi:version="0.32"
++   inkscape:version="0.44+devel"
++   sodipodi:docbase="/home/andreas/project/gossip/16x16"
++   sodipodi:docname="status-offline.svg"
++   inkscape:output_extension="org.inkscape.output.svg.inkscape"
++   inkscape:export-filename="/home/andreas/project/gossip/16x16/status-offline.png"
++   inkscape:export-xdpi="90"
++   inkscape:export-ydpi="90"
++   sodipodi:modified="true">
++  <defs
++     id="defs6943">
++    <linearGradient
++       inkscape:collect="always"
++       id="linearGradient7922">
++      <stop
++         style="stop-color:#e8e8e6;stop-opacity:1"
++         offset="0"
++         id="stop7924" />
++      <stop
++         style="stop-color:#babdb6;stop-opacity:1"
++         offset="1"
++         id="stop7926" />
++    </linearGradient>
++    <linearGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient7922"
++       id="linearGradient7928"
++       x1="0.67574239"
++       y1="0.81831664"
++       x2="9.8658419"
++       y2="10.594059"
++       gradientUnits="userSpaceOnUse"
++       gradientTransform="matrix(0.8666667,0,0,0.8666667,1.0666667,1.0666666)" />
++  </defs>
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="22.197802"
++     inkscape:cx="15.038145"
++     inkscape:cy="7.8865336"
++     inkscape:current-layer="layer1"
++     showgrid="false"
++     inkscape:grid-bbox="true"
++     inkscape:document-units="px"
++     inkscape:window-width="1674"
++     inkscape:window-height="969"
++     inkscape:window-x="0"
++     inkscape:window-y="26" />
++  <metadata
++     id="metadata6946">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     id="layer1"
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer">
++    <rect
++       style="opacity:1;fill:url(#linearGradient7928);fill-opacity:1;stroke:#555753;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
++       id="rect6949"
++       width="13"
++       height="13"
++       x="1.5"
++       y="1.4999999"
++       rx="1.4641089"
++       ry="1.4641089" />
++    <rect
++       style="opacity:0.4;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
++       id="rect7920"
++       width="11"
++       height="11"
++       x="2.5"
++       y="2.5"
++       rx="0.45049509"
++       ry="0.45049506" />
++  </g>
++</svg>
+
+=== added file 'data/icons/scalable/status/user-online.svg'
+--- data/icons/scalable/status/user-online.svg	1970-01-01 00:00:00 +0000
++++ data/icons/scalable/status/user-online.svg	2008-09-03 18:35:30 +0000
+@@ -0,0 +1,104 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<!-- Created with Inkscape (http://www.inkscape.org/) -->
++<svg
++   xmlns:dc="http://purl.org/dc/elements/1.1/"
++   xmlns:cc="http://web.resource.org/cc/"
++   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++   xmlns:svg="http://www.w3.org/2000/svg"
++   xmlns="http://www.w3.org/2000/svg"
++   xmlns:xlink="http://www.w3.org/1999/xlink"
++   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
++   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
++   width="16px"
++   height="16px"
++   id="svg4908"
++   sodipodi:version="0.32"
++   inkscape:version="0.44+devel"
++   sodipodi:docbase="/home/andreas/project/gossip/16x16"
++   sodipodi:docname="status-avaible.svg"
++   inkscape:output_extension="org.inkscape.output.svg.inkscape"
++   inkscape:export-filename="/home/andreas/project/gossip/16x16/status-avaible.png"
++   inkscape:export-xdpi="90"
++   inkscape:export-ydpi="90"
++   sodipodi:modified="true">
++  <defs
++     id="defs4910">
++    <linearGradient
++       inkscape:collect="always"
++       id="linearGradient5899">
++      <stop
++         style="stop-color:#7fe719;stop-opacity:1"
++         offset="0"
++         id="stop5901" />
++      <stop
++         style="stop-color:#67bc13;stop-opacity:1"
++         offset="1"
++         id="stop5903" />
++    </linearGradient>
++    <radialGradient
++       inkscape:collect="always"
++       xlink:href="#linearGradient5899"
++       id="radialGradient5905"
++       cx="9.466115"
++       cy="8.9839392"
++       fx="9.466115"
++       fy="8.9839392"
++       r="6.7474474"
++       gradientTransform="matrix(1.1671849,-3.2679277e-3,2.7524467e-3,1.0150183,-1.6222549,-0.2024225)"
++       gradientUnits="userSpaceOnUse" />
++  </defs>
++  <sodipodi:namedview
++     id="base"
++     pagecolor="#ffffff"
++     bordercolor="#666666"
++     borderopacity="1.0"
++     inkscape:pageopacity="0.0"
++     inkscape:pageshadow="2"
++     inkscape:zoom="22.197802"
++     inkscape:cx="14.452639"
++     inkscape:cy="6.4458104"
++     inkscape:current-layer="layer1"
++     showgrid="false"
++     inkscape:grid-bbox="true"
++     inkscape:document-units="px"
++     inkscape:window-width="1674"
++     inkscape:window-height="969"
++     inkscape:window-x="0"
++     inkscape:window-y="26" />
++  <metadata
++     id="metadata4913">
++    <rdf:RDF>
++      <cc:Work
++         rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type
++           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g
++     id="layer1"
++     inkscape:label="Layer 1"
++     inkscape:groupmode="layer">
++    <path
++       sodipodi:type="arc"
++       style="opacity:1;fill:url(#radialGradient5905);fill-opacity:1;stroke:#376e01;stroke-width:0.97113216;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
++       id="path4926"
++       sodipodi:cx="7.9737625"
++       sodipodi:cy="7.7221532"
++       sodipodi:rx="6.2618814"
++       sodipodi:ry="6.3632426"
++       d="M 14.235644 7.7221532 A 6.2618814 6.3632426 0 1 1  1.7118812,7.7221532 A 6.2618814 6.3632426 0 1 1  14.235644 7.7221532 z"
++       transform="matrix(1.0380267,0,0,1.0214918,-0.2769783,0.1118841)" />
++    <path
++       sodipodi:type="arc"
++       style="opacity:0.4;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:1.14770162;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
++       id="path5897"
++       sodipodi:cx="7.9737625"
++       sodipodi:cy="7.7221532"
++       sodipodi:rx="6.2618814"
++       sodipodi:ry="6.3632426"
++       d="M 14.235644 7.7221532 A 6.2618814 6.3632426 0 1 1  1.7118812,7.7221532 A 6.2618814 6.3632426 0 1 1  14.235644 7.7221532 z"
++       transform="matrix(0.8783303,0,0,0.8643392,0.996403,1.3254404)" />
++  </g>
++</svg>
+
+=== modified file 'src/applet.c'
+--- src/applet.c	2009-03-05 02:17:45 +0000
++++ src/applet.c	2009-03-05 02:18:06 +0000
+@@ -88,6 +88,8 @@
+ #define LOCKDOWN_KEY    LOCKDOWN_DIR "/disable_user_switching"
+ #define LOCK_SCREEN_KEY  LOCKDOWN_DIR "/disable_lock_screen"
+ 
++#define ICONS_DIR       DATADIR G_DIR_SEPARATOR_S "fast-user-switch-applet" G_DIR_SEPARATOR_S "icons"
++
+ /* ******************** *
+  *  Private Structures  *
+  * ******************** */
+@@ -388,6 +390,10 @@
+ 
+       g_type_init();
+ 
++      /* Add App specific icons to the search path */
++      gtk_icon_theme_append_search_path(gtk_icon_theme_get_default(),
++	                                       ICONS_DIR);
++
+       /* Do this here so it's only done once. */
+       gtk_rc_parse_string ("style \"fast-user-switch-menubar-style\"\n"
+ 			   "{\n"
+

@@ -1,0 +1,306 @@
+=== modified file 'src/applet.c'
+--- src/applet.c	2009-03-05 02:15:16 +0000
++++ src/applet.c	2009-03-05 02:17:45 +0000
+@@ -635,6 +635,11 @@
+ 	}
+       else
+ 	gtk_widget_show (menuitem);
++
++      if (fusa_user_get_uid(users->data) == getuid()) {
++	gtk_widget_hide (menuitem);
++      }
++
+       g_signal_connect (users->data, "displays-changed",
+ 			G_CALLBACK (user_displays_changed_cb), adata);
+ 
+@@ -651,9 +656,7 @@
+   adata->items = g_slist_prepend (adata->items, adata->separator_item);
+ 
+   /* Add the 'other user' entry */
+-  adata->login_screen_item = gtk_image_menu_item_new_with_label (_("Other"));
+-  gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (adata->login_screen_item),
+-				 gtk_image_new ());
++  adata->login_screen_item = gtk_menu_item_new_with_label (_("Switch User..."));
+   gtk_menu_shell_append (GTK_MENU_SHELL (adata->menu),
+ 			  adata->login_screen_item);
+   g_signal_connect (adata->login_screen_item, "style-set",
+@@ -768,6 +771,10 @@
+   g_signal_connect (adata->guest_session_item, "activate",
+ 					G_CALLBACK (guest_session_activate_cb), adata);
+   adata->items = g_slist_prepend (adata->items, adata->guest_session_item);
++  GtkWidget * guest_label = gtk_bin_get_child(GTK_BIN(adata->guest_session_item));
++  gint xpad, ypad;
++  gtk_misc_get_padding(GTK_MISC(guest_label), &xpad, &ypad);
++  gtk_misc_set_padding(GTK_MISC(guest_label), xpad + FUSA_USER_MENU_ITEM_PAD, ypad);
+ 
+   show_hide_guest (adata);
+ 
+@@ -1444,6 +1451,11 @@
+     }
+   else
+     gtk_widget_show (menuitem);
++
++  if (fusa_user_get_uid(user) == getuid()) {
++    gtk_widget_hide (menuitem);
++  }
++
+   g_signal_connect (user, "displays-changed",
+ 		    G_CALLBACK (user_displays_changed_cb), adata);
+   sort_menu (adata);
+@@ -1522,6 +1534,10 @@
+   else
+     gtk_widget_show (menuitem);
+ 
++  if (fusa_user_get_uid(user) == getuid()) {
++    gtk_widget_hide (menuitem);
++  }
++
+   sort_menu (adata);
+ }
+ 
+@@ -2983,10 +2999,22 @@
+   column = 0;
+   count = 0;
+   items = adata->items;
++  GSList * prev = NULL;
+   while (items)
+     {
+       if (GTK_WIDGET_VISIBLE (items->data))
+ 	{
++	  gchar const * cur_dname = fusa_user_get_display_name(fusa_user_menu_item_get_user(items->data));
++	  gchar const * pre_dname = prev != NULL        ? fusa_user_get_display_name(fusa_user_menu_item_get_user(prev->data))        : NULL;
++	  gchar const * nxt_dname = items->next != NULL ? fusa_user_get_display_name(fusa_user_menu_item_get_user(items->next->data)) : NULL;
++
++	  if ((cur_dname != NULL && pre_dname != NULL && strcmp(cur_dname, pre_dname) == 0) ||
++	      (cur_dname != NULL && nxt_dname != NULL && strcmp(cur_dname, nxt_dname) == 0)) {
++	    fusa_user_menu_item_set_conflict(items->data, TRUE);
++	  } else {
++	    fusa_user_menu_item_set_conflict(items->data, FALSE);
++	  }
++
+ 	  gtk_menu_attach (GTK_MENU (adata->menu), items->data,
+ 			   column, column + 1, row, row + 1);
+ 	  row++;
+@@ -3004,6 +3032,7 @@
+               items->data, count++);
+ 	}
+ 
++	  prev = items;
+       items = items->next;
+     }
+ }
+
+=== modified file 'src/fusa-user-menu-item.c'
+--- src/fusa-user-menu-item.c	2006-11-02 03:08:40 +0000
++++ src/fusa-user-menu-item.c	2008-09-17 14:01:37 +0000
+@@ -78,6 +78,7 @@
+   gulong user_icon_changed_id;
+   gulong user_displays_changed_id;
+   gint icon_size;
++  gboolean conflict_mode;
+ };
+ 
+ struct _FusaUserMenuItemClass
+@@ -193,6 +194,7 @@
+   GtkWidget *box;
+ 
+   item->icon_size = DEFAULT_ICON_SIZE;
++  item->conflict_mode = FALSE;
+ 
+   item->image = gtk_image_new ();
+   g_signal_connect (item->image, "style-set",
+@@ -208,9 +210,15 @@
+   item->label = gtk_label_new (NULL);
+   gtk_label_set_use_markup (GTK_LABEL (item->label), TRUE);
+   gtk_misc_set_alignment (GTK_MISC (item->label), 0.0, 0.5);
++
++  gint xpad, ypad;
++  gtk_misc_get_padding(GTK_MISC (item->label), &xpad, &ypad);
++  gtk_misc_set_padding(GTK_MISC (item->label), xpad + FUSA_USER_MENU_ITEM_PAD, ypad);
++
+   g_signal_connect (item->label, "style-set",
+ 		    G_CALLBACK (label_style_set_cb), item);
+   gtk_container_add (GTK_CONTAINER (box), item->label);
++
+   gtk_widget_show (item->label);
+ }
+ 
+@@ -314,52 +322,8 @@
+ 										   event);
+   else
+     retval = TRUE;
+-  if (GTK_WIDGET_DRAWABLE (widget))
+-    {
+-      gint horizontal_padding,
+-           indicator_size,
+-           indicator_spacing,
+-	   offset,
+-	   x,
+-	   y;
+-      GtkShadowType shadow_type;
+-
+-      horizontal_padding = 0;
+-      indicator_size = 0;
+-      indicator_spacing = 0;
+-      gtk_widget_style_get (widget,
+- 			    "horizontal-padding", &horizontal_padding,
+-			    "indicator-size", &indicator_size,
+-			    "indicator-spacing", &indicator_spacing,
+-			    NULL);
+-
+-      offset = GTK_CONTAINER (widget)->border_width + widget->style->xthickness + 2; 
+-
+-      if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR)
+-	{
+-	  x = widget->allocation.x + widget->allocation.width -
+-	    offset - horizontal_padding - indicator_size + indicator_spacing +
+-	    (indicator_size - indicator_spacing - indicator_size) / 2;
+-	}
+-      else 
+-	{
+-	  x = widget->allocation.x + offset + horizontal_padding +
+-	    (indicator_size - indicator_spacing - indicator_size) / 2;
+-	}
+-      
+-      y = widget->allocation.y + (widget->allocation.height - indicator_size) / 2;
+-
+-      if (fusa_user_get_n_displays (FUSA_USER_MENU_ITEM (widget)->user) > 0)
+-        shadow_type = GTK_SHADOW_IN; /* they have displays, so mark it checked */
+-      else
+-        shadow_type = GTK_SHADOW_OUT; /* they haave no displays, so no check */
+-
+-      gtk_paint_check (widget->style, widget->window, GTK_WIDGET_STATE (widget),
+-		       shadow_type, &(event->area), widget, "check",
+-		       x, y, indicator_size, indicator_size);
+-    }
+-
+-  return TRUE;
++
++  return retval;
+ }
+ 
+ static void
+@@ -412,8 +376,11 @@
+ user_displays_changed_cb (FusaUser *user,
+ 			  gpointer  data)
+ {
+-  if (fusa_user_get_uid (user) == getuid ())
+-    gtk_widget_set_sensitive (data, (fusa_user_get_n_displays (user) > 1));
++  if (fusa_user_get_uid (user) == getuid ()) {
++	gtk_widget_hide(data);
++  } else {
++	gtk_widget_show(data);
++  }
+ }
+ 
+ static void
+@@ -454,41 +421,36 @@
+ static void
+ reset_label (FusaUserMenuItem *item)
+ {
+-#if 0
+-  gchar *text;
+-  PangoLayout *layout;
+-  gint height;
+-#endif
+-
+   if (!item->user)
+     return;
+ 
+-#if 0
+-  text = g_strconcat ("<b>",
+-		      fusa_user_get_display_name (item->user),
+-		      "</b>\n",
+-		      "<small>",
+-		      fusa_user_get_user_name (item->user),
+-		      "</small>",
+-		      NULL);
+-
+-  gtk_label_set_markup (GTK_LABEL (item->label), text);
+-  g_free (text);
+-
+-  /* This next bit accounts for 20% of the memorytime.
+-   * I have therefore commented out this whole part for now. */
+-  layout = gtk_label_get_layout (GTK_LABEL (item->label));
+-  pango_layout_get_pixel_size (layout, NULL, &height);
+-
+-  if (height > (item->icon_size + CLOSE_ENOUGH_SIZE))
+-#endif
+-    gtk_label_set_markup (GTK_LABEL (item->label),
+-			  fusa_user_get_display_name (item->user));
++	gchar * text;
++	if (fusa_user_get_n_displays(item->user) > 0) {
++		text = g_strconcat("<b>", fusa_user_get_display_name(item->user), "</b>", NULL);
++	} else {
++		text = g_strdup(fusa_user_get_display_name(item->user));
++	}
++
++	/* If this name is the same as another one in the list
++	 * conflict mode gets triggered.  Which means we're going
++	 * to put the user name next to it for clarity. */
++	if (item->conflict_mode) {
++		gchar * temp;
++		temp = g_strdup_printf("%s  <span font_size=\"smaller\">(%s)</span>", text, fusa_user_get_user_name(item->user));
++		g_free(text);
++		text = temp;
++	}
++
++    gtk_label_set_markup (GTK_LABEL (item->label), text);
++	g_free(text);
++
++	return;
+ }
+ 
+ static void
+ reset_icon (FusaUserMenuItem *item)
+ {
++/*
+   GdkPixbuf *pixbuf;
+ 
+   if (!item->user || !gtk_widget_has_screen (GTK_WIDGET (item)))
+@@ -500,6 +462,7 @@
+ 				  item->icon_size);
+   gtk_image_set_from_pixbuf (GTK_IMAGE (item->image), pixbuf);
+   g_object_unref (pixbuf);
++*/
+ }
+ 
+ 
+@@ -550,3 +513,13 @@
+     }
+   g_object_notify (G_OBJECT (item), "icon-size");
+ }
++
++void
++fusa_user_menu_item_set_conflict  (FusaUserMenuItem *item,
++                          gboolean          conflict)
++{
++	g_return_if_fail (FUSA_IS_USER_MENU_ITEM (item));
++	item->conflict_mode = conflict;
++	reset_label(item);
++	return;
++}
+
+=== modified file 'src/fusa-user-menu-item.h'
+--- src/fusa-user-menu-item.h	2005-07-27 22:13:57 +0000
++++ src/fusa-user-menu-item.h	2008-09-15 19:08:47 +0000
+@@ -44,6 +44,8 @@
+ #define FUSA_USER_MENU_ITEM_GET_CLASS(object) \
+   (G_TYPE_INSTANCE_GET_CLASS ((object), FUSA_TYPE_USER_MENU_ITEM, FusaUserMenuItemClass))
+ 
++#define FUSA_USER_MENU_ITEM_PAD  0
++
+ typedef struct _FusaUserMenuItem FusaUserMenuItem;
+ typedef struct _FusaUserMenuItemClass FusaUserMenuItemClass;
+ 
+@@ -57,6 +59,9 @@
+ void       fusa_user_menu_item_set_icon_size (FusaUserMenuItem *item,
+ 					      gint              pixel_size);
+ 
++void       fusa_user_menu_item_set_conflict  (FusaUserMenuItem *item,
++                          gboolean          conflict);
++
+ G_END_DECLS
+ 
+ #endif /* !__FUSA_USER_MENU_ITEM__ */
+

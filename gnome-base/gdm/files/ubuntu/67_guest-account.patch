@@ -1,0 +1,133 @@
+# Description: If a flexisession with user  name ":guest" is requested
+#  (which is an impossible system user name), and guest session
+#  setup/teardown scripts are available in
+#  /usr/share/gdm/guest-session/ (shipped by separate gdm-guest-user
+#  package), run a guest session without requiring a password. This
+#  flexiserver command requires standard gdm authentication, and thus
+#  can only be run by users who are already logged into the machine.
+#  Guest sessions call /usr/share/gdm/guest-session/Xsession instead of
+#  /etc/gdm/Xsession, so that we can wrap AppArmor (or other MAC
+#  system) rules around it.
+# Ubuntu: https://wiki.ubuntu.com/DesktopTeam/Specs/Intrepid/GuestAccount
+# UbuntuSpecific: Yes, upstream works on guest account support in gdm
+#   2.22+, but that is not appropriate for Intrepid yet.
+--- gdm-2.20.7/daemon/slave.c	2008-07-28 16:47:05.000000000 +0200
++++ gdm-2.20.7.new/daemon/slave.c	2008-07-29 10:51:12.000000000 +0200
+@@ -1604,6 +1604,102 @@
+ 		/* this usually doesn't return */
+ 		gdm_slave_chooser ();  /* Run the chooser */
+ 		return;
++	} else if (d->preset_user && !strcmp(d->preset_user, ":guest")) {
++                GError *err = NULL;
++                gboolean result;
++                gchar *sout, *serr;
++                char *username;
++                gint status;
++                int len;
++                struct sigaction dfl, old_act;
++                const char* argv[] = {
++                    "/usr/share/gdm/guest-session/guest-session-setup.sh",
++                    NULL, NULL}; /* leave enough room for one argument */
++
++		gdm_debug ("gdm_slave_run: Starting guest login");
++
++                /* temporarily reset SIGCHLD, we need it for g_spawn_sync */
++                dfl.sa_handler = SIG_DFL;
++                dfl.sa_flags = SA_RESTART|SA_NOCLDSTOP;
++                sigemptyset (&dfl.sa_mask);
++                if (sigaction (SIGCHLD, &dfl, &old_act) < 0) {
++                    gdm_debug("gdm_slave_run: failure to temporarily restore SIGCHLD: %s",
++                        strerror(errno));
++                    return;
++                }
++
++                /* call guest setup script */
++                result = g_spawn_sync ("/", (gchar**) argv, NULL, 0, NULL, NULL, &sout,
++                    &serr, &status, &err);
++                g_assert (sigaction (SIGCHLD, &old_act, NULL) == 0);
++                if (!result) {
++                    gdm_debug ("gdm_slave_run: Calling %s failed: %s", argv[0],
++                        err->message);
++                    g_error_free (err);
++                    return;
++                }
++                if (status != 0) {
++                    gdm_debug ("gdm_slave_run: %s failed with status %i:\n%s\n%s",
++                        argv[0], status, sout, serr);
++                    g_free(sout);
++                    g_free(serr);
++                    return;
++                }
++                g_free (serr);
++
++                /* extract user name from stdout */
++                len = strlen (sout);
++                if (sout[len-1] == '\n')
++                    sout[len-1] = 0;
++                username = strrchr (sout, '\n');
++                if (!username) {
++                    gdm_debug ("gdm_slave_run: no output, last line of stdout must have username");
++                    g_free (sout);
++                    return;
++                }
++                username = g_strdup (username + 1);
++                g_free (sout);
++
++                gdm_debug ("gdm_slave_run: %s succeeded, username: '%s'", argv[0], username);
++
++                /* run guest session */
++		d->logged_in = TRUE;
++		gdm_slave_send_num (GDM_SOP_LOGGED_IN, TRUE);
++		gdm_slave_send_string (GDM_SOP_LOGIN, username);
++
++		if (setup_automatic_session (d, username)) {
++			gdm_slave_session_start ();
++		}
++
++		gdm_slave_send_num (GDM_SOP_LOGGED_IN, FALSE);
++		d->logged_in = FALSE;
++		gdm_slave_send_string (GDM_SOP_LOGIN, "");
++		logged_in_uid = -1;
++		logged_in_gid = -1;
++
++		gdm_debug ("gdm_slave_run: Guest login done");
++
++                /* call guest teardown script */
++                argv[0] = "/usr/share/gdm/guest-session/guest-session-cleanup.sh";
++                argv[1] = username;
++                g_assert (sigaction (SIGCHLD, &dfl, &old_act) == 0);
++                result = g_spawn_sync ("/", (gchar**) argv, NULL, 0, NULL, NULL, NULL,
++                    NULL, &status, &err);
++                g_assert (sigaction (SIGCHLD, &old_act, NULL) == 0);
++                if (!result) {
++                    gdm_debug ("gdm_slave_run: Calling '%s %s' failed: %s", argv[0],
++                        argv[1], err->message);
++                    g_error_free (err);
++                }
++                g_free (username);
++
++		if (remanage_asap) {
++			gdm_slave_quick_exit (DISPLAY_REMANAGE);
++		}
++
++		/* return to gdm_slave_start so that the server
++		 * can be reinitted and all that kind of fun stuff. */
++		return;
+ 	} else if (d->type == TYPE_STATIC &&
+ 		   gdm_first_login &&
+ 		   ! ve_string_empty (ParsedAutomaticLogin) &&
+@@ -3885,7 +3981,13 @@
+ #endif
+ 
+ 	if (sessionexec != NULL) {
+-		const char *basexsession = gdm_daemon_config_get_value_string (GDM_KEY_BASE_XSESSION);
++		const char *basexsession;
++                if (d->preset_user && !strcmp (d->preset_user, ":guest")) {
++                    basexsession = "/usr/share/gdm/guest-session/Xsession";
++                    gdm_debug ("session_child_run: guest session, calling session %s", basexsession);
++                } else {
++                    basexsession = gdm_daemon_config_get_value_string (GDM_KEY_BASE_XSESSION);
++                }
+ 		char **bxvec = g_strsplit (basexsession, " ", -1);
+ 
+ 		/* cannot be possibly failsafe */

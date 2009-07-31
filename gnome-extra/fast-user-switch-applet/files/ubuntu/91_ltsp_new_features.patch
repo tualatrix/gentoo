@@ -1,0 +1,29 @@
+=== modified file 'src/applet.c'
+diff -Nur -x '*.orig' -x '*~' fast-user-switch-applet-2.24.0/src/applet.c fast-user-switch-applet-2.24.0.new/src/applet.c
+--- fast-user-switch-applet-2.24.0/src/applet.c	2009-04-10 01:33:00.966098377 +0100
++++ fast-user-switch-applet-2.24.0.new/src/applet.c	2009-04-10 01:33:02.338098424 +0100
+@@ -2843,7 +2843,8 @@
+    * gdm-guest-session installed, offer it */
+   if (show_guest && !adata->guest_active &&
+       access ("/usr/share/gdm/guest-session/guest-session-launch", X_OK) == 0 &&
+-      geteuid() >= 500)
++      geteuid() >= 500 &&
++	  !g_getenv("LTSP_CLIENT"))
+     gtk_widget_show (adata->guest_session_item);
+   else
+     gtk_widget_hide (adata->guest_session_item);
+@@ -3520,12 +3521,14 @@
+ 	if (adata->hibernate_available) {
+ 		gtk_widget_show(adata->hibernate_item);
+ 	}
++	if (!g_getenv("LTSP_CLIENT")) {
+ 	if (adata->restart_available) {
+ 		gtk_widget_show(adata->reboot_item);
+ 	}
+ 	if (adata->shutdown_available) {
+ 		gtk_widget_show(adata->shutdown_item);
+     }
++	}
+   }
+ 
+   return;

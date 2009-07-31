@@ -1,0 +1,51 @@
+=== modified file 'src/applet.c'
+--- src/applet.c	2009-03-05 02:18:33 +0000
++++ src/applet.c	2009-03-05 02:18:45 +0000
+@@ -3442,6 +3442,8 @@
+ static void
+ fusa_applet_data_free (FusaAppletData *adata)
+ {
++  gulong signal_id;
++
+   if (adata->prefs)
+     gtk_widget_destroy (adata->prefs);
+ 
+@@ -3453,10 +3455,36 @@
+   g_object_unref (adata->client);
+ 
+   /* User manager */
++  if (adata->user_notify_id != 0) {
++  	g_signal_handler_disconnect(fusa_manager_get_user_by_uid (adata->manager, getuid ()),
++	                            adata->user_notify_id);
++    adata->user_notify_id = 0;
++  }
++  signal_id = g_signal_handler_find(adata->manager, G_SIGNAL_MATCH_DATA,
++                                           0, 0, NULL, NULL, adata);
++  while (signal_id != 0) {
++	  g_signal_handler_disconnect(adata->manager, signal_id);
++	  signal_id = g_signal_handler_find(adata->manager, G_SIGNAL_MATCH_DATA,
++									    0, 0, NULL, NULL, adata);
++  }
++
++  /* Delete user callbacks */
++  GSList * users = fusa_manager_list_users (adata->manager);
++  while (users) {
++      signal_id = g_signal_handler_find(users->data, G_SIGNAL_MATCH_DATA,
++					       0, 0, NULL, NULL, adata);
++      while (signal_id != 0) {
++	g_signal_handler_disconnect(users->data, signal_id);
++	signal_id = g_signal_handler_find(users->data, G_SIGNAL_MATCH_DATA,
++				0, 0, NULL, NULL, adata);
++      }
++      users = g_slist_delete_link (users, users);
++  } /* while users */
++
+   g_object_unref (adata->manager);
+ 
+   /* Status Manager */
+-  gulong signal_id = g_signal_handler_find(adata->status_manager, G_SIGNAL_MATCH_DATA,
++  signal_id = g_signal_handler_find(adata->status_manager, G_SIGNAL_MATCH_DATA,
+                                            0, 0, NULL, NULL, adata);
+   while (signal_id != 0) {
+ 	  g_signal_handler_disconnect(adata->status_manager, signal_id);
+

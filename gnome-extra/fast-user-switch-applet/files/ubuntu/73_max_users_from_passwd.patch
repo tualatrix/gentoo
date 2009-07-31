@@ -1,0 +1,167 @@
+=== modified file 'src/applet.c'
+--- old/src/applet.c	2008-07-18 02:58:57 +0000
++++ new/src/applet.c	2008-10-31 19:55:16 +0000
+@@ -229,7 +229,8 @@
+ /* Utility Functions */
+ static void      reset_login_screen_item      (GtkWidget      *widget,
+ 					       gboolean        use_xnest_value,
+-					       const gchar    *pref_value);
++					       const gchar    *pref_value,
++					       FusaManager * manager);
+ static void      reset_login_window_item      (GtkWidget      *widget,
+ 					       gboolean        use_xnest_value,
+ 					       const gchar    *pref_value);
+@@ -573,7 +574,7 @@
+ 
+   use_xnest = panel_applet_gconf_get_bool (applet, USE_XNEST_KEY, NULL);
+   value = gconf_client_get_string (adata->client, SHOW_SCREEN_KEY, NULL);
+-  reset_login_screen_item (adata->login_screen_item, use_xnest, value);
++  reset_login_screen_item (adata->login_screen_item, use_xnest, value, adata->manager);
+   g_free (value);
+ 
+   value = gconf_client_get_string (adata->client, SHOW_WINDOW_KEY, NULL);
+@@ -1245,6 +1246,12 @@
+   g_signal_connect (user, "displays-changed",
+ 		    G_CALLBACK (user_displays_changed_cb), adata);
+   sort_menu (adata);
++
++    reset_login_screen_item (adata->login_screen_item,
++			     panel_applet_gconf_get_bool (adata->applet,
++							  USE_XNEST_KEY, NULL),
++			     gconf_client_get_string (adata->client, SHOW_SCREEN_KEY, NULL),
++			     adata->manager);
+ }
+ 
+ static void
+@@ -1441,7 +1448,7 @@
+ 
+       str = gconf_client_get_string (client, SHOW_SCREEN_KEY, NULL);
+       reset_login_screen_item (adata->login_screen_item,
+-			       gconf_value_get_bool (value), str);
++			       gconf_value_get_bool (value), str, adata->manager);
+       g_free (str);
+ 
+       str = gconf_client_get_string (client, SHOW_WINDOW_KEY, NULL);
+@@ -1480,7 +1487,7 @@
+     reset_login_screen_item (adata->login_screen_item,
+ 			     panel_applet_gconf_get_bool (adata->applet,
+ 							  USE_XNEST_KEY, NULL),
+-			     gconf_value_get_string (value));
++			     gconf_value_get_string (value), adata->manager);
+   else if (strcmp (key, SHOW_WINDOW_KEY) == 0)
+     reset_login_window_item (adata->login_window_item,
+ 			     panel_applet_gconf_get_bool (adata->applet,
+@@ -1936,9 +1943,10 @@
+ static void
+ reset_login_screen_item (GtkWidget   *widget,
+ 			 gboolean     use_xnest_value,
+-			 const gchar *pref_value)
++			 const gchar *pref_value,
++			 FusaManager * manager)
+ {
+-  if (!pref_value || strcmp (pref_value, "always") == 0)
++  if (!pref_value || strcmp (pref_value, "always") == 0 || fusa_manager_get_passwd_overload(manager))
+     gtk_widget_show (widget);
+   else if (pref_value && strcmp (pref_value, "never") == 0)
+     gtk_widget_hide (widget);
+
+=== modified file 'src/fusa-manager.c'
+--- old/src/fusa-manager.c	2008-07-20 15:38:21 +0000
++++ new/src/fusa-manager.c	2008-11-06 15:54:30 +0000
+@@ -135,6 +135,8 @@
+   gsize user_max_file;
+   gint max_icon_size;
+ 
++  gboolean passwd_overload;
++
+   guint8 allow_root  : 1;
+   guint8 relax_group : 1;
+   guint8 relax_other : 1;
+@@ -380,6 +382,8 @@
+   g_object_unref (file);
+   file = NULL;
+ 
++  manager->passwd_overload = FALSE;
++
+   /* /etc/passwd */
+   manager->users =
+     g_hash_table_new_full (g_str_hash, g_str_equal,
+@@ -785,11 +789,14 @@
+   endusershell ();
+ }
+ 
++#define MAX_USERS 15
++
+ static void
+ reload_passwd (FusaManager *manager)
+ {
+   struct passwd *pwent;
+   GSList *old_users, *new_users, *list;
++  guint user_count;
+   
+   old_users = NULL;
+   new_users = NULL;
+@@ -809,7 +816,36 @@
+ 
+   setpwent ();
+ 
+-  for (pwent = getpwent (); pwent; pwent = getpwent ())
++  manager->passwd_overload = FALSE;
++  for (pwent = getpwent (), user_count = 0; 
++           pwent && user_count < MAX_USERS;
++           pwent = getpwent (), user_count++) {
++	/* Skip users below MinimalUID... */
++	if (pwent->pw_uid < manager->minimal_uid) {
++		user_count--;
++		continue;
++	}
++
++	/* ...And users w/ invalid shells... */
++	if (!pwent->pw_shell ||
++			!g_hash_table_lookup (manager->shells, pwent->pw_shell)) {
++	  	user_count--;
++		continue;
++	}
++
++	/* ...And explicitly excluded users */
++	if (g_hash_table_lookup (manager->exclusions, pwent->pw_name)) {
++	  	user_count--;
++		continue;
++	}
++  }
++  if (user_count == MAX_USERS) {
++    manager->passwd_overload = TRUE;
++  }
++
++  setpwent ();
++
++  for (pwent = getpwent (); pwent && !manager->passwd_overload; pwent = getpwent ())
+     {
+       FusaUser *user;
+ 
+@@ -1490,6 +1526,12 @@
+   return default_manager;
+ }
+ 
++gboolean
++fusa_manager_get_passwd_overload (FusaManager * manager)
++{
++  return manager->passwd_overload;
++}
++
+ /**
+  * fusa_manager_get_display:
+  * @manager: the manager to query.
+
+=== modified file 'src/fusa-manager.h'
+--- old/src/fusa-manager.h	2006-10-31 02:39:32 +0000
++++ new/src/fusa-manager.h	2008-10-31 19:55:16 +0000
+@@ -83,6 +83,7 @@
+ GType        fusa_manager_get_type              (void) G_GNUC_CONST;
+ 
+ FusaManager *fusa_manager_ref_default           (void);
++gboolean     fusa_manager_get_passwd_overload   (FusaManager * manager);
+ 
+ /* Users */
+ GSList      *fusa_manager_list_users            (FusaManager *manager);
+

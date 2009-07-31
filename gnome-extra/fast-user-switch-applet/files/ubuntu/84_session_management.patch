@@ -1,0 +1,2196 @@
+=== modified file 'configure.ac'
+diff -Nur -x '*.orig' -x '*~' fast-user-switch-applet-2.24.0/configure.ac fast-user-switch-applet-2.24.0.new/configure.ac
+--- fast-user-switch-applet-2.24.0/configure.ac	2008-09-22 14:56:37.000000000 +0100
++++ fast-user-switch-applet-2.24.0.new/configure.ac	2009-04-13 02:31:09.637187632 +0100
+@@ -51,7 +51,9 @@
+ PKG_CHECK_MODULES(APPLET, gtk+-2.0 >= $GTK_REQUIRED_VERSION
+ 	     libpanelapplet-2.0 >= $PANEL_REQUIRED_VERSION
+ 	     libglade-2.0 >= $GLADE_REQUIRED_VERSION
+-	     gio-2.0 >= $GLIB_REQUIRED_VERSION)
++	     gio-2.0 >= $GLIB_REQUIRED_VERSION
++	     polkit-gnome
++	     libgnomeui-2.0)
+ AC_SUBST(APPLET_CFLAGS)
+ AC_SUBST(APPLET_LIBS)
+ 
+diff -Nur -x '*.orig' -x '*~' fast-user-switch-applet-2.24.0/data/fast-user-switch-applet.schemas.in fast-user-switch-applet-2.24.0.new/data/fast-user-switch-applet.schemas.in
+--- fast-user-switch-applet-2.24.0/data/fast-user-switch-applet.schemas.in	2009-04-13 02:31:08.205186760 +0100
++++ fast-user-switch-applet-2.24.0.new/data/fast-user-switch-applet.schemas.in	2009-04-13 02:31:09.637187632 +0100
+@@ -36,6 +36,17 @@
+       </locale>
+     </schema>
+     <schema>
++      <key>/schemas/apps/fast-user-switch-applet/per-applet/suppress_logout_restart_shutdown</key>
++      <owner>fast-user-switch-applet</owner>
++      <type>bool</type>
++      <default>FALSE</default>
++      <locale name="C">
++	<short>Suppress the dialog to confirm logout, restart and shutdown action</short>
++	<long>Whether or not to show confirmation dialogs for logout,
++        restart and shutdown actions.</long>
++      </locale>
++    </schema>
++    <schema>
+       <key>/schemas/apps/fast-user-switch-applet/show_screen_item</key>
+       <applyto>/apps/fast-user-switch-applet/show_screen_item</applyto>
+       <owner>fast-user-switch-applet</owner>
+@@ -75,6 +86,19 @@
+       </locale>
+     </schema>
+     <schema>
++      <key>/schemas/apps/fast-user-switch-applet/show_session_commands</key>
++      <applyto>/apps/fast-user-switch-applet/show_session_commands</applyto>
++      <owner>fast-user-switch-applet</owner>
++      <type>bool</type>
++      <default>TRUE</default>
++      <locale name="C">
++	<short>Show Commands to Affect the Session</short>
++	<long>Whether to show the commands to logout, login and shutdown the
++	computer in the applet's menu.
++	</long>
++      </locale>
++    </schema>
++    <schema>
+       <key>/schemas/apps/fast-user-switch-applet/show_guest_login</key>
+       <applyto>/apps/fast-user-switch-applet/show_guest_login</applyto>
+       <owner>fast-user-switch-applet</owner>
+diff -Nur -x '*.orig' -x '*~' fast-user-switch-applet-2.24.0/data/ui.glade fast-user-switch-applet-2.24.0.new/data/ui.glade
+--- fast-user-switch-applet-2.24.0/data/ui.glade	2008-09-22 14:54:51.000000000 +0100
++++ fast-user-switch-applet-2.24.0.new/data/ui.glade	2009-04-13 02:31:09.637187632 +0100
+@@ -511,6 +511,27 @@
+ 			  <property name="fill">False</property>
+ 			</packing>
+ 		      </child>
++
++		      <child>
++			<widget class="GtkCheckButton" id="confirmations_check">
++			  <property name="visible">True</property>
++			  <property name="tooltip" translatable="yes">Logout, restart and shutdown actions have to be confirmed.</property>
++			  <property name="can_focus">True</property>
++			  <property name="label" translatable="yes">Show _confirm dialogs for logout, restart and shutdown</property>
++			  <property name="use_underline">True</property>
++			  <property name="relief">GTK_RELIEF_NORMAL</property>
++			  <property name="focus_on_click">True</property>
++			  <property name="active">True</property>
++			  <property name="inconsistent">False</property>
++			  <property name="draw_indicator">True</property>
++			</widget>
++			<packing>
++			  <property name="padding">0</property>
++			  <property name="expand">False</property>
++			  <property name="fill">False</property>
++			</packing>
++		      </child>
++
+ 		    </widget>
+ 		  </child>
+ 		</widget>
+diff -Nur -x '*.orig' -x '*~' fast-user-switch-applet-2.24.0/po/POTFILES.in fast-user-switch-applet-2.24.0.new/po/POTFILES.in
+--- fast-user-switch-applet-2.24.0/po/POTFILES.in	2008-09-22 14:54:53.000000000 +0100
++++ fast-user-switch-applet-2.24.0.new/po/POTFILES.in	2009-04-13 02:31:09.637187632 +0100
+@@ -12,3 +12,4 @@
+ src/fusa-user.c
+ src/fusa-utils.c
+ src/gdm-queue.c
++src/logout-dialog.c
+diff -Nur -x '*.orig' -x '*~' fast-user-switch-applet-2.24.0/src/applet.c fast-user-switch-applet-2.24.0.new/src/applet.c
+--- fast-user-switch-applet-2.24.0/src/applet.c	2009-04-13 02:31:08.209187930 +0100
++++ fast-user-switch-applet-2.24.0.new/src/applet.c	2009-04-13 02:31:09.641186567 +0100
+@@ -52,14 +52,21 @@
+ #include <bonobo/bonobo-ui-util.h>
+ 
+ #include <libgnome/gnome-init.h>
+-#include <libgnomeui/gnome-help.h>
++#include <gnome.h>
+ 
+ #include <panel-applet.h>
+ #include <panel-applet-gconf.h>
+ 
++#include <dbus/dbus-glib.h>
++
+ #include "fusa-manager.h"
+ #include "fusa-user-menu-item.h"
+ #include "fusa-utils.h"
++#include "gdm-queue.h"
++#include "logout-dialog.h"
++#include "fade-and-grab.h"
++#include <polkit-gnome/polkit-gnome.h>
++#include "applet.h"
+ 
+ 
+ /* **************** *
+@@ -69,15 +76,18 @@
+ #define DISPLAY_KEY	"display_style"
+ #define USE_XNEST_KEY	"use_xnest"
+ #define LOCK_KEY	"lock_screen_after_switch"
++#define SUPPRESS_KEY	"suppress_logout_restart_shutdown"
+ 
+ #define GLOBAL_DIR	"/apps/fast-user-switch-applet"
+ #define SHOW_WINDOW_KEY	"/apps/fast-user-switch-applet/show_window_item"
+ #define SHOW_SCREEN_KEY	"/apps/fast-user-switch-applet/show_screen_item"
+ #define SHOW_GUEST_KEY	"/apps/fast-user-switch-applet/show_guest_login"
+ #define ACTIVE_ONLY_KEY	"/apps/fast-user-switch-applet/show_active_users_only"
++#define SHOW_SESSION_COMMANDS "/apps/fast-user-switch-applet/show_session_commands"
+ 
+ #define LOCKDOWN_DIR    "/desktop/gnome/lockdown"
+ #define LOCKDOWN_KEY    LOCKDOWN_DIR "/disable_user_switching"
++#define LOCK_SCREEN_KEY  LOCKDOWN_DIR "/disable_lock_screen"
+ 
+ /* ******************** *
+  *  Private Structures  *
+@@ -98,6 +108,14 @@
+   GtkWidget *separator_item;
+   GtkWidget *login_screen_item;
+   GtkWidget *login_window_item;
++  GtkWidget *session_separator_item;
++  GtkWidget *lock_screen_item;
++  GtkWidget *close_session_item;
++  GtkWidget *suspend_item;
++  GtkWidget *hibernate_item;
++  GtkWidget *reboot_item;
++  GtkWidget *shutdown_item;
++
+   GtkWidget *guest_session_item;
+   GSList *items;
+ 
+@@ -110,6 +128,18 @@
+   GtkIconSize icon_size;
+ 
+   gboolean guest_active;
++
++  gboolean hibernate_available;
++  gboolean suspend_available;
++  gboolean lock_screen_allowed;
++  gboolean restart_available;
++  gboolean shutdown_available;
++
++  GtkWidget *session_dialog;
++  gboolean	session_dialog_displayed;
++
++  /* DBus events */
++  DBusGProxy * dbus_proxy;
+ }
+ FusaAppletData;
+ 
+@@ -120,6 +150,19 @@
+ }
+ SelectorResponseData;
+ 
++typedef struct _SelectorAppletAction
++{
++  FusaAppletData *adata;
++  gint action;
++}
++SelectorAppletAction;
++
++enum {
++	SHUTDOWN,
++	RESTART,
++	LOGOUT,
++};
++
+ 
+ /* ********************* *
+  *  Function Prototypes  *
+@@ -204,6 +247,8 @@
+ 					       gpointer         data);
+ static void     prefs_lock_check_toggled_cb   (GtkToggleButton *button,
+ 					       gpointer         data);
++static void     prefs_confirm_check_toggled_cb (GtkToggleButton *button,
++					        gpointer         data);
+ static gboolean menubar_button_press_event_cb (GtkWidget       *menubar,
+ 					       GdkEventButton  *event,
+ 					       gpointer         data);
+@@ -232,6 +277,18 @@
+ 					       GParamSpec      *pspec,
+ 					       gpointer         data);
+ 
++static gboolean ck_multiple_users   (void);
++
++static void     session_activate_cb          (GtkMenuItem *item,
++			               gpointer     data);
++static void     lock_screen_activate_cb  (GtkMenuItem *item,
++			               gpointer     data);
++static void     power_management_activate_cb  (GtkMenuItem *item,
++			               gpointer     data);
++
++static void		session_action		(gint action);
++
++
+ /* Utility Functions */
+ static void      show_hide_guest              (FusaAppletData *adata);
+ static void      reset_login_screen_item      (GtkWidget      *widget,
+@@ -261,6 +318,13 @@
+ static void      make_label_larger            (GtkLabel       *label);
+ static void      make_label_small_italic      (GtkLabel       *label);
+ static void      fusa_applet_data_free        (FusaAppletData *adata);
++static void      dbus_namechange              (DBusGProxy * proxy,
++                           const gchar * name,
++                           const gchar * prev,
++                           const gchar * new,
++                           FusaAppletData * adata);
++void             update_session_ui            (FusaAppletData * adata);
++static void      discover_pm_abilities        (FusaAppletData *adata);
+ 
+ 
+ /* ****************** *
+@@ -270,7 +334,6 @@
+ static GtkTooltips *tooltips = NULL;
+ static GnomeProgram *program = NULL;
+ 
+-
+ /* *************************** *
+  *  Applet main() Declaration  *
+  * *************************** */
+@@ -307,6 +370,7 @@
+   gchar *tmp, *key, *value;
+   gboolean use_xnest, active_only;
+   BonoboUIComponent *popup_component;
++  SelectorAppletAction* sAppletAction;
+ 
+   if (strcmp (iid, "OAFIID:GNOME_FastUserSwitchApplet") != 0)
+     return FALSE;
+@@ -320,10 +384,12 @@
+       first_time = TRUE;
+ 
+       program = gnome_program_init ("fast-user-switch-applet", VERSION,
+-				    LIBGNOME_MODULE, argc, argv,
++				    LIBGNOMEUI_MODULE, argc, argv,
+ 				    GNOME_PROGRAM_STANDARD_PROPERTIES,
+ 				    NULL);
+ 
++      g_type_init();
++
+       /* Do this here so it's only done once. */
+       gtk_rc_parse_string ("style \"fast-user-switch-menubar-style\"\n"
+ 			   "{\n"
+@@ -346,6 +412,30 @@
+ 
+   adata->client = gconf_client_get_default ();
+   adata->manager = fusa_manager_ref_default ();
++  adata->session_dialog = NULL;
++  adata->session_dialog_displayed = FALSE;
++
++  discover_pm_abilities(adata);
++
++  adata->dbus_proxy = NULL;
++  DBusGConnection * sbus;
++  sbus = dbus_g_bus_get(DBUS_BUS_SESSION, NULL);
++  if (sbus != NULL) {
++	adata->dbus_proxy = dbus_g_proxy_new_for_name_owner (sbus,
++	                                                  DBUS_SERVICE_DBUS,
++	                                                  DBUS_PATH_DBUS,
++	                                                  DBUS_INTERFACE_DBUS,
++	                                                  NULL);
++  }
++
++  if (adata->dbus_proxy != NULL) {
++	  dbus_g_proxy_add_signal(adata->dbus_proxy, "NameOwnerChanged",
++								G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
++								G_TYPE_INVALID);
++	  dbus_g_proxy_connect_signal(adata->dbus_proxy, "NameOwnerChanged",
++								G_CALLBACK(dbus_namechange),
++								adata, NULL);
++  }
+ 
+   tmp = g_strdup_printf ("applet-user-menu-item-%p", adata);
+   adata->user_menu_item_quark = g_quark_from_string (tmp);
+@@ -360,7 +450,7 @@
+   else
+     g_object_ref (tooltips);
+ 
+-  gtk_tooltips_set_tip (tooltips, GTK_WIDGET (applet), _("User Switcher"), NULL);
++  gtk_tooltips_set_tip (tooltips, GTK_WIDGET (applet), _("Switch users or shut down"), NULL);
+   gtk_container_set_border_width (GTK_CONTAINER (applet), 0);
+   gtk_widget_set_name (GTK_WIDGET (applet), "fast-user-switch-applet");
+   panel_applet_set_flags (applet, PANEL_APPLET_EXPAND_MINOR);
+@@ -559,10 +649,12 @@
+   g_signal_connect (adata->manager, "user-added",
+ 		    G_CALLBACK (manager_user_added_cb), adata);
+ 
++  /* Add a seperator */
+   adata->separator_item = gtk_separator_menu_item_new ();
+   gtk_menu_shell_append (GTK_MENU_SHELL (adata->menu), adata->separator_item);
+   adata->items = g_slist_prepend (adata->items, adata->separator_item);
+ 
++  /* Add the 'other user' entry */
+   adata->login_screen_item = gtk_image_menu_item_new_with_label (_("Other"));
+   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (adata->login_screen_item),
+ 				 gtk_image_new ());
+@@ -576,6 +668,7 @@
+ 		    G_CALLBACK (login_screen_activate_cb), adata);
+   adata->items = g_slist_prepend (adata->items, adata->login_screen_item);
+ 
++  /* Add an entry for a login window */
+   adata->login_window_item = gtk_image_menu_item_new_with_label (_("Login Window"));
+   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (adata->login_window_item),
+ 				 gtk_image_new ());
+@@ -589,6 +682,110 @@
+ 		    G_CALLBACK (login_window_activate_cb), adata);
+   adata->items = g_slist_prepend (adata->items, adata->login_window_item);
+ 
++  /* Add a seperator */
++  adata->session_separator_item = gtk_separator_menu_item_new ();
++  gtk_menu_shell_append (GTK_MENU_SHELL (adata->menu), adata->session_separator_item);
++
++  /* Add entry for lock screen */
++  adata->lock_screen_item = gtk_image_menu_item_new_with_label (_("Lock Screen"));
++  gtk_menu_shell_append (GTK_MENU_SHELL (adata->menu),
++			  adata->lock_screen_item);
++  g_signal_connect (adata->lock_screen_item, "style-set",
++		    G_CALLBACK (menuitem_style_set_cb), adata);
++  g_signal_connect (adata->lock_screen_item, "destroy",
++		    G_CALLBACK (menuitem_destroy_cb), adata);
++  g_signal_connect (adata->lock_screen_item, "activate",
++		    G_CALLBACK (lock_screen_activate_cb), NULL);
++
++
++  /* Add entry for log off */
++  sAppletAction = g_new0 (SelectorAppletAction, 3);
++  sAppletAction[0].adata = adata;
++  sAppletAction[0].action = (gint) LOGOUT;
++  /* Only show dots when confirmation is enabled */
++  if (panel_applet_gconf_get_bool (adata->applet, SUPPRESS_KEY, NULL))
++    {
++      adata->close_session_item = gtk_image_menu_item_new_with_label (_("Log Out"));
++    }
++  else
++    {
++      adata->close_session_item = gtk_image_menu_item_new_with_label (_("Log Out..."));
++    }
++  gtk_menu_shell_append (GTK_MENU_SHELL (adata->menu),
++			  adata->close_session_item);
++  g_signal_connect (adata->close_session_item, "style-set",
++		    G_CALLBACK (menuitem_style_set_cb), adata);
++  g_signal_connect (adata->close_session_item, "destroy",
++		    G_CALLBACK (menuitem_destroy_cb), adata);
++  g_signal_connect (adata->close_session_item, "activate",
++		    G_CALLBACK (session_activate_cb), &sAppletAction[0]);
++
++  /* Add entry for suspend */
++  adata->suspend_item = gtk_image_menu_item_new_with_label (_("Suspend"));
++  gtk_menu_shell_append (GTK_MENU_SHELL (adata->menu),
++			  adata->suspend_item);
++  g_signal_connect (adata->suspend_item, "style-set",
++		    G_CALLBACK (menuitem_style_set_cb), adata);
++  g_signal_connect (adata->suspend_item, "destroy",
++		    G_CALLBACK (menuitem_destroy_cb), adata);
++  g_signal_connect (adata->suspend_item, "activate",
++		    G_CALLBACK (power_management_activate_cb), (gpointer)"Suspend");
++
++  /* Add entry for hibernate */
++  adata->hibernate_item = gtk_image_menu_item_new_with_label (_("Hibernate"));
++  gtk_menu_shell_append (GTK_MENU_SHELL (adata->menu),
++			  adata->hibernate_item);
++  g_signal_connect (adata->hibernate_item, "style-set",
++		    G_CALLBACK (menuitem_style_set_cb), adata);
++  g_signal_connect (adata->hibernate_item, "destroy",
++		    G_CALLBACK (menuitem_destroy_cb), adata);
++  g_signal_connect (adata->hibernate_item, "activate",
++		    G_CALLBACK (power_management_activate_cb), (gpointer)"Hibernate");
++
++  /* Add entry for restart */
++  sAppletAction[1].adata = adata;
++  sAppletAction[1].action = (gint) RESTART;
++  /* Only show dots when confirmation is enabled */
++  if (panel_applet_gconf_get_bool (adata->applet, SUPPRESS_KEY, NULL))
++    {
++      adata->reboot_item = gtk_image_menu_item_new_with_label (_("Restart"));
++    }
++  else
++    {
++      adata->reboot_item = gtk_image_menu_item_new_with_label (_("Restart..."));
++    }
++  gtk_menu_shell_append (GTK_MENU_SHELL (adata->menu),
++			  adata->reboot_item);
++  g_signal_connect (adata->reboot_item, "style-set",
++		    G_CALLBACK (menuitem_style_set_cb), adata);
++  g_signal_connect (adata->reboot_item, "destroy",
++		    G_CALLBACK (menuitem_destroy_cb), adata);
++  g_signal_connect (adata->reboot_item, "activate",
++		    G_CALLBACK (session_activate_cb), &sAppletAction[1]);
++
++  /* Add entry for shutdown */
++  sAppletAction[2].adata = adata;
++  sAppletAction[2].action = (gint) SHUTDOWN;
++  /* Only show dots when confirmation is enabled */
++  if (panel_applet_gconf_get_bool (adata->applet, SUPPRESS_KEY, NULL))
++    {
++      adata->shutdown_item = gtk_image_menu_item_new_with_label (_("Shut Down"));
++    }
++  else
++    {
++      adata->shutdown_item = gtk_image_menu_item_new_with_label (_("Shut Down..."));
++    }
++  gtk_menu_shell_append (GTK_MENU_SHELL (adata->menu),
++			  adata->shutdown_item);
++  g_signal_connect (adata->shutdown_item, "style-set",
++		    G_CALLBACK (menuitem_style_set_cb), adata);
++  g_signal_connect (adata->shutdown_item, "destroy",
++		    G_CALLBACK (menuitem_destroy_cb), adata);
++  g_signal_connect (adata->shutdown_item, "activate",
++		    G_CALLBACK (session_activate_cb), &sAppletAction[2]);
++
++  update_session_ui(adata);
++
+   use_xnest = panel_applet_gconf_get_bool (applet, USE_XNEST_KEY, NULL);
+   value = gconf_client_get_string (adata->client, SHOW_SCREEN_KEY, NULL);
+   reset_login_screen_item (adata->login_screen_item, use_xnest, value, adata->manager);
+@@ -637,7 +834,7 @@
+ 			     client_notify_global_func, adata, NULL, NULL);
+ 
+   adata->client_notify_lockdown_id =
+-    gconf_client_notify_add (adata->client, LOCKDOWN_KEY,
++    gconf_client_notify_add (adata->client, LOCKDOWN_DIR,
+                              client_notify_lockdown_func, adata, NULL, NULL);
+ 
+   adata->items = g_slist_sort_with_data (adata->items,
+@@ -1123,6 +1320,32 @@
+   else if (!xnest_available)
+     gtk_widget_set_sensitive (check, FALSE);
+   g_free (key);
++
++  /* [_] Show confirm dialogs for logout, restart and shutdown */
++  check = glade_xml_get_widget (xml, "confirmations_check");
++  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check),
++				!panel_applet_gconf_get_bool (adata->applet,
++							     SUPPRESS_KEY,
++							     NULL));
++  g_signal_connect (check, "toggled",
++		    G_CALLBACK (prefs_confirm_check_toggled_cb), adata);
++  key = panel_applet_gconf_get_full_key (adata->applet, SUPPRESS_KEY);
++  if (has_lockdown || !gconf_client_key_is_writable (adata->client, key, NULL))
++    {
++      gtk_widget_set_sensitive (check, FALSE);
++
++      if (!label_setup_done)
++	{
++	  GtkWidget *label;
++      
++	  label = glade_xml_get_widget (xml, "warning_label");
++	  make_label_small_italic (GTK_LABEL (label));
++	  label_setup_done = TRUE;
++
++	  gtk_widget_show (warning_box);
++	}
++    }
++  g_free (key);
+   
+   gtk_window_present (GTK_WINDOW (adata->prefs));
+ }
+@@ -1199,6 +1422,7 @@
+ }
+ 
+ 
++
+ /* *********************** *
+  *  FusaManager Callbacks  *
+  * *********************** */
+@@ -1320,6 +1544,11 @@
+           gtk_widget_show ( GTK_WIDGET (adata->applet));
+         }
+     }
++  else if (strcmp (key, LOCK_SCREEN_KEY) == 0)
++    {
++	  adata->lock_screen_allowed = !gconf_value_get_bool (value);
++	  update_session_ui(adata);
++    }
+ }            
+ 
+ static void
+@@ -1363,7 +1592,6 @@
+   sort_menu (adata);
+ }
+ 
+-
+ /* *********************** *
+  *  GConfClient Callbacks  *
+  * *********************** */
+@@ -1508,6 +1736,18 @@
+       else
+ 	gtk_widget_hide (adata->separator_item);
+     }
++  else if (strcmp (key, SUPPRESS_KEY) == 0)
++    {
++    if (gconf_value_get_bool(value)) {
++       gtk_menu_item_set_label(GTK_MENU_ITEM(adata->close_session_item), _("Log Out"));
++	   gtk_menu_item_set_label(GTK_MENU_ITEM(adata->shutdown_item), _("Shut Down"));
++	   gtk_menu_item_set_label(GTK_MENU_ITEM(adata->reboot_item), _("Restart"));
++	} else {
++       gtk_menu_item_set_label(GTK_MENU_ITEM(adata->close_session_item), _("Log Out..."));
++	   gtk_menu_item_set_label(GTK_MENU_ITEM(adata->shutdown_item), _("Shut Down..."));
++	   gtk_menu_item_set_label(GTK_MENU_ITEM(adata->reboot_item), _("Restart..."));
++	}
++	}
+ 
+   g_free (key);
+ }
+@@ -1572,6 +1812,10 @@
+     {
+       show_hide_guest (adata);
+     }
++  else if (strcmp (key, SHOW_SESSION_COMMANDS) == 0)
++    {
++	  update_session_ui(adata);
++    }
+ 
+   if (g_getenv ("LTSP_CLIENT") && (
+       GTK_WIDGET_VISIBLE (adata->login_screen_item) ||
+@@ -1627,6 +1871,17 @@
+ 			       gtk_toggle_button_get_active (button), NULL);
+ }
+ 
++static void
++prefs_confirm_check_toggled_cb (GtkToggleButton *button,
++			        gpointer         data)
++{
++  FusaAppletData *adata;
++
++  adata = data;
++  panel_applet_gconf_set_bool (adata->applet, SUPPRESS_KEY,
++			       !gtk_toggle_button_get_active (button), NULL);
++}
++
+ /*
+  * gnome-panel/applets/wncklet/window-menu.c:window_filter_button_press()
+  * 
+@@ -1995,6 +2250,442 @@
+   gtk_label_set_text (data, fusa_user_get_display_name (FUSA_USER (object)));
+ }
+ 
++static gboolean
++ck_multiple_users (void)
++{
++	DBusGConnection * sbus = dbus_g_bus_get(DBUS_BUS_SYSTEM, NULL);
++	g_return_val_if_fail(sbus != NULL, TRUE); /* worst case */
++	DBusGProxy * proxy = dbus_g_proxy_new_for_name(sbus, "org.freedesktop.ConsoleKit",
++	                                                     "/org/freedesktop/ConsoleKit/Manager",
++	                                                     "org.freedesktop.ConsoleKit.Manager");
++
++	if (proxy == NULL) {
++		return TRUE;
++	}
++
++	gboolean result;
++	GPtrArray * seats = NULL;
++
++	result = dbus_g_proxy_call(proxy, "GetSeats", NULL, G_TYPE_INVALID,
++	                           dbus_g_type_get_collection("GPtrArray", DBUS_TYPE_G_OBJECT_PATH), &seats, G_TYPE_INVALID);
++
++	if (!result) {
++		g_warning("Unable to get the seats for ConsoleKit");
++		g_object_unref(proxy);
++		return TRUE;
++	}
++	
++	gchar * this_session_id = NULL;
++	
++	result = dbus_g_proxy_call(proxy, "GetCurrentSession", NULL, G_TYPE_INVALID,
++							DBUS_TYPE_G_OBJECT_PATH, &this_session_id, G_TYPE_INVALID);
++							
++	g_object_unref(proxy);
++							
++	if (!result) {
++		g_warning("Unable to get current session from ConsoleKit");
++		return TRUE;
++	}
++	
++	proxy = dbus_g_proxy_new_for_name(sbus, "org.freedesktop.ConsoleKit",
++									this_session_id, "org.freedesktop.ConsoleKit.Session");
++
++	if (proxy == NULL) {
++		return TRUE;
++	}
++	
++	guint this_session_uid;
++	
++	result = dbus_g_proxy_call(proxy, "GetUnixUser", NULL, G_TYPE_INVALID,
++							G_TYPE_UINT, &this_session_uid, G_TYPE_INVALID);										
++
++	if (!result) {
++		g_warning("Unable to get UID from ConsoleKit");
++		return TRUE;
++	}
++	
++	guint seat;
++	gboolean multiple_users = FALSE;
++	for (seat = 0; seat < seats->len; seat++) {
++		gchar * seat_id = g_ptr_array_index(seats, seat);
++		DBusGProxy * seat_proxy = dbus_g_proxy_new_for_name(sbus, "org.freedesktop.ConsoleKit",
++		                                                    seat_id, "org.freedesktop.ConsoleKit.Seat");
++		g_free(seat_id);
++
++		if (seat_proxy == NULL) {
++			continue;
++		}
++
++		GPtrArray * sessions = NULL;
++
++		gboolean result = dbus_g_proxy_call(seat_proxy,
++		                                    "GetSessions", NULL, G_TYPE_INVALID,
++	                                        dbus_g_type_get_collection("GPtrArray", DBUS_TYPE_G_OBJECT_PATH), &sessions, G_TYPE_INVALID);
++
++		g_object_unref(seat_proxy);
++		if (!result) {
++			continue;
++		}
++
++		guint session;
++		for (session = 0; session < sessions->len; session++) {
++			gchar * session_id = g_ptr_array_index(sessions, session);
++			if (strcmp(this_session_id, session_id) == 0) {
++				continue;
++			}
++			DBusGProxy * session_proxy = dbus_g_proxy_new_for_name(sbus, "org.freedesktop.ConsoleKit",
++		                                                    	session_id, "org.freedesktop.ConsoleKit.Session");
++		    g_free(session_id);
++		    
++		    if (session_proxy == NULL) {
++		    	continue;
++		    }
++		    
++		    guint session_uid;
++		    result =  dbus_g_proxy_call(session_proxy, "GetUnixUser", NULL, G_TYPE_INVALID,
++		    							G_TYPE_UINT, &session_uid, G_TYPE_INVALID);	
++		    g_object_unref(session_proxy);
++		    							
++		    if (!result) {
++		    	continue;
++		    }
++		    
++		    if (session_uid != this_session_uid) {
++		    	multiple_users = TRUE;
++		    	break;
++		    }
++		}
++		
++		g_ptr_array_free(sessions, TRUE);
++		
++		if (multiple_users) {
++			break;
++		}
++	}
++
++	g_ptr_array_free(seats, TRUE);
++	g_object_unref(proxy);
++	g_free(this_session_id);
++
++	return multiple_users;
++}
++
++gboolean
++pk_require_auth (LogoutDialogAction action) {
++	if (action == LOGOUT_DIALOG_LOGOUT) {
++		return FALSE;
++	}
++
++	gchar * pk_action;
++	if (ck_multiple_users()) {
++		if (action == LOGOUT_DIALOG_RESTART) {
++			pk_action = "org.freedesktop.consolekit.system.restart-multiple-users";
++		} else {
++			pk_action = "org.freedesktop.consolekit.system.stop-multiple-users";
++		}
++	} else {
++		if (action == LOGOUT_DIALOG_RESTART) {
++			pk_action = "org.freedesktop.consolekit.system.restart";
++		} else {
++			pk_action = "org.freedesktop.consolekit.system.stop";
++		}
++	}
++
++	PolKitResult polres;
++	if (pk_can_do_action(pk_action, &polres)) {
++		if (polres == POLKIT_RESULT_YES) {
++			return FALSE;
++		}
++		return TRUE;
++	}
++	return FALSE;
++}
++
++gboolean
++pk_can_do_action (const gchar    *action_id, PolKitResult * pol_result)
++{
++        PolKitGnomeContext *gnome_context;
++        PolKitAction *action;
++        PolKitCaller *caller;
++        DBusError dbus_error;
++        PolKitError *error;
++        PolKitResult result;
++
++        gnome_context = polkit_gnome_context_get (NULL);
++
++        if (gnome_context == NULL) {
++                return FALSE;
++        }
++
++        if (gnome_context->pk_tracker == NULL) {
++                return FALSE;
++        }
++
++        dbus_error_init (&dbus_error);
++        caller = polkit_tracker_get_caller_from_pid (gnome_context->pk_tracker,
++                                                     getpid (),
++                                                     &dbus_error);
++        dbus_error_free (&dbus_error);
++
++        if (caller == NULL) {
++                return FALSE;
++        }
++
++        action = polkit_action_new ();
++        if (!polkit_action_set_action_id (action, action_id)) {
++                polkit_action_unref (action);
++                polkit_caller_unref (caller);
++                return FALSE;
++        }
++
++        result = POLKIT_RESULT_UNKNOWN;
++        error = NULL;
++        result = polkit_context_is_caller_authorized (gnome_context->pk_context,
++                                                      action, caller, FALSE,
++                                                      &error);
++        if (polkit_error_is_set (error)) {
++                polkit_error_free (error);
++        }
++        polkit_action_unref (action);
++                polkit_caller_unref (caller);
++
++		if (pol_result != NULL) {
++			*pol_result = result;
++		}
++
++        return result != POLKIT_RESULT_NO && result != POLKIT_RESULT_UNKNOWN;
++}
++
++static void
++session_activate_cb (GtkMenuItem *item,
++			  gpointer     data)
++{
++  SelectorAppletAction* sAppletAction = (SelectorAppletAction*) data;
++  gint action = sAppletAction->action;
++  FusaAppletData* adata = sAppletAction->adata;
++
++  gboolean suppress_dialog = panel_applet_gconf_get_bool (adata->applet, SUPPRESS_KEY, NULL);
++  
++  if (adata->session_dialog_displayed && !suppress_dialog && adata->session_dialog != NULL) {
++  	/* If another dialog is open and it's the correct one, then just do nothing here */
++  	switch (LOGOUT_DIALOG(adata->session_dialog)->action) {
++  	case LOGOUT_DIALOG_LOGOUT:
++	  if (action == LOGOUT)
++	  	return;
++	  break;
++	case LOGOUT_DIALOG_RESTART:
++	  if (action == RESTART)
++	  	return;
++	  break;
++	case LOGOUT_DIALOG_SHUTDOWN:
++	  if (action == SHUTDOWN)
++	  	return;
++	  break;
++	default:
++	  g_warning ("Unknown dialog type");
++	}
++  }
++  
++  if (!suppress_dialog) {
++  	  if (adata->session_dialog != NULL && adata->session_dialog_displayed) {
++  	  	/* We're already displaying a dialog, but it's the wrong one.
++  	  	   Destroy the old dialog now and create the correct one instead */
++ 	  	gtk_widget_hide(adata->session_dialog);
++	  	gtk_widget_unrealize(adata->session_dialog);
++	  	g_object_unref(adata->session_dialog);
++	  	adata->session_dialog_displayed = FALSE;
++	  }
++	  switch (action) {
++	  case LOGOUT:
++		if (!pk_require_auth(LOGOUT_DIALOG_LOGOUT)) 
++		{
++			adata->session_dialog = logout_dialog_new(LOGOUT_DIALOG_LOGOUT);
++			adata->session_dialog_displayed = TRUE;
++		}
++		break;
++	  case SHUTDOWN:
++		if (!pk_require_auth(LOGOUT_DIALOG_SHUTDOWN))
++		{
++			adata->session_dialog = logout_dialog_new(LOGOUT_DIALOG_SHUTDOWN);
++			adata->session_dialog_displayed = TRUE;
++		}
++		break;
++	  case RESTART:
++		if (!pk_require_auth(LOGOUT_DIALOG_RESTART))
++		{
++			adata->session_dialog = logout_dialog_new(LOGOUT_DIALOG_RESTART);
++			adata->session_dialog_displayed = TRUE;
++		}
++		break;
++	  default:
++		g_warning("Unknown session action");
++		return;
++	  }
++  }
++
++  if (adata->session_dialog != NULL && adata->session_dialog_displayed && !suppress_dialog) {
++	  g_object_ref(G_OBJECT(adata->session_dialog));
++	  
++	  //grab_keyboard_and_mouse(dialog);
++	  GtkResponseType response = gtk_dialog_run(GTK_DIALOG(adata->session_dialog));
++
++	  //ungrab_keyboard_and_mouse();
++	  if (response != GTK_RESPONSE_NONE) {
++	  	/* The dialog emits GTK_RESPONSE_NONE if it was destroyed elsewhere.
++	  	   If that's the case, we don't want to destroy it again, else we'll just crash */
++	  	gtk_widget_hide(adata->session_dialog);
++	  	gtk_widget_unrealize(adata->session_dialog);
++	  	g_object_unref(LOGOUT_DIALOG (adata->session_dialog));
++	  	adata->session_dialog_displayed = FALSE;
++	  }
++
++	  if (response == GTK_RESPONSE_HELP) {
++		action = RESTART;
++		response = GTK_RESPONSE_OK;
++	  }
++
++	  if (response != GTK_RESPONSE_OK) {
++		return;
++	  }
++  }
++
++#if 0
++  /* For debugging when you don't want to restart every time :) */
++  switch (action) {
++  case LOGOUT:
++	printf("Would logout\n");
++  	break;
++  case SHUTDOWN:
++	printf("Would shutdown\n");
++	break;
++  case RESTART:
++	printf("Would restart\n");
++	break;
++  }
++  return;
++#endif
++
++  session_action (action);
++}
++
++static void
++power_management_activate_cb (GtkMenuItem *item,
++			  gpointer     data)
++{
++	DBusGConnection * sbus;
++	sbus = dbus_g_bus_get(DBUS_BUS_SESSION, NULL);
++	if (sbus == NULL) {
++		g_warning("Unable to get DBus session bus.");
++		return;
++	}
++
++	DBusGProxy * pm_proxy;
++	pm_proxy = dbus_g_proxy_new_for_name_owner (sbus,
++	                                            "org.freedesktop.PowerManagement",
++	                                            "/org/freedesktop/PowerManagement",
++	                                            "org.freedesktop.PowerManagement",
++	                                            NULL);
++	if (pm_proxy == NULL) {
++		g_warning("Unable to get DBus proxy to power management interface.");
++		return;
++	}
++
++	gchar * function = (gchar *)data;
++
++	/* "Hibernate" or "Suspend" */
++	if (strcmp("Hibernate", function) == 0 ||
++	        strcmp("Suspend", function) == 0) {
++		dbus_g_proxy_call_no_reply(pm_proxy, function, G_TYPE_INVALID, G_TYPE_INVALID);
++	}
++
++	g_object_unref(pm_proxy);
++
++	return;
++}
++
++static void
++session_action (gint action)
++{
++	DBusGConnection * sbus;
++	DBusGProxy * sm_proxy;
++	GError * error = NULL;
++	gboolean res = FALSE;
++	
++	sbus = dbus_g_bus_get(DBUS_BUS_SESSION, NULL); 
++	if (sbus == NULL) {
++		g_warning("Unable to get DBus session bus.");
++		return;
++	}
++	sm_proxy = dbus_g_proxy_new_for_name_owner (sbus,
++                                            	"org.gnome.SessionManager",
++                                            	"/org/gnome/SessionManager",
++                                            	"org.gnome.SessionManager",
++                                           	 	&error);
++	if (sm_proxy == NULL) {
++		g_warning("Unable to get DBus proxy to SessionManager interface: %s", error->message);
++		g_error_free(error);
++		return;
++	}		
++	
++	g_clear_error (&error);
++	
++	if (action == LOGOUT) {
++		res = dbus_g_proxy_call_with_timeout (sm_proxy, "Logout", INT_MAX, &error, 
++											  G_TYPE_UINT, 1, G_TYPE_INVALID, G_TYPE_INVALID);
++	} else if (action == SHUTDOWN) {
++		res = dbus_g_proxy_call_with_timeout (sm_proxy, "RequestShutdown", INT_MAX, &error, 
++											  G_TYPE_INVALID, G_TYPE_INVALID);
++	} else if (action == RESTART) {
++		res = dbus_g_proxy_call_with_timeout (sm_proxy, "RequestReboot", INT_MAX, &error, 
++											  G_TYPE_INVALID, G_TYPE_INVALID);
++	} else {
++		g_warning ("Unknown session action");
++	}
++	
++	if (!res) {
++		if (error != NULL) {
++			g_warning ("SessionManager action failed: %s", error->message);
++		} else {
++			g_warning ("SessionManager action failed: unknown error");
++		}
++	}
++	
++	g_object_unref(sm_proxy);
++	
++	if (error != NULL) {
++		g_error_free(error);
++	}
++	
++	return;
++}	
++	
++static void
++lock_screen_activate_cb (GtkMenuItem *item,
++			  gpointer     data)
++{
++	DBusGConnection * sbus;
++	sbus = dbus_g_bus_get(DBUS_BUS_SESSION, NULL);
++	if (sbus == NULL) {
++		g_warning("Unable to get DBus session bus.");
++		return;
++	}
++
++	DBusGProxy * pm_proxy;
++	pm_proxy = dbus_g_proxy_new_for_name_owner (sbus,
++	                                            "org.gnome.ScreenSaver",
++	                                            "/",
++	                                            "org.gnome.ScreenSaver",
++	                                            NULL);
++	if (pm_proxy == NULL) {
++		g_warning("Unable to get DBus proxy to screensaver interface.");
++		return;
++	}
++
++	dbus_g_proxy_call_no_reply(pm_proxy, "Lock", G_TYPE_INVALID, G_TYPE_INVALID);
++	g_object_unref(pm_proxy);
++
++	return;
++}
+ 
+ /* ******************* *
+  *  Utility Functions  *
+@@ -2568,10 +3259,142 @@
+ 
+   gconf_client_notify_remove (adata->client, adata->client_notify_applet_id);
+   gconf_client_notify_remove (adata->client, adata->client_notify_global_id);
++  gconf_client_notify_remove (adata->client, adata->client_notify_lockdown_id);
+   gconf_client_remove_dir (adata->client, GLOBAL_DIR, NULL);
+   g_object_unref (adata->client);
+   g_object_unref (adata->manager);
+   g_object_unref (tooltips);
+ 
++  /* DBus Proxy */
++  if (adata->dbus_proxy != NULL) {
++  	dbus_g_proxy_disconnect_signal(adata->dbus_proxy, "NameOwnerChanged",
++  	                               G_CALLBACK(dbus_namechange),
++  	                               adata);
++	g_object_unref(adata->dbus_proxy);
++	adata->dbus_proxy = NULL;
++  }
++
+   g_free (adata);
+ }
++
++static void
++dbus_namechange (DBusGProxy * proxy,
++                 const gchar * name,
++                 const gchar * prev,
++                 const gchar * new,
++                 FusaAppletData * adata)
++{
++	if (name != NULL) {
++		if (strcmp(name, "org.freedesktop.PowerManagement") == 0) {
++			g_debug("Power Management on DBus has changed");
++			discover_pm_abilities (adata);
++			update_session_ui (adata);
++		}
++	}
++}
++
++void
++update_session_ui (FusaAppletData * adata)
++{
++  g_debug("Updating Session Management UI");
++
++  gtk_widget_hide(adata->session_separator_item);
++  gtk_widget_hide(adata->lock_screen_item);
++  gtk_widget_hide(adata->close_session_item);
++  gtk_widget_hide(adata->suspend_item);
++  gtk_widget_hide(adata->hibernate_item);
++  gtk_widget_hide(adata->reboot_item);
++  gtk_widget_hide(adata->shutdown_item);
++
++  gboolean show_session_items = gconf_client_get_bool (adata->client, SHOW_SESSION_COMMANDS, NULL);
++
++  if (show_session_items) {
++	gtk_widget_show(adata->session_separator_item);
++	if (adata->lock_screen_allowed) {
++		gtk_widget_show(adata->lock_screen_item);
++	}
++	gtk_widget_show(adata->close_session_item);
++	if (adata->suspend_available) {
++		gtk_widget_show(adata->suspend_item);
++	}
++	if (adata->hibernate_available) {
++		gtk_widget_show(adata->hibernate_item);
++	}
++	if (adata->restart_available) {
++		gtk_widget_show(adata->reboot_item);
++	}
++	if (adata->shutdown_available) {
++		gtk_widget_show(adata->shutdown_item);
++    }
++  }
++
++  return;
++}
++
++static void
++discover_pm_abilities (FusaAppletData *adata)
++{
++	g_debug("Discovering Power Management Settings");
++
++	adata->hibernate_available = FALSE;
++	adata->suspend_available = FALSE;
++	adata->lock_screen_allowed = FALSE;
++    adata->restart_available = FALSE;
++    adata->shutdown_available = FALSE;
++
++	adata->lock_screen_allowed = !gconf_client_get_bool (adata->client, LOCK_SCREEN_KEY, NULL);
++
++	if (pk_can_do_action("org.freedesktop.consolekit.system.restart", NULL) ||
++		pk_can_do_action("org.freedesktop.consolekit.system.restart-multiple-users", NULL)) {
++		adata->restart_available = TRUE;
++	}
++	if (pk_can_do_action("org.freedesktop.consolekit.system.stop", NULL) ||
++		pk_can_do_action("org.freedesktop.consolekit.system.stop-multiple-users", NULL)) {
++		adata->shutdown_available = TRUE;
++    }
++
++	DBusGConnection * sbus;
++	sbus = dbus_g_bus_get(DBUS_BUS_SESSION, NULL);
++	if (sbus == NULL) {
++		g_warning("Unable to get DBus session bus.");
++		return;
++	}
++
++	DBusGProxy * pm_proxy;
++	pm_proxy = dbus_g_proxy_new_for_name_owner (sbus,
++	                                            "org.freedesktop.PowerManagement",
++	                                            "/org/freedesktop/PowerManagement",
++	                                            "org.freedesktop.PowerManagement",
++	                                            NULL);
++
++	if (pm_proxy == NULL) {
++		dbus_g_connection_unref(sbus);
++		g_warning("Unable to get DBus proxy to power management interface.");
++		return;
++	}
++
++	GError * error = NULL;
++	gboolean ret = FALSE;
++
++	ret = dbus_g_proxy_call(pm_proxy,
++							"CanHibernate", &error,
++							G_TYPE_INVALID,
++							G_TYPE_BOOLEAN, &adata->hibernate_available,
++							G_TYPE_INVALID);
++
++	if (ret) {
++		ret = dbus_g_proxy_call(pm_proxy,
++								"CanSuspend", &error,
++								G_TYPE_INVALID,
++								G_TYPE_BOOLEAN, &adata->suspend_available,
++								G_TYPE_INVALID);
++	}
++
++	if (error != NULL) {
++		g_error_free(error);
++	}
++
++	dbus_g_connection_unref(sbus);
++	
++	return;
++}
+diff -Nur -x '*.orig' -x '*~' fast-user-switch-applet-2.24.0/src/applet.h fast-user-switch-applet-2.24.0.new/src/applet.h
+--- fast-user-switch-applet-2.24.0/src/applet.h	1970-01-01 01:00:00.000000000 +0100
++++ fast-user-switch-applet-2.24.0.new/src/applet.h	2009-04-13 02:31:09.641186567 +0100
+@@ -0,0 +1,10 @@
++
++#ifndef __SEEN_APPLET_H__
++#define __SEEN_APPLET_H__ 1
++
++#include <polkit-gnome/polkit-gnome.h>
++
++gboolean pk_require_auth (LogoutDialogAction action);
++gboolean		pk_can_do_action		(const gchar *action_id, PolKitResult * pol_result);
++
++#endif /* __SEEN_APPLET_H__ */
+diff -Nur -x '*.orig' -x '*~' fast-user-switch-applet-2.24.0/src/fade-and-grab.c fast-user-switch-applet-2.24.0.new/src/fade-and-grab.c
+--- fast-user-switch-applet-2.24.0/src/fade-and-grab.c	1970-01-01 01:00:00.000000000 +0100
++++ fast-user-switch-applet-2.24.0.new/src/fade-and-grab.c	2009-04-13 02:31:09.641186567 +0100
+@@ -0,0 +1,519 @@
++/*
++ * Gksu -- a library providing access to su functionality
++ * Copyright (C) 2004 Gustavo Noronha Silva
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++ * Boston, MA 02111-1307, USA.
++ */
++
++#include <stdlib.h>
++#include <unistd.h>
++
++#include <gdk/gdk.h>
++#include <gdk/gdkx.h>
++
++#include <glib/gi18n.h>
++
++#include <gtk/gtkdialog.h>
++#include <gtk/gtkmessagedialog.h>
++
++/*
++ * code 'stolen' from gnome-session's logout.c
++ *
++ * Written by Owen Taylor <otaylor@redhat.com>
++ * Copyright (C) Red Hat
++ */
++typedef struct {
++  GdkScreen    *screen;
++  int           monitor;
++  GdkRectangle  area;
++  int           rowstride;
++  GdkWindow    *root_window;
++  GdkWindow    *draw_window;
++  GdkPixbuf    *start_pb, *end_pb, *frame;
++  guchar       *start_p, *end_p, *frame_p;
++  GTimeVal      start_time;
++  GdkGC        *gc;
++  gboolean      composited;
++} FadeoutData;
++
++FadeoutData *fade_data = NULL;
++static GList *fadeout_windows = NULL;
++
++#define FADE_DURATION 500.0
++
++int
++gsm_screen_get_width (GdkScreen *screen,
++		      int        monitor)
++{
++	GdkRectangle geometry;
++
++	gdk_screen_get_monitor_geometry (screen, monitor, &geometry);
++
++	return geometry.width;
++}
++
++int
++gsm_screen_get_height (GdkScreen *screen,
++		       int        monitor)
++{
++	GdkRectangle geometry;
++
++	gdk_screen_get_monitor_geometry (screen, monitor, &geometry);
++
++	return geometry.height;
++}
++
++int
++gsm_screen_get_x (GdkScreen *screen,
++		  int        monitor)
++{
++	GdkRectangle geometry;
++
++	gdk_screen_get_monitor_geometry (screen, monitor, &geometry);
++
++	return geometry.x;
++}
++
++int
++gsm_screen_get_y (GdkScreen *screen,
++		  int        monitor)
++{
++	GdkRectangle geometry;
++
++	gdk_screen_get_monitor_geometry (screen, monitor, &geometry);
++
++	return geometry.y;
++}
++
++static void
++get_current_frame (FadeoutData *fadeout,
++		   double    sat)
++{
++  guchar *sp, *ep, *fp;
++  int i, j, width, offset;
++
++  width = fadeout->area.width * 3;
++  offset = 0;
++
++  for (i = 0; i < fadeout->area.height; i++)
++    {
++      sp = fadeout->start_p + offset;
++      ep = fadeout->end_p   + offset;
++      fp = fadeout->frame_p + offset;
++
++      for (j = 0; j < width; j += 3)
++	{
++	  guchar r = abs (*(sp++) - ep[0]);
++	  guchar g = abs (*(sp++) - ep[1]);
++	  guchar b = abs (*(sp++) - ep[2]);
++
++	  *(fp++) = *(ep++) + r * sat;
++	  *(fp++) = *(ep++) + g * sat;
++	  *(fp++) = *(ep++) + b * sat;
++	}
++
++      offset += fadeout->rowstride;
++    }
++}
++
++static void
++darken_pixbuf (GdkPixbuf *pb)
++{
++  int width, height, rowstride;
++  int i, j;
++  guchar *p, *pixels;
++
++  width     = gdk_pixbuf_get_width (pb) * 3;
++  height    = gdk_pixbuf_get_height (pb);
++  rowstride = gdk_pixbuf_get_rowstride (pb);
++  pixels    = gdk_pixbuf_get_pixels (pb);
++
++  for (i = 0; i < height; i++)
++    {
++      p = pixels + (i * rowstride);
++      for (j = 0; j < width; j++)
++	p [j] >>= 1;
++    }
++}
++
++static gboolean
++fadeout_callback (FadeoutData *fadeout)
++{
++  GTimeVal current_time;
++  double elapsed, percent;
++
++  g_get_current_time (&current_time);
++  elapsed = ((((double)current_time.tv_sec - fadeout->start_time.tv_sec) * G_USEC_PER_SEC +
++	      (current_time.tv_usec - fadeout->start_time.tv_usec))) / 1000.0;
++
++  if (elapsed < 0)
++    {
++      g_warning ("System clock seemed to go backwards?");
++      elapsed = G_MAXDOUBLE;
++    }
++
++  if (elapsed > FADE_DURATION )
++    {
++      if (fadeout->composited)
++        {
++          gdk_window_set_opacity (fadeout->draw_window, 0.5);
++        }
++      else
++        {
++          gdk_draw_pixbuf (fadeout->draw_window,
++						   fadeout->gc,
++						   fadeout->end_pb,
++						   0, 0,
++						   0, 0,
++						   fadeout->area.width,
++						   fadeout->area.height,
++						   GDK_RGB_DITHER_NONE,
++						   0, 0);
++        }
++
++      return FALSE;
++    }
++
++  percent = elapsed / FADE_DURATION;
++
++  if (fadeout->composited)
++    {
++      gdk_window_set_opacity (fadeout->draw_window, percent/2);
++    }
++  else
++    {
++      get_current_frame (fadeout, 1.0 - percent);
++      gdk_draw_pixbuf (fadeout->draw_window,
++					   fadeout->gc,
++					   fadeout->frame,
++					   0, 0,
++					   0, 0,
++					   fadeout->area.width,
++					   fadeout->area.height,
++					   GDK_RGB_DITHER_NONE,
++					   0, 0);
++    }
++
++  gdk_flush ();
++
++  return TRUE;
++}
++
++static void
++hide_fadeout_windows (void)
++{
++  GList *l;
++
++  for (l = fadeout_windows; l; l = l->next)
++    {
++      gdk_window_hide (GDK_WINDOW (l->data));
++      g_object_unref (l->data);
++    }
++
++  g_list_free (fadeout_windows);
++  fadeout_windows = NULL;
++}
++
++static gboolean
++fadein_callback (FadeoutData *fadeout)
++{
++  GTimeVal current_time;
++  double elapsed, percent;
++
++  g_get_current_time (&current_time);
++  elapsed = ((((double)current_time.tv_sec - fadeout->start_time.tv_sec) * G_USEC_PER_SEC +
++	      (current_time.tv_usec - fadeout->start_time.tv_usec))) / 1000.0;
++
++  if (elapsed < 0)
++    {
++      g_warning ("System clock seemed to go backwards?");
++      elapsed = G_MAXDOUBLE;
++    }
++
++  if (elapsed > FADE_DURATION)
++    {
++      if (fadeout->composited)
++        {
++          gdk_window_set_opacity (fadeout->draw_window, 0.0);
++          gdk_window_resize (fadeout->draw_window, 4, 4);
++        }
++      else
++        {
++          gdk_draw_pixbuf (fadeout->draw_window,
++						   fadeout->gc,
++						   fadeout->end_pb,
++						   0, 0,
++						   0, 0,
++						   fadeout->area.width,
++						   fadeout->area.height,
++						   GDK_RGB_DITHER_NONE,
++						   0, 0);
++        }
++
++      g_object_unref (fadeout->gc);
++      g_object_unref (fadeout->start_pb);
++      g_object_unref (fadeout->end_pb);
++      g_object_unref (fadeout->frame);
++
++      g_free (fadeout);
++
++      hide_fadeout_windows ();
++
++      return FALSE;
++    }
++
++  percent = elapsed / FADE_DURATION;
++
++  if (fadeout->composited)
++    {
++      gdk_window_set_opacity (fadeout->draw_window, 0.5 - percent/2);
++    }
++  else
++    {
++      get_current_frame (fadeout, percent);
++      gdk_draw_pixbuf (fadeout->draw_window,
++					   fadeout->gc,
++					   fadeout->frame,
++					   0, 0,
++					   0, 0,
++					   fadeout->area.width,
++					   fadeout->area.height,
++					   GDK_RGB_DITHER_NONE,
++					   0, 0);
++    }
++
++  gdk_flush ();
++
++  return TRUE;
++}
++
++static void
++fadeout_screen (GdkScreen *screen,
++		int        monitor)
++{
++  GdkWindowAttr attr;
++  int attr_mask;
++  GdkGCValues values;
++  FadeoutData *fadeout;
++
++  fadeout = g_new (FadeoutData, 1);
++
++  fadeout->screen = screen;
++  fadeout->monitor = monitor;
++  fadeout->composited = gdk_screen_is_composited (screen);
++
++  fadeout->area.x = gsm_screen_get_x (screen, monitor);
++  fadeout->area.y = gsm_screen_get_y (screen, monitor);
++  fadeout->area.width = gsm_screen_get_width (screen, monitor);
++  fadeout->area.height = gsm_screen_get_height (screen, monitor);
++
++  fadeout->root_window = gdk_screen_get_root_window (screen);
++  attr.window_type = GDK_WINDOW_TOPLEVEL;
++  attr.x = fadeout->area.x;
++  attr.y = fadeout->area.y;
++  attr.width = 4;
++  attr.height = 4;
++  attr.wclass = GDK_INPUT_OUTPUT;
++  attr.visual = gdk_screen_get_system_visual (fadeout->screen);
++  attr.colormap = gdk_screen_get_default_colormap (fadeout->screen);
++  attr.override_redirect = TRUE;
++  attr_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP | GDK_WA_NOREDIR;
++
++  fadeout->draw_window = gdk_window_new (fadeout->root_window, &attr, attr_mask);
++  fadeout_windows = g_list_prepend (fadeout_windows, fadeout->draw_window);
++
++  fadeout->start_pb = gdk_pixbuf_get_from_drawable (NULL,
++						    fadeout->root_window,
++						    NULL,
++						    fadeout->area.x,
++						    fadeout->area.y,
++						    0, 0,
++						    fadeout->area.width,
++						    fadeout->area.height);
++
++  fadeout->end_pb = gdk_pixbuf_copy (fadeout->start_pb);
++  darken_pixbuf (fadeout->end_pb);
++
++  fadeout->frame = gdk_pixbuf_copy (fadeout->start_pb);
++  fadeout->rowstride = gdk_pixbuf_get_rowstride (fadeout->start_pb);
++
++  fadeout->start_p = gdk_pixbuf_get_pixels (fadeout->start_pb);
++  fadeout->end_p   = gdk_pixbuf_get_pixels (fadeout->end_pb);
++  fadeout->frame_p = gdk_pixbuf_get_pixels (fadeout->frame);
++
++  values.subwindow_mode = GDK_INCLUDE_INFERIORS;
++
++  fadeout->gc = gdk_gc_new_with_values (fadeout->root_window, &values, GDK_GC_SUBWINDOW);
++
++  if (fadeout->composited)
++    {
++      gdk_window_set_opacity (fadeout->draw_window, 0.0);
++    }
++  else
++    {
++      gdk_window_set_back_pixmap (fadeout->draw_window, NULL, FALSE);
++      gdk_draw_pixbuf (fadeout->draw_window,
++					   fadeout->gc,
++					   fadeout->frame,
++					   0, 0,
++					   0, 0,
++					   fadeout->area.width,
++					   fadeout->area.height,
++					   GDK_RGB_DITHER_NONE,
++					   0, 0);
++    }
++
++  gdk_window_show (fadeout->draw_window);
++  gdk_window_clear (fadeout->draw_window);
++  gdk_window_resize (fadeout->draw_window,
++                                         fadeout->area.width,
++                                         fadeout->area.height);
++
++  g_get_current_time (&fadeout->start_time);
++  g_idle_add ((GSourceFunc) fadeout_callback, fadeout);
++
++  fade_data = fadeout;
++}
++
++/* End of 'stolen' code */
++
++#define GRAB_TRIES	16
++#define GRAB_WAIT	250 /* milliseconds */
++
++typedef enum
++  {
++    FAILED_GRAB_MOUSE,
++    FAILED_GRAB_KEYBOARD
++  } FailedGrabWhat;
++
++void
++report_failed_grab (FailedGrabWhat what)
++{
++  GtkWidget *dialog;
++
++  dialog = g_object_new (GTK_TYPE_MESSAGE_DIALOG,
++			 "message-type", GTK_MESSAGE_WARNING,
++			 "buttons", GTK_BUTTONS_CLOSE,
++			 NULL);
++
++  switch (what)
++    {
++    case FAILED_GRAB_MOUSE:
++      gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG(dialog),
++				     _("<b><big>Could not grab your mouse.</big></b>"
++				       "\n\n"
++				       "A malicious client may be eavesdropping "
++				       "on your session or you may have just clicked "
++				       "a menu or some application just decided to get "
++				       "focus."
++				       "\n\n"
++				       "Try again."));
++
++      break;
++    case FAILED_GRAB_KEYBOARD:
++      gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG(dialog),
++				     _("<b><big>Could not grab your keyboard.</big></b>"
++				       "\n\n"
++				       "A malicious client may be eavesdropping "
++				       "on your session or you may have just clicked "
++				       "a menu or some application just decided to get "
++				       "focus."
++				       "\n\n"
++				       "Try again."));
++      break;
++    }
++
++  gtk_window_set_keep_above(GTK_WINDOW(dialog), TRUE);
++  gtk_dialog_run (GTK_DIALOG(dialog));
++  gtk_widget_destroy (dialog);
++
++  while (gtk_events_pending ())
++    gtk_main_iteration ();
++
++}
++
++void
++grab_keyboard_and_mouse (GtkWidget *dialog)
++{
++  GdkGrabStatus status;
++  gint grab_tries = 0;
++
++  fadeout_screen (gdk_screen_get_default (), 0);
++  gtk_widget_show_all (dialog);
++
++  /* reset cursor */
++  gdk_window_set_cursor(dialog->window, gdk_cursor_new(GDK_LEFT_PTR));
++
++  for(;;)
++    {
++      status = gdk_pointer_grab ((GTK_WIDGET(dialog))->window, TRUE, 0, NULL,
++				 NULL, GDK_CURRENT_TIME);
++      if (status == GDK_GRAB_SUCCESS)
++	break;
++      usleep (GRAB_WAIT * 1000);
++      if (++grab_tries > GRAB_TRIES)
++	{
++	  gtk_widget_hide (dialog);
++	  g_get_current_time (&fade_data->start_time);
++	  while (fadein_callback (fade_data) != FALSE);
++	  report_failed_grab (FAILED_GRAB_MOUSE);
++	  return;
++	}
++    }
++
++  for(;;)
++    {
++      status = gdk_keyboard_grab ((GTK_WIDGET(dialog))->window,
++				  FALSE, GDK_CURRENT_TIME);
++      if (status == GDK_GRAB_SUCCESS)
++	break;
++
++      usleep(GRAB_WAIT * 1000);
++
++      if (++grab_tries > GRAB_TRIES)
++	{
++	  gtk_widget_hide (dialog);
++	  g_get_current_time (&fade_data->start_time);
++	  while (fadein_callback (fade_data) != FALSE);
++	  report_failed_grab (FAILED_GRAB_KEYBOARD);
++	  return;
++	}
++    }
++
++  /* we "raise" the window because there is a race here for
++   * focus-follow-mouse and auto-raise WMs that may put the window
++   * in the background and confuse users
++   */
++  gtk_widget_set_parent_window(GTK_WIDGET(dialog), fade_data->draw_window);
++  gdk_window_set_transient_for(gtk_widget_get_window(GTK_WIDGET(dialog)), fade_data->draw_window);
++  gtk_window_set_keep_above(GTK_WINDOW(dialog), TRUE);
++  gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
++  gtk_window_present(GTK_WINDOW(dialog));
++
++  return;
++}
++
++void
++ungrab_keyboard_and_mouse (void)
++{
++  /* Ungrab */
++  gdk_pointer_ungrab(GDK_CURRENT_TIME);
++  gdk_keyboard_ungrab(GDK_CURRENT_TIME);
++  gdk_flush();
++
++  g_get_current_time (&fade_data->start_time);
++  while (fadein_callback (fade_data) != FALSE);
++}
+diff -Nur -x '*.orig' -x '*~' fast-user-switch-applet-2.24.0/src/fade-and-grab.h fast-user-switch-applet-2.24.0.new/src/fade-and-grab.h
+--- fast-user-switch-applet-2.24.0/src/fade-and-grab.h	1970-01-01 01:00:00.000000000 +0100
++++ fast-user-switch-applet-2.24.0.new/src/fade-and-grab.h	2009-04-13 02:31:09.645184106 +0100
+@@ -0,0 +1,11 @@
++
++#ifndef __SEEN_FADE_AND_GRAB__
++#define __SEEN_FADE_AND_GRAB__ 1
++
++#include <gtk/gtkdialog.h>
++
++void grab_keyboard_and_mouse (GtkWidget *dialog);
++void ungrab_keyboard_and_mouse (void);
++
++
++#endif /* __SEEN_FADE_AND_GRAB__  */
+diff -Nur -x '*.orig' -x '*~' fast-user-switch-applet-2.24.0/src/logout-dialog.c fast-user-switch-applet-2.24.0.new/src/logout-dialog.c
+--- fast-user-switch-applet-2.24.0/src/logout-dialog.c	1970-01-01 01:00:00.000000000 +0100
++++ fast-user-switch-applet-2.24.0.new/src/logout-dialog.c	2009-04-13 02:31:09.645184106 +0100
+@@ -0,0 +1,369 @@
++/*
++ * libgksuui -- Gtk+ widget and convenience functions for requesting passwords
++ * Copyright (C) 2004 Gustavo Noronha Silva
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++ * Boston, MA 02111-1307, USA.
++ */
++
++#include <string.h>
++#include <math.h>
++
++#include <gtk/gtk.h>
++#include <gdk/gdkx.h>
++#include <glib/gi18n.h>
++#include <X11/XKBlib.h>
++
++#include "../config.h"
++
++#include "logout-dialog.h"
++#include "applet.h"
++
++enum {
++	PROP_ZERO,
++	PROP_ACTION
++};
++
++
++static void
++logout_dialog_class_init (LogoutDialogClass *klass);
++
++static void
++logout_dialog_init (LogoutDialog *logout_dialog);
++
++static void
++set_property (GObject * object, guint param_id, const GValue * value, GParamSpec *pspec);
++
++static void
++get_property (GObject * object, guint param_id, GValue * value, GParamSpec *pspec);
++
++static gboolean
++timer_cb (gpointer data);
++
++static void
++show_cb (GtkWidget * widget, gpointer data);
++
++static void
++check_restart (LogoutDialog * dialog);
++
++static gchar*
++get_plural_string (LogoutDialog * dialog);
++
++static const gchar * title_strings[LOGOUT_DIALOG_ACTION_CNT] = {
++	/* LOGOUT_DIALOG_LOGOUT, */ 	NC_("title", "Log Out"),
++	/* LOGOUT_DIALOG_RESTART, */	NC_("title", "Restart"),
++	/* LOGOUT_DIALOG_SHUTDOWN, */	NC_("title", "Shut Down")
++};
++
++static const gchar * button_strings[LOGOUT_DIALOG_ACTION_CNT] = {
++	/* LOGOUT_DIALOG_LOGOUT, */ 	NC_("button", "Log Out"),
++	/* LOGOUT_DIALOG_RESTART, */	NC_("button", "Restart"),
++	/* LOGOUT_DIALOG_SHUTDOWN, */	NC_("button", "Shut Down")
++};
++
++static const gchar * restart_auth = N_("Restart...");
++
++static const gchar * body_logout_update = N_("You recently installed updates which will only take effect after a restart.  Restart to apply software updates.");
++
++static const gchar * icon_strings[LOGOUT_DIALOG_ACTION_CNT] = {
++	/* LOGOUT_DIALOG_LOGOUT, */ 	"system-log-out",
++	/* LOGOUT_DIALOG_RESTART, */	"system-restart",
++	/* LOGOUT_DIALOG_SHUTDOWN, */	"system-shutdown"
++};
++
++GType
++logout_dialog_get_type (void)
++{
++  static GType type = 0;
++
++  if (type == 0)
++    {
++      static const GTypeInfo info =
++	{
++	  sizeof (LogoutDialogClass), /* size of class */
++	  NULL, /* base_init */
++	  NULL, /* base_finalize */
++	  (GClassInitFunc) logout_dialog_class_init,
++	  NULL, /* class_finalize */
++	  NULL, /* class_data */
++	  sizeof (LogoutDialog), /* size of object */
++	  0, /* n_preallocs */
++	  (GInstanceInitFunc) logout_dialog_init /* instance_init */
++	};
++      type = g_type_register_static (gtk_dialog_get_type (),
++				     "LogoutDialogType",
++				     &info, 0);
++    }
++
++  return type;
++}
++
++static gchar*
++get_plural_string (LogoutDialog * dialog)
++{
++  static gchar *plural_string = "";
++
++  switch (dialog->action)
++    {
++    case LOGOUT_DIALOG_LOGOUT:
++      plural_string = ngettext("You will be logged out in %d second.",
++			       "You will be logged out in %d seconds.", 
++			       dialog->timeout);
++      break;
++    case LOGOUT_DIALOG_RESTART:
++      plural_string = ngettext("The computer will restart in %d second.",
++			       "The computer will restart in %d seconds.", 
++			       dialog->timeout);
++      break;
++    case LOGOUT_DIALOG_SHUTDOWN:
++      plural_string = ngettext("The computer will be shut down in %d second.",
++			       "The computer will be shut down in %d seconds.",
++			       dialog->timeout);
++      break;
++	default:
++	  break;
++    }
++  
++  return plural_string;
++}
++
++static void
++logout_dialog_class_init (LogoutDialogClass *klass)
++{
++  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
++
++  gobject_class->set_property = set_property;
++  gobject_class->get_property = get_property;
++
++  g_object_class_install_property(gobject_class, PROP_ACTION,
++                                  g_param_spec_int("action", NULL, NULL,
++                                                   LOGOUT_DIALOG_LOGOUT, LOGOUT_DIALOG_SHUTDOWN,
++                                                   LOGOUT_DIALOG_LOGOUT, G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
++
++  return;
++}
++
++static void
++set_property (GObject * object, guint param_id, const GValue * value, GParamSpec *pspec)
++{
++	g_return_if_fail(param_id == PROP_ACTION);
++
++	LogoutDialog * dialog = LOGOUT_DIALOG(object);
++	dialog->action = (LogoutDialogAction)g_value_get_int(value);
++
++	gtk_image_set_from_icon_name(GTK_IMAGE(dialog->image), icon_strings[dialog->action], GTK_ICON_SIZE_DIALOG);
++	gtk_window_set_title (GTK_WINDOW(dialog), _(title_strings[dialog->action]));
++	gtk_widget_hide(dialog->message);
++	gtk_button_set_label(GTK_BUTTON(dialog->ok_button), _(button_strings[dialog->action]));
++
++	gchar * timeouttxt = g_strdup_printf(get_plural_string(dialog), dialog->timeout);
++	gtk_label_set_text(GTK_LABEL(dialog->timeout_text), timeouttxt);
++	g_free(timeouttxt);
++
++	check_restart(dialog);
++
++	return;
++}
++
++static void
++get_property (GObject * object, guint param_id, GValue * value, GParamSpec *pspec)
++{
++	g_return_if_fail(param_id == PROP_ACTION);
++	g_value_set_int(value, LOGOUT_DIALOG(object)->action);
++}
++
++static gboolean
++timer_cb (gpointer data)
++{
++	LogoutDialog * dialog = LOGOUT_DIALOG(data);
++
++	if (dialog->timeout == 0) {
++		gtk_dialog_response(GTK_DIALOG(dialog), GTK_RESPONSE_OK);
++		dialog->timerfunc = 0;
++		return FALSE;
++	} else {
++		dialog->timeout--;
++
++		gchar * timeouttxt = g_strdup_printf(get_plural_string(dialog), dialog->timeout);
++		gtk_label_set_text(GTK_LABEL(dialog->timeout_text), timeouttxt);
++		g_free(timeouttxt);
++	}
++
++	return TRUE;
++}
++
++static void
++show_cb (GtkWidget * widget, gpointer data)
++{
++	LogoutDialog * dialog = LOGOUT_DIALOG(widget);
++
++	if (dialog->timerfunc != 0) {
++		g_source_remove(dialog->timerfunc);
++		dialog->timerfunc = 0;
++	}
++
++	dialog->timerfunc = g_timeout_add_seconds(1, timer_cb, dialog);
++	return;
++}
++
++static void
++check_restart (LogoutDialog * dialog)
++{
++	if (dialog->action != LOGOUT_DIALOG_LOGOUT) {
++		return;
++	}
++
++	if (g_file_test("/var/run/reboot-required", G_FILE_TEST_EXISTS)) {
++		if (pk_can_do_action("org.freedesktop.consolekit.system.restart", NULL) ||
++			pk_can_do_action("org.freedesktop.consolekit.system.restart-multiple-users", NULL)) {
++
++			gtk_label_set_text(GTK_LABEL(dialog->message), _(body_logout_update));
++			gtk_widget_show(dialog->message);
++			if (pk_require_auth(LOGOUT_DIALOG_RESTART)) {
++			  gtk_button_set_label(GTK_BUTTON(dialog->restart_button), _(restart_auth));
++			} else {
++			  gtk_button_set_label(GTK_BUTTON(dialog->restart_button), _(button_strings[LOGOUT_DIALOG_RESTART]));
++			}
++			gtk_widget_show(dialog->restart_button);
++		}
++	}
++
++	return;
++}
++
++static gboolean
++focus_out_cb (GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
++{
++  gtk_window_present (GTK_WINDOW(widget));
++  return TRUE;
++}
++
++static void
++logout_dialog_init (LogoutDialog *logout_dialog)
++{
++  GtkDialog *dialog;
++  gint      border_width = 6;
++
++  logout_dialog->timeout = 60;
++  logout_dialog->timerfunc = 0;
++
++  /* dialog window */
++  dialog = GTK_DIALOG(logout_dialog);
++
++  /* make sure that our window will always have the focus */
++  g_signal_connect (G_OBJECT(dialog), "focus-out-event",
++		    G_CALLBACK(focus_out_cb), NULL);
++
++  logout_dialog->main_vbox = dialog->vbox;
++
++  gtk_window_set_title (GTK_WINDOW(logout_dialog), "");
++  gtk_dialog_set_has_separator (GTK_DIALOG(logout_dialog), FALSE);
++  gtk_container_set_border_width (GTK_CONTAINER(logout_dialog), border_width);
++  gtk_box_set_spacing (GTK_BOX(logout_dialog->main_vbox), 12);
++  gtk_window_set_resizable (GTK_WINDOW(logout_dialog), FALSE);
++
++  gtk_window_stick(GTK_WINDOW(logout_dialog));
++  gtk_window_set_keep_above(GTK_WINDOW(logout_dialog), TRUE);
++  gtk_widget_realize(GTK_WIDGET(logout_dialog));
++  gdk_window_set_functions(GTK_WIDGET(logout_dialog)->window, GDK_FUNC_CLOSE);
++
++  /* center window */
++  gtk_window_set_position (GTK_WINDOW(logout_dialog), GTK_WIN_POS_CENTER);
++
++  /* the action buttons */
++  /*  the cancel button  */
++  logout_dialog->restart_button = gtk_dialog_add_button (dialog,
++						      GTK_STOCK_HELP,
++						      GTK_RESPONSE_HELP);
++  gtk_button_set_label(GTK_BUTTON(logout_dialog->restart_button), _(button_strings[LOGOUT_DIALOG_RESTART]));
++  gtk_widget_hide(logout_dialog->restart_button);
++
++  /*  the cancel button  */
++  logout_dialog->cancel_button = gtk_dialog_add_button (dialog,
++						      GTK_STOCK_CANCEL,
++						      GTK_RESPONSE_CANCEL);
++  /*  the ok button  */
++  logout_dialog->ok_button = gtk_dialog_add_button (dialog,
++						  GTK_STOCK_OK,
++						  GTK_RESPONSE_OK);
++  gtk_widget_grab_default (logout_dialog->ok_button);
++
++  /* Title */
++  gtk_window_set_title (GTK_WINDOW(logout_dialog), _(title_strings[logout_dialog->action]));
++
++  /* hbox */
++  logout_dialog->hbox = gtk_hbox_new (FALSE, 12);
++  gtk_container_set_border_width (GTK_CONTAINER(logout_dialog->hbox), 6);
++  gtk_box_pack_start (GTK_BOX(logout_dialog->main_vbox),
++		      logout_dialog->hbox, FALSE, FALSE, 0);
++  gtk_widget_show (logout_dialog->hbox);
++
++  /* image */
++  logout_dialog->image =
++    gtk_image_new_from_icon_name (icon_strings[logout_dialog->action],
++			      GTK_ICON_SIZE_DIALOG);
++  gtk_misc_set_alignment (GTK_MISC(logout_dialog->image), 0.5, 0);
++  gtk_box_pack_start (GTK_BOX(logout_dialog->hbox), logout_dialog->image,
++		      FALSE, FALSE, 0);
++  gtk_widget_show (logout_dialog->image);
++
++  /* vbox for text */
++  logout_dialog->vbox_text = gtk_vbox_new(FALSE, 12);
++  gtk_box_pack_start(GTK_BOX(logout_dialog->hbox), logout_dialog->vbox_text, TRUE, TRUE, 0);
++  gtk_widget_show(logout_dialog->vbox_text);
++
++  /* Message */
++  logout_dialog->message = gtk_label_new("");
++  gtk_label_set_line_wrap(GTK_LABEL(logout_dialog->message), TRUE);
++  gtk_label_set_single_line_mode(GTK_LABEL(logout_dialog->message), FALSE);
++  gtk_label_set_selectable(GTK_LABEL(logout_dialog->message), TRUE);
++  gtk_misc_set_alignment (GTK_MISC(logout_dialog->message), 0.0, 0.0);
++  gtk_box_pack_start(GTK_BOX(logout_dialog->vbox_text), logout_dialog->message, TRUE, TRUE, 0);
++  gtk_widget_show(logout_dialog->message);
++
++  /* timeout */
++  logout_dialog->timeout_text = gtk_label_new("");
++  gtk_label_set_line_wrap(GTK_LABEL(logout_dialog->timeout_text), TRUE);
++  gtk_label_set_single_line_mode(GTK_LABEL(logout_dialog->timeout_text), FALSE);
++  gtk_label_set_selectable(GTK_LABEL(logout_dialog->timeout_text), FALSE);
++  gtk_misc_set_alignment (GTK_MISC(logout_dialog->timeout_text), 0.0, 0.5);
++  gtk_box_pack_start(GTK_BOX(logout_dialog->vbox_text), logout_dialog->timeout_text, TRUE, TRUE, 0);
++  gtk_widget_show(logout_dialog->timeout_text);
++
++  g_signal_connect(G_OBJECT(logout_dialog), "show", G_CALLBACK(show_cb), logout_dialog);
++
++  return;
++}
++
++/**
++ * logout_dialog_new:
++ *
++ * Creates a new #LogoutDialog.
++ *
++ * Returns: the new #LogoutDialog
++ */
++GtkWidget*
++logout_dialog_new (LogoutDialogAction action)
++{
++  LogoutDialog * dialog = g_object_new (LOGOUT_TYPE_DIALOG, "action", action, NULL);
++  return GTK_WIDGET(dialog);
++}
++
++LogoutDialogAction
++logout_dialog_get_action (LogoutDialog * dialog)
++{
++	return dialog->action;
++}
++
+diff -Nur -x '*.orig' -x '*~' fast-user-switch-applet-2.24.0/src/logout-dialog.h fast-user-switch-applet-2.24.0.new/src/logout-dialog.h
+--- fast-user-switch-applet-2.24.0/src/logout-dialog.h	1970-01-01 01:00:00.000000000 +0100
++++ fast-user-switch-applet-2.24.0.new/src/logout-dialog.h	2009-04-13 02:31:09.645184106 +0100
+@@ -0,0 +1,99 @@
++/*
++ * libgksuui -- Gtk+ widget and convenience functions for requesting passwords
++ * Copyright (C) 2004 Gustavo Noronha Silva
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++ * Boston, MA 02111-1307, USA.
++ */
++
++#ifndef __LOGOUT_DIALOG_H__
++#define __LOGOUT_DIALOG_H__
++
++#include <gtk/gtk.h>
++
++G_BEGIN_DECLS
++
++#define LOGOUT_TYPE_DIALOG (logout_dialog_get_type ())
++#define LOGOUT_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LOGOUT_TYPE_DIALOG, LogoutDialog))
++#define LOGOUT_DIALOG_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LOGOUT_TYPE_DIALOG, LogoutDialogClass))
++#define LOGOUT_IS_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LOGOUT_TYPE_DIALOG))
++#define LOGOUT_IS_DIALOG_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LOGOUT_TYPE_CONTEXT))
++#define LOGOUT_DIALOG_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), LOGOUT_TYPE_DIALOG, LogoutDialogClass))
++
++typedef struct _LogoutDialogClass LogoutDialogClass;
++typedef struct _LogoutDialog LogoutDialog;
++typedef enum _LogoutDialogAction LogoutDialogAction;
++
++enum _LogoutDialogAction {
++	LOGOUT_DIALOG_LOGOUT,
++	LOGOUT_DIALOG_RESTART,
++	LOGOUT_DIALOG_SHUTDOWN,
++	LOGOUT_DIALOG_ACTION_CNT
++};
++
++struct _LogoutDialogClass
++{
++  GtkDialogClass parent_class;
++};
++
++/**
++ * LogoutDialog:
++ * @dialog: parent widget
++ * @main_vbox: GtkDialog's vbox
++ * @hbox: box to separate the image of the right-side widgets
++ * @image: the authorization image, left-side widget
++ * @entry_vbox: right-side widgets container
++ * @label: message describing what is required from the user,
++ * right-side widget
++ * @entry: place to type the password in, right-side widget
++ * @ok_button: OK button of the dialog
++ * @cancel_button: Cancel button of the dialog
++ *
++ * Convenience widget based on #GtkDialog to request a password.
++ */
++struct _LogoutDialog
++{
++  GtkDialog dialog;
++
++  GtkWidget *main_vbox;
++  GtkWidget *hbox;
++  GtkWidget *image;
++  GtkWidget *ok_button;
++  GtkWidget *cancel_button;
++  GtkWidget *restart_button;
++  GtkWidget *vbox_text;
++  GtkWidget *message;
++  GtkWidget *timeout_text;
++
++  LogoutDialogAction action;
++
++  /* private */
++  gchar *         timeout_result;
++  guint           timeout;
++  guint           timerfunc;
++};
++
++GType
++logout_dialog_get_type (void);
++
++GtkWidget*
++logout_dialog_new (LogoutDialogAction action);
++
++LogoutDialogAction
++logout_dialog_get_action (LogoutDialog * widget);
++
++G_END_DECLS
++
++#endif
+diff -Nur -x '*.orig' -x '*~' fast-user-switch-applet-2.24.0/src/Makefile.am fast-user-switch-applet-2.24.0.new/src/Makefile.am
+--- fast-user-switch-applet-2.24.0/src/Makefile.am	2008-09-22 14:54:48.000000000 +0100
++++ fast-user-switch-applet-2.24.0.new/src/Makefile.am	2009-04-13 02:31:09.645184106 +0100
+@@ -21,7 +21,10 @@
+ 	fusa-user-menu-item.h		\
+ 	fusa-user-private.h		\
+ 	fusa-utils.h			\
+-	gdm-queue.h
++	applet.h			\
++	gdm-queue.h			\
++	fade-and-grab.h			\
++	logout-dialog.h
+ 
+ 
+ # ################### #
+@@ -44,7 +47,9 @@
+ 	fusa-user.c					\
+ 	fusa-user-menu-item.c				\
+ 	fusa-utils.c					\
+-	gdm-queue.c
++	gdm-queue.c					\
++	fade-and-grab.c					\
++	logout-dialog.c
+ 
+ fast_user_switch_applet_LDADD =				\
+ 	$(APPLET_LIBS)					\

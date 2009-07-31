@@ -1,0 +1,268 @@
+=== modified file 'data/fast-user-switch-applet.schemas.in'
+--- data/fast-user-switch-applet.schemas.in	2005-12-26 08:49:12 +0000
++++ data/fast-user-switch-applet.schemas.in	2008-08-27 17:47:43 +0000
+@@ -74,5 +74,17 @@
+ 	users.</long>
+       </locale>
+     </schema>
++    <schema>
++      <key>/schemas/apps/fast-user-switch-applet/show_guest_login</key>
++      <applyto>/apps/fast-user-switch-applet/show_guest_login</applyto>
++      <owner>fast-user-switch-applet</owner>
++      <type>bool</type>
++      <default>TRUE</default>
++      <locale name="C">
++	<short>Show the "Guest session" Menuitem</short>
++	<long>Whether or not to show a menu item to start a guest session
++	using the gdm-guest-session command.</long>
++      </locale>
++    </schema>
+   </schemalist>
+ </gconfschemafile>
+
+=== modified file 'src/applet.c'
+--- src/applet.c	2008-08-30 04:53:45 +0000
++++ src/applet.c	2008-10-21 15:19:03 +0000
+@@ -73,6 +73,7 @@
+ #define GLOBAL_DIR	"/apps/fast-user-switch-applet"
+ #define SHOW_WINDOW_KEY	"/apps/fast-user-switch-applet/show_window_item"
+ #define SHOW_SCREEN_KEY	"/apps/fast-user-switch-applet/show_screen_item"
++#define SHOW_GUEST_KEY	"/apps/fast-user-switch-applet/show_guest_login"
+ #define ACTIVE_ONLY_KEY	"/apps/fast-user-switch-applet/show_active_users_only"
+ 
+ #define LOCKDOWN_DIR    "/desktop/gnome/lockdown"
+@@ -97,6 +98,7 @@
+   GtkWidget *separator_item;
+   GtkWidget *login_screen_item;
+   GtkWidget *login_window_item;
++  GtkWidget *guest_session_item;
+   GSList *items;
+ 
+   guint client_notify_applet_id;
+@@ -106,6 +108,8 @@
+   GQuark user_menu_item_quark;
+   gint8 pixel_size;
+   GtkIconSize icon_size;
++
++  gboolean guest_active;
+ }
+ FusaAppletData;
+ 
+@@ -222,11 +226,14 @@
+ 					       gpointer         data);
+ static void     login_window_activate_cb      (GtkMenuItem     *item,
+ 					       gpointer         data);
++static void     guest_session_activate_cb     (GtkMenuItem     *item,
++					       gpointer         data);
+ static void     user_notify_display_name_cb   (GObject         *object,
+ 					       GParamSpec      *pspec,
+ 					       gpointer         data);
+ 
+ /* Utility Functions */
++static void      show_hide_guest              (FusaAppletData *adata);
+ static void      reset_login_screen_item      (GtkWidget      *widget,
+ 					       gboolean        use_xnest_value,
+ 					       const gchar    *pref_value);
+@@ -505,9 +512,23 @@
+    * one to be initialised needs to be filled in from the start rather than
+    * depending on getting data from the callback like the first one.
+    */
++  adata->guest_active = FALSE;
+   users = fusa_manager_list_users (adata->manager);
+   while (users)
+     {
++      GSList *displays;
++      gboolean is_active = FALSE;
++
++      displays = fusa_user_get_displays (users->data);
++      if (displays)
++	{
++	  is_active = TRUE;
++	  g_slist_free (displays);
++	}
++
++      if (strcmp (fusa_user_get_user_name(users->data), "guest") == 0)
++	adata->guest_active = is_active;
++
+       menuitem = fusa_user_menu_item_new (users->data);
+       g_object_set_qdata (users->data, adata->user_menu_item_quark, menuitem);
+       g_signal_connect (menuitem, "style-set",
+@@ -521,14 +542,8 @@
+ 
+       if (active_only)
+ 	{
+-	  GSList *displays;
+-
+-	  displays = fusa_user_get_displays (users->data);
+-	  if (displays)
+-	    {
+-	      g_slist_free (displays);
+-	      gtk_widget_show (menuitem);
+-	    }
++	  if (is_active)
++	    gtk_widget_show (menuitem);
+ 	}
+       else
+ 	gtk_widget_show (menuitem);
+@@ -581,9 +596,21 @@
+   reset_login_window_item (adata->login_window_item, use_xnest, value);
+   g_free (value);
+ 
++  adata->guest_session_item = gtk_menu_item_new_with_label (_("Guest session"));
++  gtk_menu_shell_append (GTK_MENU_SHELL (adata->menu),
++						  adata->guest_session_item);
++  g_signal_connect (adata->guest_session_item, "destroy",
++					G_CALLBACK (menuitem_destroy_cb), adata);
++  g_signal_connect (adata->guest_session_item, "activate",
++					G_CALLBACK (guest_session_activate_cb), adata);
++  adata->items = g_slist_prepend (adata->items, adata->guest_session_item);
++
++  show_hide_guest (adata);
++
+   if (g_getenv ("LTSP_CLIENT") && (
+       GTK_WIDGET_VISIBLE (adata->login_screen_item) ||
+-	  GTK_WIDGET_VISIBLE (adata->login_window_item)))
++      GTK_WIDGET_VISIBLE (adata->login_window_item) ||
++      GTK_WIDGET_VISIBLE (adata->guest_session_item)))
+     gtk_widget_show (adata->separator_item);
+   else
+     gtk_widget_hide (adata->separator_item);
+@@ -1215,7 +1242,8 @@
+ {
+   FusaAppletData *adata;
+   GtkWidget *menuitem;
+-  gboolean active_only;
++  gboolean active_only, is_active = FALSE;
++  GSList *displays;
+ 
+   adata = data;
+ 
+@@ -1230,17 +1258,24 @@
+   gtk_menu_shell_append (GTK_MENU_SHELL (adata->menu), menuitem);
+   adata->items = g_slist_prepend (adata->items, menuitem);
+ 
++  displays = fusa_user_get_displays (user);
++  if (displays)
++    {
++      is_active = TRUE;
++      g_slist_free (displays);
++    }
++
++  if (strcmp (fusa_user_get_user_name(user), "guest") == 0)
++    {
++      adata->guest_active = is_active;
++      show_hide_guest (adata);
++    }
++
+   active_only = gconf_client_get_bool (adata->client, ACTIVE_ONLY_KEY, NULL);
+   if (active_only)
+     {
+-      GSList *displays;
+-
+-      displays = fusa_user_get_displays (user);
+-      if (displays)
+-	{
+-	  g_slist_free (displays);
+-	  gtk_widget_show (menuitem);
+-	}
++      if (is_active)
++	gtk_widget_show (menuitem);
+     }
+   else
+     gtk_widget_show (menuitem);
+@@ -1285,24 +1320,32 @@
+ {
+   FusaAppletData *adata;
+   GtkWidget *menuitem;
+-  gboolean active_only;
++  gboolean active_only, is_active = FALSE;
++  GSList *displays;
+ 
+   adata = data;
+   menuitem = g_object_get_qdata (G_OBJECT (user), adata->user_menu_item_quark);
+   if (!menuitem)
+     return;
+ 
++  displays = fusa_user_get_displays (user);
++  if (displays)
++    {
++      is_active = TRUE;
++      g_slist_free (displays);
++    }
++
++  if (strcmp (fusa_user_get_user_name(user), "guest") == 0)
++    {
++      adata->guest_active = is_active;
++      show_hide_guest (adata);
++    }
++
+   active_only = gconf_client_get_bool (adata->client, ACTIVE_ONLY_KEY, NULL);
+   if (active_only)
+     {
+-      GSList *displays;
+-
+-      displays = fusa_user_get_displays (user);
+-      if (displays)
+-	{
+-	  g_slist_free (displays);
+-	  gtk_widget_show (menuitem);
+-	}
++      if (is_active)
++	gtk_widget_show (menuitem);
+       else
+ 	gtk_widget_hide (menuitem);
+     }
+@@ -1517,10 +1560,15 @@
+ 	  items = items->next;
+ 	}
+     }
++  else if (strcmp (key, SHOW_GUEST_KEY) == 0)
++    {
++      show_hide_guest (adata);
++    }
+ 
+   if (g_getenv ("LTSP_CLIENT") && (
+       GTK_WIDGET_VISIBLE (adata->login_screen_item) ||
+-	  GTK_WIDGET_VISIBLE (adata->login_window_item)))
++      GTK_WIDGET_VISIBLE (adata->login_window_item) ||
++      GTK_WIDGET_VISIBLE (adata->guest_session_item)))
+     gtk_widget_show (adata->separator_item);
+   else
+     gtk_widget_hide (adata->separator_item);
+@@ -1887,6 +1935,14 @@
+ }
+ 
+ static void
++guest_session_activate_cb (GtkMenuItem *item,
++			  gpointer     data)
++{
++  gchar *argv[] = {"/usr/share/gdm/guest-session/guest-session-launch", NULL };
++  g_spawn_sync (NULL, argv, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL);
++}
++
++static void
+ login_window_activate_cb (GtkMenuItem *item,
+ 			  gpointer     data)
+ {
+@@ -1937,6 +1993,20 @@
+  * ******************* */
+ 
+ static void
++show_hide_guest (FusaAppletData *adata)
++{
++  gboolean show_guest = gconf_client_get_bool (adata->client, SHOW_GUEST_KEY, NULL);
++  /* if we are not a system user (like the guest user itself), and we have
++   * gdm-guest-session installed, offer it */
++  if (show_guest && !adata->guest_active &&
++      access ("/usr/share/gdm/guest-session/guest-session-launch", X_OK) == 0 &&
++      geteuid() >= 500)
++    gtk_widget_show (adata->guest_session_item);
++  else
++    gtk_widget_hide (adata->guest_session_item);
++}
++
++static void
+ reset_login_screen_item (GtkWidget   *widget,
+ 			 gboolean     use_xnest_value,
+ 			 const gchar *pref_value)
+
