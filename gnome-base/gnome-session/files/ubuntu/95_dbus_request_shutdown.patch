@@ -1,0 +1,97 @@
+Index: gnome-session-2.26.0svn20090408/gnome-session/gsm-manager.c
+===================================================================
+--- gnome-session-2.26.0svn20090408.orig/gnome-session/gsm-manager.c	2009-04-08 18:02:20.000000000 +0100
++++ gnome-session-2.26.0svn20090408/gnome-session/gsm-manager.c	2009-04-08 18:04:09.000000000 +0100
+@@ -2815,6 +2815,48 @@
+ }
+ 
+ gboolean
++gsm_manager_request_shutdown (GsmManager *manager,
++                              GError    **error)
++{
++        g_debug ("GsmManager: RequestShutdown called");
++
++        g_return_val_if_fail (GSM_IS_MANAGER (manager), FALSE);
++
++        if (manager->priv->phase != GSM_MANAGER_PHASE_RUNNING) {
++                g_set_error (error,
++                             GSM_MANAGER_ERROR,
++                             GSM_MANAGER_ERROR_NOT_IN_RUNNING,
++                             "RequestShutdown interface is only available during the Running phase");
++                return FALSE;
++        }
++
++        request_shutdown (manager);
++
++        return TRUE;
++}
++
++gboolean
++gsm_manager_request_reboot (GsmManager *manager,
++                            GError    **error)
++{
++        g_debug ("GsmManager: RequestReboot called");
++
++        g_return_val_if_fail (GSM_IS_MANAGER (manager), FALSE);
++
++        if (manager->priv->phase != GSM_MANAGER_PHASE_RUNNING) {
++                g_set_error (error,
++                             GSM_MANAGER_ERROR,
++                             GSM_MANAGER_ERROR_NOT_IN_RUNNING,
++                             "RequestReboot interface is only available during the Running phase");
++                return FALSE;
++        }
++
++        request_reboot (manager);
++
++        return TRUE;
++}
++
++gboolean
+ gsm_manager_shutdown (GsmManager *manager,
+                       GError    **error)
+ {
+Index: gnome-session-2.26.0svn20090408/gnome-session/gsm-manager.h
+===================================================================
+--- gnome-session-2.26.0svn20090408.orig/gnome-session/gsm-manager.h	2009-04-08 18:00:57.000000000 +0100
++++ gnome-session-2.26.0svn20090408/gnome-session/gsm-manager.h	2009-04-08 18:02:07.000000000 +0100
+@@ -148,7 +148,10 @@
+                                                                 guint                  flags,
+                                                                 gboolean              *is_inhibited,
+                                                                 GError                *error);
+-
++gboolean            gsm_manager_request_shutdown               (GsmManager     *manager,
++                                                                GError        **error);
++gboolean            gsm_manager_request_reboot                 (GsmManager     *manager,
++                                                                GError        **error);  
+ gboolean            gsm_manager_shutdown                       (GsmManager     *manager,
+                                                                 GError        **error);
+ 
+Index: gnome-session-2.26.0svn20090408/gnome-session/org.gnome.SessionManager.xml
+===================================================================
+--- gnome-session-2.26.0svn20090408.orig/gnome-session/org.gnome.SessionManager.xml	2009-04-08 17:59:06.000000000 +0100
++++ gnome-session-2.26.0svn20090408/gnome-session/org.gnome.SessionManager.xml	2009-04-08 18:00:34.000000000 +0100
+@@ -301,6 +301,23 @@
+       </doc:doc>
+     </method>
+ 
++	<method name="RequestShutdown">
++      <doc:doc>
++        <doc:description>
++          <doc:para>Request a shutdown with no dialog</doc:para>
++        </doc:description>
++      </doc:doc>
++	</method>
++
++	<method name="RequestReboot">
++      <doc:doc>
++        <doc:description>
++          <doc:para>Request a reboot with no dialog</doc:para>
++        </doc:description>
++      </doc:doc>
++	</method>
++	
++
+     <!-- Signals -->
+ 
+     <signal name="ClientAdded">
