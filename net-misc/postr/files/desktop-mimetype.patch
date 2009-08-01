@@ -1,0 +1,8 @@
+diff -Nur -x '*.orig' -x '*~' postr-0.12.3/data/postr.desktop postr-0.12.3.new/data/postr.desktop
+--- postr-0.12.3/data/postr.desktop	2008-12-19 12:51:01.000000000 -0200
++++ postr-0.12.3.new/data/postr.desktop	2009-03-26 14:24:55.500392985 -0300
+@@ -9,3 +9,4 @@
+ Terminal=false
+ Type=Application
+ Categories=GNOME;GTK;Graphics;
++MimeType=image/bmp;image/gif;image/x-fits;image/pcx;image/x-portable-anymap;image/x-portable-bitmap;image/x-portable-graymap;image/x-portable-pixmap;image/x-sgi;image/x-tga;image/x-xbitmap;image/x-xwindowdump;image/tiff;image/jpeg;image/x-psd;image/png;image/x-icon;image/x-xpixmap;image/svg+xml;
