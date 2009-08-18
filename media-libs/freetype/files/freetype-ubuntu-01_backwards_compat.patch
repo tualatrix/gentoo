@@ -1,0 +1,33 @@
+diff -Naur freetype-2.3.9-ubuntu-2/src/base/ftapi.c freetype-2.3.9-ubuntu-3/src/base/ftapi.c
+--- freetype-2.3.9-ubuntu-2/src/base/ftapi.c	2009-06-20 12:46:10.000000000 +0200
++++ freetype-2.3.9-ubuntu-3/src/base/ftapi.c	2009-06-20 12:46:53.000000000 +0200
+@@ -118,4 +118,18 @@
+   }
+ 
+ 
++  FT_BASE_DEF( FT_Short )
++  FT_Get_Short( FT_Stream stream )
++  {
++    return FT_GET_SHORT();
++  }
++
++
++  FT_BASE_DEF( FT_Long )
++  FT_Get_Long( FT_Stream stream )
++  {
++    return FT_GET_LONG();
++  }
++
++
+ /* END */
+diff -Naur freetype-2.3.9-ubuntu-2/src/base/ftbase.c freetype-2.3.9-ubuntu-3/src/base/ftbase.c
+--- freetype-2.3.9-ubuntu-2/src/base/ftbase.c	2009-06-20 12:46:10.000000000 +0200
++++ freetype-2.3.9-ubuntu-3/src/base/ftbase.c	2009-06-20 12:46:53.000000000 +0200
+@@ -31,6 +31,7 @@
+ #include "ftstream.c"
+ #include "fttrigon.c"
+ #include "ftutil.c"
++#include "ftapi.c"
+ 
+ #if defined( FT_MACINTOSH ) && !defined ( DARWIN_NO_CARBON )
+ #include "ftmac.c"

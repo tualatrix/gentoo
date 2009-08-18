@@ -1,0 +1,12 @@
+diff -Naur freetype-2.3.9-ubuntu-4/src/sfnt/ttmtx.c freetype-2.3.9-ubuntu-5/src/sfnt/ttmtx.c
+--- freetype-2.3.9-ubuntu-4/src/sfnt/ttmtx.c	2009-06-20 12:47:07.000000000 +0200
++++ freetype-2.3.9-ubuntu-5/src/sfnt/ttmtx.c	2009-06-20 12:47:50.000000000 +0200
+@@ -174,7 +174,7 @@
+     }
+ 
+     if ( FT_QNEW_ARRAY( *longs,  num_longs  ) ||
+-         FT_QNEW_ARRAY( *shorts, num_shorts ) )
++         (num_shorts > 0 && FT_QNEW_ARRAY( *shorts, num_shorts ) ) )
+       goto Fail;
+ 
+     if ( FT_FRAME_ENTER( table_len ) )

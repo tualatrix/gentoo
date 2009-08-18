@@ -1,0 +1,12 @@
+diff -Naur freetype-2.3.9-ubuntu-6/builds/unix/ftconfig.in freetype-2.3.9-ubuntu-7/builds/unix/ftconfig.in
+--- freetype-2.3.9-ubuntu-6/builds/unix/ftconfig.in	2009-06-20 12:47:58.000000000 +0200
++++ freetype-2.3.9-ubuntu-7/builds/unix/ftconfig.in	2009-06-20 12:48:37.000000000 +0200
+@@ -298,7 +298,7 @@
+     register FT_Int32  t, t2;
+ 
+ 
+-    asm __volatile__ (
++    __asm__ __volatile__ (
+       "smull  %1, %2, %4, %3\n\t"       /* (lo=%1,hi=%2) = a*b */
+       "mov    %0, %2, asr #31\n\t"      /* %0  = (hi >> 31) */
+       "add    %0, %0, #0x8000\n\t"      /* %0 += 0x8000 */

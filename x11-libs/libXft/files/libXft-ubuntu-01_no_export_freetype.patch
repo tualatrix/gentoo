@@ -1,0 +1,12 @@
+diff -Naur libXft-2.1.13-ubuntu-1/xft.pc.in libXft-2.1.13-ubuntu-2/xft.pc.in
+--- libXft-2.1.13-ubuntu-1/xft.pc.in	2008-05-12 23:31:03.000000000 +0200
++++ libXft-2.1.13-ubuntu-2/xft.pc.in	2009-06-20 12:51:48.000000000 +0200
+@@ -6,7 +6,7 @@
+ Name: Xft
+ Description: X FreeType library
+ Version: @VERSION@
+-Requires: xproto, xrender, fontconfig, freetype2
++Requires: xproto
+ Requires.private: xrender, fontconfig, freetype2
+ Cflags: -I${includedir}
+ Libs: -L${libdir} -lXft

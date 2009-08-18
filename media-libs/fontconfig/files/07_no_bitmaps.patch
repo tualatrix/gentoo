@@ -1,0 +1,49 @@
+---
+ conf.d/Makefile.am |    1 +
+ conf.d/Makefile.in |    1 +
+ 2 files changed, 2 insertions(+)
+
+Index: fontconfig-2.6.0/conf.d/Makefile.am
+===================================================================
+--- fontconfig-2.6.0.orig/conf.d/Makefile.am
++++ fontconfig-2.6.0/conf.d/Makefile.am
+@@ -74,16 +74,17 @@
+ 	49-sansserif.conf \
+ 	50-user.conf \
+ 	51-local.conf \
+ 	53-monospace-lcd-filter.conf \
+ 	60-latin.conf \
+ 	65-fonts-persian.conf \
+ 	65-nonlatin.conf \
+ 	69-unifont.conf \
++	70-no-bitmaps.conf \
+ 	80-delicious.conf \
+ 	90-synthetic.conf
+ 
+ EXTRA_DIST = $(CONF_FILES) $(DOC_FILES)
+ 
+ configdir=$(CONFDIR)
+ confavaildir=$(configdir)/conf.avail
+ confddir=$(configdir)/conf.d
+Index: fontconfig-2.6.0/conf.d/Makefile.in
+===================================================================
+--- fontconfig-2.6.0.orig/conf.d/Makefile.in
++++ fontconfig-2.6.0/conf.d/Makefile.in
+@@ -290,16 +290,17 @@
+ 	49-sansserif.conf \
+ 	50-user.conf \
+ 	51-local.conf \
+ 	53-monospace-lcd-filter.conf \
+ 	60-latin.conf \
+ 	65-fonts-persian.conf \
+ 	65-nonlatin.conf \
+ 	69-unifont.conf \
++	70-no-bitmaps.conf \
+ 	80-delicious.conf \
+ 	90-synthetic.conf
+ 
+ EXTRA_DIST = $(CONF_FILES) $(DOC_FILES)
+ configdir = $(CONFDIR)
+ confavaildir = $(configdir)/conf.avail
+ confddir = $(configdir)/conf.d
+ confavail_DATA = $(CONF_FILES)

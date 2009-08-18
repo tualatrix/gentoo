@@ -1,0 +1,128 @@
+diff -Nur fontconfig-2.6.0.orig/conf.d/40-nonlatin.conf fontconfig-2.6.0/conf.d/40-nonlatin.conf
+--- fontconfig-2.6.0.orig/conf.d/40-nonlatin.conf	2009-08-18 20:55:42.065758687 +0800
++++ fontconfig-2.6.0/conf.d/40-nonlatin.conf	2009-08-18 20:56:09.861785007 +0800
+@@ -51,6 +51,7 @@
+ 		<family>Baekmuk Dotum</family>
+ 		<family>SimSun</family>
+ 		<family>MgOpen Modata</family>
++		<family>MgOpen Moderna</family>
+ 		<family>Sazanami Gothic</family>
+ 		<family>AR PL ShanHeiSun Uni</family>
+ 		<family>ZYSong18030</family>
+diff -Nur fontconfig-2.6.0.orig/conf.d/60-latin.conf fontconfig-2.6.0/conf.d/60-latin.conf
+--- fontconfig-2.6.0.orig/conf.d/60-latin.conf	2009-08-18 20:55:42.065758687 +0800
++++ fontconfig-2.6.0/conf.d/60-latin.conf	2009-08-18 20:56:09.862783668 +0800
+@@ -4,8 +4,8 @@
+ 	<alias>
+ 		<family>serif</family>
+ 		<prefer>
+-			<family>Bitstream Vera Serif</family>
+ 			<family>DejaVu Serif</family>
++			<family>Bitstream Vera Serif</family>
+ 			<family>Times New Roman</family>
+ 			<family>Thorndale AMT</family>
+ 			<family>Luxi Serif</family>
+@@ -16,8 +16,8 @@
+ 	<alias>
+ 		<family>sans-serif</family>
+ 		<prefer>
+-			<family>Bitstream Vera Sans</family>
+ 			<family>DejaVu Sans</family>
++			<family>Bitstream Vera Sans</family>
+ 			<family>Verdana</family>
+ 			<family>Arial</family>
+ 			<family>Albany AMT</family>
+@@ -32,8 +32,8 @@
+ 	<alias>
+ 		<family>monospace</family>
+ 		<prefer>
+-			<family>Bitstream Vera Sans Mono</family>
+ 			<family>DejaVu Sans Mono</family>
++			<family>Bitstream Vera Sans Mono</family>
+ 			<family>Andale Mono</family>
+ 			<family>Courier New</family>
+ 			<family>Cumberland AMT</family>
+diff -Nur fontconfig-2.6.0.orig/conf.d/Makefile.am fontconfig-2.6.0/conf.d/Makefile.am
+--- fontconfig-2.6.0.orig/conf.d/Makefile.am	2009-08-18 20:55:42.065758687 +0800
++++ fontconfig-2.6.0/conf.d/Makefile.am	2009-08-18 20:57:55.603510278 +0800
+@@ -25,7 +25,12 @@
+ 	README
+ 
+ CONF_FILES = \
++	10-antialias.conf \
+ 	10-autohint.conf \
++	10-hinting.conf \
++	10-hinting-full.conf \
++	10-hinting-medium.conf \
++	10-hinting-slight.conf \
+ 	10-no-sub-pixel.conf \
+ 	10-sub-pixel-bgr.conf \
+ 	10-sub-pixel-rgb.conf \
+@@ -42,6 +47,7 @@
+ 	49-sansserif.conf \
+ 	50-user.conf \
+ 	51-local.conf \
++	53-monospace-lcd-filter.conf \
+ 	60-latin.conf \
+ 	65-fonts-persian.conf \
+ 	65-khmer.conf \
+@@ -53,6 +59,9 @@
+ 	90-synthetic.conf
+ 
+ CONF_LINKS = \
++	10-antialias.conf \
++	10-hinting.conf \
++	10-hinting-slight.conf \
+ 	20-fix-globaladvance.conf \
+ 	20-unhint-small-vera.conf \
+ 	30-urw-aliases.conf \
+@@ -62,6 +71,7 @@
+ 	49-sansserif.conf \
+ 	50-user.conf \
+ 	51-local.conf \
++	53-monospace-lcd-filter.conf \
+ 	60-latin.conf \
+ 	65-fonts-persian.conf \
+ 	65-nonlatin.conf \
+diff -Nur fontconfig-2.6.0.orig/conf.d/Makefile.in fontconfig-2.6.0/conf.d/Makefile.in
+--- fontconfig-2.6.0.orig/conf.d/Makefile.in	2009-08-18 20:55:42.065758687 +0800
++++ fontconfig-2.6.0/conf.d/Makefile.in	2009-08-18 20:56:09.863760049 +0800
+@@ -242,7 +242,12 @@
+ 	README
+ 
+ CONF_FILES = \
++	10-antialias.conf \
+ 	10-autohint.conf \
++	10-hinting.conf \
++	10-hinting-full.conf \
++	10-hinting-medium.conf \
++	10-hinting-slight.conf \
+ 	10-no-sub-pixel.conf \
+ 	10-sub-pixel-bgr.conf \
+ 	10-sub-pixel-rgb.conf \
+@@ -259,6 +264,7 @@
+ 	49-sansserif.conf \
+ 	50-user.conf \
+ 	51-local.conf \
++	53-monospace-lcd-filter.conf \
+ 	60-latin.conf \
+ 	65-fonts-persian.conf \
+ 	65-khmer.conf \
+@@ -270,6 +276,9 @@
+ 	90-synthetic.conf
+ 
+ CONF_LINKS = \
++	10-antialias.conf \
++	10-hinting.conf \
++	10-hinting-slight.conf \
+ 	20-fix-globaladvance.conf \
+ 	20-unhint-small-vera.conf \
+ 	30-urw-aliases.conf \
+@@ -279,6 +288,7 @@
+ 	49-sansserif.conf \
+ 	50-user.conf \
+ 	51-local.conf \
++	53-monospace-lcd-filter.conf \
+ 	60-latin.conf \
+ 	65-fonts-persian.conf \
+ 	65-nonlatin.conf \

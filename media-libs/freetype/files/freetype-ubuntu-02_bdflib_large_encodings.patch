@@ -1,0 +1,18 @@
+diff -Naur freetype-2.3.9-ubuntu-3/src/bdf/bdflib.c freetype-2.3.9-ubuntu-4/src/bdf/bdflib.c
+--- freetype-2.3.9-ubuntu-3/src/bdf/bdflib.c	2009-06-20 12:46:41.000000000 +0200
++++ freetype-2.3.9-ubuntu-4/src/bdf/bdflib.c	2009-06-20 12:47:22.000000000 +0200
+@@ -1584,6 +1584,14 @@
+         goto Exit;
+       }
+ 
++      /* Check that the encoding is in the range [0, 65535] because       */
++      /* otherwise p->have (a bitmap with static size) overflows.         */
++      if ( p->glyph_enc >= sizeof(p->have) * 8 )
++      {
++	error = BDF_Err_Invalid_File_Format; /* Not the ideal error code */
++	goto Exit;
++      }
++
+       /* Check to see whether this encoding has already been encountered. */
+       /* If it has then change it to unencoded so it gets added if        */
+       /* indicated.                                                       */

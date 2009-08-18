@@ -1,0 +1,12 @@
+diff -Naur cairo-1.8.8-ubuntu-1/src/cairo-mutex.c cairo-1.8.8-ubuntu-2/src/cairo-mutex.c
+--- cairo-1.8.8-ubuntu-1/src/cairo-mutex.c	2009-06-17 13:55:38.000000000 +0200
++++ cairo-1.8.8-ubuntu-2/src/cairo-mutex.c	2009-06-26 20:15:04.000000000 +0200
+@@ -35,7 +35,7 @@
+ 
+ #include "cairo-mutex-private.h"
+ 
+-#define CAIRO_MUTEX_DECLARE(mutex) cairo_mutex_t mutex = CAIRO_MUTEX_NIL_INITIALIZER;
++#define CAIRO_MUTEX_DECLARE(mutex) cairo_private cairo_mutex_t mutex = CAIRO_MUTEX_NIL_INITIALIZER;
+ #include "cairo-mutex-list-private.h"
+ #undef   CAIRO_MUTEX_DECLARE
+ 
