@@ -1,8 +1,6 @@
 # Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: $
-
-EAPI=2
+# $Header: /var/cvsroot/gentoo-x86/media-libs/freetype/freetype-2.3.9-r1.ebuild,v 1.6 2009/05/06 16:07:11 armin76 Exp $
 
 inherit eutils flag-o-matic libtool
 
@@ -14,8 +12,8 @@ SRC_URI="mirror://sourceforge/freetype/${P/_/}.tar.bz2
 
 LICENSE="FTL GPL-2"
 SLOT="2"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~sparc-fbsd ~x86 ~x86-fbsd"
-IUSE="X bindist debug doc utils fontforge +cleartype ubuntu"
+KEYWORDS="alpha amd64 arm hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc ~sparc-fbsd x86 ~x86-fbsd"
+IUSE="X bindist debug doc utils fontforge"
 
 DEPEND="X?	( x11-libs/libX11
 			  x11-libs/libXau
@@ -26,15 +24,10 @@ DEPEND="X?	( x11-libs/libX11
 RDEPEND="${DEPEND}
 		!<media-libs/fontconfig-2.3.2-r2"
 
-pkg_setup() {
-	if use cleartype && use ubuntu; then
-		eerror "The cleartype and ubuntu useflags are mutually exclusive,"
-		eerror "you must disable one of them."
-		die "Either disable the cleartype or the ubuntu useflag."
-	fi
-}
+src_unpack() {
+	unpack ${A}
+	cd "${S}"
 
-src_prepare() {
 	enable_option() {
 		sed -i -e "/#define $1/a #define $1" \
 			include/freetype/config/ftoption.h \
@@ -66,13 +59,12 @@ src_prepare() {
 	enable_option FT_CONFIG_OPTION_INCREMENTAL
 	disable_option FT_CONFIG_OPTION_OLD_INTERNALS
 
-	if use ubuntu; then
-		epatch "${FILESDIR}"/${PN}-ubuntu-01_backwards_compat.patch
-		epatch "${FILESDIR}"/${PN}-ubuntu-02_bdflib_large_encodings.patch
-		epatch "${FILESDIR}"/${PN}-ubuntu-03_hmtx_no_shorts.patch
-		epatch "${FILESDIR}"/${PN}-ubuntu-04_proper_armel_asm_declaration.patch
-		epatch "${FILESDIR}"/enable-subpixel-rendering.patch
-	fi
+	#Ubuntu patch
+	epatch "${FILESDIR}"/${PN}-ubuntu-01_backwards_compat.patch
+	epatch "${FILESDIR}"/${PN}-ubuntu-02_bdflib_large_encodings.patch
+	epatch "${FILESDIR}"/${PN}-ubuntu-03_hmtx_no_shorts.patch
+	epatch "${FILESDIR}"/${PN}-ubuntu-04_proper_armel_asm_declaration.patch
+	epatch "${FILESDIR}"/enable-subpixel-rendering.patch
 
 	epatch "${FILESDIR}"/${PN}-2.3.2-enable-valid.patch
 	epatch "${FILESDIR}"/${P}-CVE-2009-0946.patch            # 263032
@@ -135,8 +127,5 @@ pkg_postinst() {
 	elog "The utilities and demos previously bundled with freetype are now"
 	elog "optional.  Enable the utils USE flag if you would like them"
 	elog "to be installed."
-	echo
-	ewarn "DO NOT report bugs to Gentoo's bugzilla"
-	ewarn "See http://forums.gentoo.org/viewtopic-t-511382.html for support topic on Gentoo forums."
 	echo
 }
