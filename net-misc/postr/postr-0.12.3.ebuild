@@ -19,7 +19,7 @@ RDEPEND="
 	dev-python/twisted-web 
 	dev-python/pygtk
 	dev-python/gnome-python
-	gnome-extra/nautilus-python
+	dev-python/nautilus-python
 	"
 DEPEND="${RDEPEND}"
 
