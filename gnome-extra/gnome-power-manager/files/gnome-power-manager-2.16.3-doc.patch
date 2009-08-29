@@ -1,0 +1,102 @@
+diff -ur gnome-power-manager-2.16.3.orig/help/C/gnome-power-manager.xml gnome-power-manager-2.16.3/help/C/gnome-power-manager.xml
+--- gnome-power-manager-2.16.3.orig/help/C/gnome-power-manager.xml	2007-01-30 02:04:57.000000000 +0200
++++ gnome-power-manager-2.16.3/help/C/gnome-power-manager.xml	2007-11-21 22:44:57.000000000 +0200
+@@ -23,6 +23,12 @@
+ 
+   <articleinfo>
+     <title>&application; Manual</title>
++    <abstract role="description">
++      <para>
++       &application; is a session daemon for the GNOME Desktop that
++       manages the power settings for your laptop or desktop computer.
++      </para>
++    </abstract>
+     <copyright>
+       <year>2006</year>
+       <holder>Richard Hughes (richard@hughsie.com)</holder>
+@@ -40,7 +46,7 @@
+ <!-- An address can be added to the publisher information.  If a role is
+      not specified, the publisher/author is the same for all versions of the
+      document.  -->
+-    <publisher>
++    <publisher role="maintainer">
+       <publishername>Richard Hughes</publishername>
+     </publisher>
+ 
+@@ -50,7 +56,7 @@
+         any of this. -->
+ 
+     <authorgroup>
+-      <author>
++      <author role="maintainer">
+         <firstname>Richard</firstname>
+         <surname>Hughes</surname>
+ 	<email>richard@hughsie.com</email>
+diff -ur gnome-power-manager-2.16.3.orig/help/ru/gnome-power-manager.xml gnome-power-manager-2.16.3/help/ru/gnome-power-manager.xml
+--- gnome-power-manager-2.16.3.orig/help/ru/gnome-power-manager.xml	2007-01-30 02:04:57.000000000 +0200
++++ gnome-power-manager-2.16.3/help/ru/gnome-power-manager.xml	2007-11-21 22:45:35.000000000 +0200
+@@ -21,6 +21,12 @@
+ 
+   <articleinfo>
+     <title><application>GNOME Power Manager</application> Manual</title>
++    <abstract role="description">
++      <para>
++        &application; is a session daemon for the GNOME Desktop that
++        manages the power settings for your laptop or desktop computer.
++      </para>
++    </abstract>
+     <copyright>
+       <year>2006</year>
+       <holder>Richard Hughes (richard@hughsie.com)</holder>
+@@ -38,7 +44,7 @@
+ <!-- An address can be added to the publisher information.  If a role is
+      not specified, the publisher/author is the same for all versions of the
+      document.  -->
+-    <publisher>
++    <publisher role="maintainer">
+       <publishername>Richard Hughes</publishername>
+     </publisher>
+ 
+@@ -64,7 +70,7 @@
+         any of this. -->
+ 
+     <authorgroup>
+-      <author>
++      <author role="maintainer">
+         <firstname>Richard</firstname>
+         <surname>Hughes</surname>
+ 	<email>richard@hughsie.com</email>
+diff -ur gnome-power-manager-2.16.3.orig/help/sv/gnome-power-manager.xml gnome-power-manager-2.16.3/help/sv/gnome-power-manager.xml
+--- gnome-power-manager-2.16.3.orig/help/sv/gnome-power-manager.xml	2007-01-30 02:04:57.000000000 +0200
++++ gnome-power-manager-2.16.3/help/sv/gnome-power-manager.xml	2007-11-21 22:45:22.000000000 +0200
+@@ -21,6 +21,12 @@
+ 
+   <articleinfo>
+     <title>Handbok för <application>GNOME-strömhanterare</application></title>
++    <abstract role="description">
++      <para>
++        &application; is a session daemon for the GNOME Desktop that
++        manages the power settings for your laptop or desktop computer.
++      </para>
++    </abstract>
+     <copyright>
+       <year>2006</year>
+       <holder>Richard Hughes (richard@hughsie.com)</holder>
+@@ -38,7 +44,7 @@
+ <!-- An address can be added to the publisher information.  If a role is
+      not specified, the publisher/author is the same for all versions of the
+      document.  -->
+-    <publisher>
++    <publisher role="maintainer">
+       <publishername>Richard Hughes</publishername>
+     </publisher>
+ 
+@@ -64,7 +70,7 @@
+         any of this. -->
+ 
+     <authorgroup>
+-      <author>
++      <author role="maintainer">
+         <firstname>Richard</firstname>
+         <surname>Hughes</surname>
+ 	<email>richard@hughsie.com</email>

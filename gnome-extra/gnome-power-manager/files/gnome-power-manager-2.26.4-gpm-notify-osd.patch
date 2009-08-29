@@ -1,0 +1,407 @@
+--- a/src/gpm-notify.c	2009-08-03 23:43:19.000000000 +0800
++++ b/src/gpm-notify.c	2009-08-29 15:14:52.479190142 +0800
+@@ -50,6 +50,14 @@
+ #define GPM_NOTIFY_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GPM_TYPE_NOTIFY, GpmNotifyPrivate))
+ #define QUIRK_WEBSITE	"http://people.freedesktop.org/~hughsient/quirk/"
+ 
++typedef struct
++{
++    NotifyActionCallback cb;
++    GFreeFunc            free_func;
++    gpointer             user_data;
++    gchar                *label;
++} NotifyAlert;
++
+ struct GpmNotifyPrivate
+ {
+ 	GpmAcAdapter		*ac_adapter;
+@@ -58,6 +66,8 @@
+ 	gchar			*internet_url;
+ 	const gchar		*do_not_show_gconf;
+ 	NotifyNotification	*libnotify;
++    GtkWidget       *dialog;
++    GHashTable      *alerts;
+ };
+ 
+ enum {
+@@ -70,6 +80,96 @@
+ 
+ G_DEFINE_TYPE (GpmNotify, gpm_notify, G_TYPE_OBJECT)
+ 
++static void
++destroy_alert (NotifyAlert *alert)
++{
++    if (alert->user_data != NULL && alert->free_func != NULL)
++        alert->free_func (alert->user_data);
++
++    g_free (alert->label);
++
++    g_free (alert);
++}
++
++static void
++add_alert_action (GpmNotify *notify,
++        const char *action,
++        const char *label,
++        NotifyActionCallback callback,
++        gpointer user_data,
++        GFreeFunc free_func)
++{
++    NotifyAlert *alert = g_new0 (NotifyAlert, 1);
++    alert->cb = callback;
++    alert->user_data = user_data;
++    alert->free_func = free_func;
++    alert->label = g_strdup (label);
++ 
++    if (notify->priv->alerts == NULL) {
++        notify->priv->alerts = g_hash_table_new_full (g_str_hash,
++                                  g_str_equal,
++                                  g_free,
++                                  (GFreeFunc)destroy_alert);
++    }
++ 
++    g_hash_table_insert (notify->priv->alerts,
++                 g_strdup (action),
++                 alert);
++}
++
++static void
++alert_action_button_clicked (GtkWidget *widget, gpointer data)
++{
++    GpmNotify *notify = (GpmNotify*)g_object_get_data (G_OBJECT (widget), "notify");
++    gchar *action = (gchar*)data;
++    NotifyAlert* alert;
++ 
++    if (notify->priv->alerts != NULL) {
++        alert = (NotifyAlert*)g_hash_table_lookup (notify->priv->alerts,
++                               action);
++        if (alert != NULL && alert->cb != NULL) {
++            alert->cb (notify->priv->libnotify,
++                   action,
++                   alert->user_data);
++        }
++    }
++ 
++    g_hash_table_remove (notify->priv->alerts, action);
++}
++
++static gboolean
++gpm_notify_display_alert (GpmNotify        *notify,
++             const gchar      *title,
++             const gchar      *content,
++             GpmNotifyTimeout  timeout,
++             const gchar      *msgicon,
++             GpmNotifyUrgency  urgency)
++{
++    GtkMessageType msg_type;
++ 
++    if (urgency == GPM_NOTIFY_URGENCY_CRITICAL) {
++        msg_type = GTK_MESSAGE_WARNING;
++    } else {
++        msg_type = GTK_MESSAGE_INFO;
++    }
++ 
++    notify->priv->dialog = gtk_message_dialog_new_with_markup (NULL,
++                                   GTK_DIALOG_DESTROY_WITH_PARENT,
++                                   msg_type,
++                                   GTK_BUTTONS_CLOSE,
++                                   "<span size='larger'><b>%s</b></span>",
++                                   GPM_NAME);
++ 
++    gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (notify->priv->dialog), "%s", content);
++ 
++    g_signal_connect_swapped (notify->priv->dialog,
++                  "response",
++                  G_CALLBACK (gtk_widget_destroy),
++                  notify->priv->dialog);
++ 
++    return TRUE;
++}
++ 
+ /**
+  * notify_closed_cb:
+  * @notify: our libnotify instance
+@@ -90,8 +190,16 @@
+		   const gchar	 *content,
+		   GpmNotifyTimeout timeout,
+		   const gchar	 *msgicon,
+-		   GpmNotifyUrgency urgency)
++          GpmNotifyUrgency  urgency,
++          gboolean          alert)
+ {
++    if (alert) {
++        gpm_notify_display_alert (notify, title,
++                      content, timeout,
++                      msgicon, urgency);
++        return TRUE;
++    }
++
+ 	if (notify->priv->libnotify != NULL) {
+ //		notify_notification_close (notify->priv->libnotify, NULL);
+ //		notify->priv->libnotify = NULL;
+@@ -124,14 +232,50 @@
+ 	return TRUE;
+ }
+ 
++static void
++add_action_buttons (gpointer key,
++           gpointer value,
++           gpointer user_data)
++{
++    GpmNotify *notify;
++    gchar *action;
++    NotifyAlert *alert;
++    GtkWidget *hbox;
++    GtkWidget *button;
++ 
++    action = (gchar*)key;
++    alert = (NotifyAlert*)value;
++    notify = (GpmNotify*)user_data;
++ 
++    button = gtk_button_new_with_label (alert->label);
++    g_signal_connect (G_OBJECT (button), "clicked",
++              G_CALLBACK (alert_action_button_clicked), action);
++    g_object_set_data (G_OBJECT (button), "notify", notify);
++ 
++    hbox = gtk_hbox_new (FALSE, 12);
++    gtk_box_pack_end (GTK_BOX (hbox), button, TRUE, FALSE, 0);
++ 
++    gtk_box_pack_start (GTK_BOX (GTK_DIALOG (notify->priv->dialog)->vbox),
++                hbox, FALSE, FALSE, 0);
++    gtk_widget_show_all (hbox);
++}
++
++ 
++
+ static gboolean
+ gpm_notify_show (GpmNotify *notify)
+ {
+ 	gboolean ret;
+-	ret = notify_notification_show (notify->priv->libnotify, NULL);
+-	if (!ret) {
+-		egg_warning ("failed to send notification");
+-	}
++    if (notify->priv->dialog != NULL) {
++        g_hash_table_foreach (notify->priv->alerts, add_action_buttons, notify);
++        gtk_window_present (GTK_WINDOW (notify->priv->dialog));
++        return TRUE;
++    } else {
++        ret = notify_notification_show (notify->priv->libnotify, NULL);
++        if (!ret) {
++            egg_warning ("failed to send notification");
++        }
++    }
+ 	return ret;
+ }
+ 
+@@ -155,11 +299,55 @@
+ 		    const gchar	 *msgicon,
+ 		    GpmNotifyUrgency urgency)
+ {
+-	gpm_notify_create (notify, title, content, timeout, msgicon, urgency);
+-	gpm_notify_show (notify);
++	gpm_notify_create (notify, title, content, timeout, msgicon, urgency, FALSE);
++    gpm_notify_show (notify);
+ 	return TRUE;
+ }
+ 
++static void
++gpm_notify_add_action (GpmNotify            *notify,
++              const char           *action,
++              const char           *label,
++              NotifyActionCallback  callback,
++              gpointer              user_data,
++              GFreeFunc             free_func)
++{
++    if (notify->priv->dialog != NULL) {
++        add_alert_action (notify,
++                  action,
++                  label,
++                  callback,
++                  user_data,
++                  free_func);
++    } else {
++        gboolean supports_actions = FALSE;
++        GList *caps = NULL;
++        GList *c = NULL;
++ 
++        caps = notify_get_server_caps ();
++        if (caps != NULL) {
++            for (c = caps; c != NULL; c = c->next) {
++                if (strcmp ((char*)c->data, "actions") == 0) {
++                    supports_actions = TRUE;
++                    break;
++                }
++            }
++ 
++            g_list_foreach (caps, (GFunc)g_free, NULL);
++            g_list_free (caps);
++        }
++ 
++        if (supports_actions) {
++            notify_notification_add_action (notify->priv->libnotify,
++                            action,
++                            label,
++                            callback,
++                            user_data,
++                            free_func);
++        }
++    }
++}
++ 
+ /**
+  * gpm_notify_cancel:
+  * @notify: This class instance
+@@ -287,22 +475,22 @@
+ 
+ 	gpm_notify_create (notify, title, msg, 0,
+ 			   GTK_STOCK_DIALOG_WARNING,
+-			   GPM_NOTIFY_URGENCY_CRITICAL);
++			   GPM_NOTIFY_URGENCY_CRITICAL,
++               TRUE);
+ 
+ 	/* add extra stuff */
+ 	notify->priv->internet_url = g_strdup (website);
+-	notify_notification_add_action  (notify->priv->libnotify,
++    gpm_notify_add_action  (notify,
+	                                 "visit-website",
+	                                 _("Visit recall website"),
+	                                 (NotifyActionCallback) notify_general_clicked_cb,
+	                                 notify, NULL);
+	notify->priv->do_not_show_gconf = GPM_CONF_NOTIFY_PERHAPS_RECALL;
+-	notify_notification_add_action  (notify->priv->libnotify,
++    gpm_notify_add_action  (notify,
+	                                 "dont-show-again",
+	                                 _("Do not show me this again"),
+	                                 (NotifyActionCallback) notify_general_clicked_cb,
+	                                 notify, NULL);
+-
+ 	gpm_notify_show (notify);
+ 	g_free (msg);
+ 	return TRUE;
+@@ -331,7 +519,8 @@
+ 
+ 	gpm_notify_create (notify, title, msg, GPM_NOTIFY_TIMEOUT_LONG,
+ 			   GTK_STOCK_DIALOG_WARNING,
+-			   GPM_NOTIFY_URGENCY_CRITICAL);
++			   GPM_NOTIFY_URGENCY_CRITICAL,
++               TRUE);
+ 
+ 	/* add extra stuff */
+ 	notify->priv->do_not_show_gconf = GPM_CONF_NOTIFY_LOW_CAPACITY;
+@@ -352,35 +541,6 @@
+ gboolean
+ gpm_notify_inhibit_lid (GpmNotify *notify)
+ {
+-	gchar *msg;
+-	const gchar *title;
+-
+-	/* don't show when running under GDM */
+-	if (g_getenv ("RUNNING_UNDER_GDM") != NULL) {
+-		egg_debug ("running under gdm, so no notification");
+-		return FALSE;
+-	}
+-
+-	title = _("Sleep warning");
+-	msg = g_strdup (_("Your laptop will not sleep if you shut the "
+-			  "lid as a running program has prevented this.\n"
+-			  "Some laptops can overheat if they do not sleep "
+-			  "when the lid is closed."));
+-
+-	gpm_notify_create (notify, title, msg, GPM_NOTIFY_TIMEOUT_LONG,
+-			   GPM_STOCK_INHIBIT,
+-			   GPM_NOTIFY_URGENCY_CRITICAL);
+-
+-	/* add extra stuff */
+-	notify->priv->do_not_show_gconf = GPM_CONF_NOTIFY_INHIBIT_LID;
+-	notify_notification_add_action  (notify->priv->libnotify,
+-	                                 "dont-show-again",
+-	                                 _("Do not show me this again"),
+-	                                 (NotifyActionCallback) notify_general_clicked_cb,
+-	                                 notify, NULL);
+-
+-	gpm_notify_show (notify);
+-	g_free (msg);
+ 	return TRUE;
+ }
+ 
+@@ -390,25 +550,6 @@
+ gboolean
+ gpm_notify_fully_charged_primary (GpmNotify *notify)
+ {
+-	const gchar *msg;
+-	const gchar *title;
+-
+-	title = _("Battery Charged");
+-	msg = _("Your laptop battery is now fully charged");
+-
+-	gpm_notify_create (notify, title, msg, GPM_NOTIFY_TIMEOUT_SHORT,
+-			   GTK_STOCK_DIALOG_WARNING,
+-			   GPM_NOTIFY_URGENCY_CRITICAL);
+-
+-	/* add extra stuff */
+-	notify->priv->do_not_show_gconf = GPM_CONF_NOTIFY_FULLY_CHARGED;
+-	notify_notification_add_action  (notify->priv->libnotify,
+-	                                 "dont-show-again",
+-	                                 _("Do not show me this again"),
+-	                                 (NotifyActionCallback) notify_general_clicked_cb,
+-	                                 notify, NULL);
+-
+-	gpm_notify_show (notify);
+ 	return TRUE;
+ }
+ 
+@@ -426,11 +567,12 @@
+ 
+ 	gpm_notify_create (notify, title, msg, GPM_NOTIFY_TIMEOUT_SHORT,
+ 			   GTK_STOCK_DIALOG_WARNING,
+-			   GPM_NOTIFY_URGENCY_CRITICAL);
++			   GPM_NOTIFY_URGENCY_CRITICAL,
++               FALSE);
+ 
+ 	/* add extra stuff */
+ 	notify->priv->do_not_show_gconf = GPM_CONF_NOTIFY_DISCHARGING;
+-	notify_notification_add_action  (notify->priv->libnotify,
++    gpm_notify_add_action  (notify,
+	                                 "dont-show-again",
+	                                 _("Do not show me this again"),
+	                                 (NotifyActionCallback) notify_general_clicked_cb,
+@@ -454,11 +596,12 @@
+ 
+ 	gpm_notify_create (notify, title, msg, GPM_NOTIFY_TIMEOUT_SHORT,
+ 			   GTK_STOCK_DIALOG_WARNING,
+-			   GPM_NOTIFY_URGENCY_CRITICAL);
++			   GPM_NOTIFY_URGENCY_CRITICAL,
++               TRUE);
+ 
+ 	/* add extra stuff */
+ 	notify->priv->do_not_show_gconf = GPM_CONF_NOTIFY_DISCHARGING;
+-	notify_notification_add_action  (notify->priv->libnotify,
++    gpm_notify_add_action  (notify,
+	                                 "dont-show-again",
+	                                 _("Do not show me this again"),
+	                                 (NotifyActionCallback) notify_general_clicked_cb,
+@@ -488,11 +631,12 @@
+ 	}
+ 
+ 	gpm_notify_create (notify, title, msg, GPM_NOTIFY_TIMEOUT_NEVER, icon,
+-			   GPM_NOTIFY_URGENCY_CRITICAL);
++			   GPM_NOTIFY_URGENCY_CRITICAL,
++               TRUE);
+ 
+ 	/* add extra stuff */
+ 	notify->priv->do_not_show_gconf = GPM_CONF_NOTIFY_SLEEP_FAILED;
+-	notify_notification_add_action  (notify->priv->libnotify,
++	gpm_notify_add_action  (notify,
+ 	                                 "dont-show-again",
+ 	                                 _("Do not show me this again"),
+ 	                                 (NotifyActionCallback) notify_general_clicked_cb,
+@@ -505,7 +649,7 @@
+ 	 * supply the info by following the procedures outlined in the "Quirks
+ 	 * website" at http://people.freedesktop.org/~hughsient/quirk/.
+ 	 */
+-	notify_notification_add_action  (notify->priv->libnotify,
++	gpm_notify_add_action  (notify,
+ 	                                 "visit-website",
+ 	                                 _("Visit quirk website"),
+ 	                                 (NotifyActionCallback) notify_general_clicked_cb,
